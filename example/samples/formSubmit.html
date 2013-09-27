@@ -1,0 +1,143 @@
+<div id="DemoContent">
+   <h2>Patient Prescription Form</h2>
+   <img src="../images/vler_das_form.gif" alt="patient">
+   <form id="patientForm" action="http://localhost:3001/core/pharmacy" method="post" enctype="application/x-www-form-urlencoded">
+      <fieldset id="contact">
+         <legend>Contact Person</legend>
+         <label for="name">Name:</label><input id="patient1" name="name" required placeholder="John 
+            Doe"/><br/>
+         <label for="address">Address:</label><input id="patient2" name="address" required placeholder="1 
+            Microsoft Way"/><br/>
+         <label for="city">City: </label><input id="patient3" name="city" required 
+            placeholder="Redmond"/><br/>
+         <label for="patient4">State</label>
+         <SELECT id="patient4" name="state" required>
+            <OPTION selected 
+               value=""></OPTION>
+            <OPTION value=AL>Alabama</OPTION>
+            <OPTION value=AK>Alaska</OPTION>
+            <OPTION 
+               value=AZ>Arizona</OPTION>
+            <OPTION value=AR>Arkansas</OPTION>
+            <OPTION value=CA>California</OPTION>
+            <OPTION 
+               value=CO>Colorado</OPTION>
+            <OPTION value=CT>Connecticut</OPTION>
+            <OPTION value=DC>District of 
+               Columbia
+            </OPTION>
+            <OPTION value=DE>Delaware</OPTION>
+            <OPTION value=FL>Florida</OPTION>
+            <OPTION 
+               value=GA>Georgia</OPTION>
+            <OPTION value=HI>Hawaii</OPTION>
+            <OPTION value=ID>Idaho</OPTION>
+            <OPTION 
+               value=IL>Illinois</OPTION>
+            <OPTION value=IN>Indiana</OPTION>
+            <OPTION value=IA>Iowa</OPTION>
+            <OPTION 
+               value=KS>Kansas</OPTION>
+            <OPTION value=KY>Kentucky</OPTION>
+            <OPTION value=LA>Louisiana</OPTION>
+            <OPTION 
+               value=ME>Maine</OPTION>
+            <OPTION value=MD>Maryland</OPTION>
+            <OPTION value=MA>Massachusetts</OPTION>
+            <OPTION 
+               value=MI>Michigan</OPTION>
+            <OPTION value=MN>Minnesota</OPTION>
+            <OPTION value=MS>Mississippi</OPTION>
+            <OPTION 
+               value=MO>Missouri</OPTION>
+            <OPTION value=MT>Montana</OPTION>
+            <OPTION value=NE>Nebraska</OPTION>
+            <OPTION 
+               value=NV>Nevada</OPTION>
+            <OPTION value=NH>New Hampshire</OPTION>
+            <OPTION value=NJ>New Jersey</OPTION>
+            <OPTION 
+               value=NM>New Mexico</OPTION>
+            <OPTION value=NY>New York</OPTION>
+            <OPTION value=NC>North Carolina</OPTION>
+            <OPTION 
+               value=ND>North Dakota</OPTION>
+            <OPTION value=OH>Ohio</OPTION>
+            <OPTION value=OK>Oklahoma</OPTION>
+            <OPTION 
+               value=OR>Oregon</OPTION>
+            <OPTION value=PA>Pennsylvania</OPTION>
+            <OPTION value=PR>Puerto Rico</OPTION>
+            <OPTION 
+               value=RI>Rhode Island</OPTION>
+            <OPTION value=SC>South Carolina</OPTION>
+            <OPTION value=SD>South 
+               Dakota
+            </OPTION>
+            <OPTION value=TN>Tennessee</OPTION>
+            <OPTION value=TX>Texas</OPTION>
+            <OPTION 
+               value=UT>Utah</OPTION>
+            <OPTION value=VT>Vermont</OPTION>
+            <OPTION value=VA>Virginia</OPTION>
+            <OPTION 
+               value=WA>Washington</OPTION>
+            <OPTION value=WV>West Virginia</OPTION>
+            <OPTION value=WI>Wisconsin</OPTION>
+            <OPTION 
+               value=WY>Wyoming</OPTION>
+         </SELECT>
+         <br/>
+         <label for="patient5">Zip Code:</label><input id="patient5" type="text" pattern="\d\d\d\d\d" 
+            maxlength="5" title="Enter a 5 digit zip code" required placeholder="98052"/><br/>
+         <label for="patient6">Email Address:</label><input id="patient6" type="email" required 
+            placeholder="john.doe@microsoft.com" /><br/>
+         <label for="patient7">Telephone number:</label><input id="patient7" type="tel" required 
+            placeholder="(425) 333-4444"/><br/>
+      </fieldset>
+      <fieldset id="patient">
+         <legend>Prescriptions</legend>
+         <label for="patient8">Drug Name:</label><input id="patient8" name="name" required placeholder="Drug 
+            Name"/><br/>
+         <label for="patient9">Starting Date:</label><input id="patient8" name="name" required placeholder="mm/dd/yyyy 
+            "/><br/>
+         <label for="patient10">Provider:</label>
+         <select required id="patient10" name="provider">
+            <option 
+               value="Johnson & Johnson">Johnson & Johnson</option>
+            <option value="Pfizer">Pfizer</option>
+            <option 
+               value="GlaxoSmithKline">GlaxoSmithKline</option>
+            <option value="Roche">Roche</option>
+            <option value="Sanofi-
+               Aventis">Sanofi-Aventis</option>
+            <option value="Novartis">Novartis</option>
+            <option 
+               value="AstraZeneca">AstraZeneca</option>
+            <option value="Abbott Laboratories">Abbott 
+               Laboratories
+            </option>
+            <option value="Merck">Merck</option>
+         </select>
+         <br/>
+         <label for="patient11">Quantity:</label>
+         <select required id="patient11"  
+            name="quantity">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option 
+               value="3">3</option>
+            <option value="4">4</option>
+         </select>
+         <br/>
+         <label for="patient12">Notes:</label><input id="patient12"  type="text" maxlength="50" 
+            name="patientMessage" list="messages"/><span class="comment"> (Special comments.) </span>
+      </fieldset>
+      <fieldset id="other">
+         <label for="patient13">Other Notes/ Comments:</label><textarea  id="patient13" 
+            name="comments"></textarea><br/>
+         <input type="submit" value="Submit Order" id="sub"/>
+         <input type="reset" value="Reset Form"/>
+      </fieldset>
+   </form>
+</div>

@@ -1,0 +1,42 @@
+{
+  "name": "eCrud",
+  "version": "0.1.0",
+  "description": "Enterprise RESTful CRUD Service for MongoDB",
+  "keywords": [
+    "mongo",
+    "mongodb",
+    "rest",
+    "restful",
+    "CRUD",
+    "crud",
+    "database"
+  ],
+  "author": "Julian Jewel <julian@julianjewel.com>",
+  "main": "./index.js",
+  "scripts": {
+    "test": "node ./test.js"
+  },
+  "devDependencies": {
+    "config": ">=0.4.30",
+    "connect-multipart-gridform": "0.1.4",
+    "csv-json": ">=0.1.0",
+    "express": ">=3.4.0",
+    "forever": ">=0.10.8",
+    "form2json": ">=0.0.4",
+    "jsesc": ">=0.4.2",
+    "JSONPath": ">=0.9.1",
+    "mongodb": ">=1.3.19",
+    "nodecr": ">=0.0.5",
+    "pdf2json": ">=0.4.9",
+    "string": ">=1.6.0",
+    "temp": ">=0.6.0",
+    "underscore": ">=1.5.2",
+    "xmldom": ">=0.1.16",
+    "xpath.js": ">=0.0.3",
+    "yaml": ">=0.2.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/department-of-veterans-affairs/vlerdas-ecrud.git"
+  }
+}
