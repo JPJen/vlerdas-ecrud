@@ -16,7 +16,7 @@
   "scripts": {
     "test": "node ./test.js"
   },
-  "devDependencies": {
+  "dependencies": {
     "config": ">=0.4.30",
     "connect-multipart-gridform": "0.1.4",
     "csv-json": ">=0.1.0",
@@ -34,6 +34,8 @@
     "xmldom": ">=0.1.16",
     "xpath.js": ">=0.0.3",
     "yaml": ">=0.2.3"
+  },
+  "devDependencies": {
   },
   "repository": {
     "type": "git",
