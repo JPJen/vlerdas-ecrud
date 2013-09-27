@@ -1,5 +1,5 @@
 {
-  "name": "eCrud",
+  "name": "ecrud",
   "version": "0.1.0",
   "description": "Enterprise RESTful CRUD Service for MongoDB",
   "keywords": [
