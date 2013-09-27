@@ -1,4 +1,4 @@
-vlerdas-ecrud
+eCrud
 =============
 
 Enterprise Extensible CRUD Services
