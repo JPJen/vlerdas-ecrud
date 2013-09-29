@@ -64,7 +64,7 @@ function createApp(db, mongo, path) {
         app.use(app.router);
 		// Simple Access Control - TODO: Preferences & Authorizations
         if (config.accessControl) {
-            var accesscontrol = require('./lib/accesscontrol');
+            var accesscontrol = require('../lib/accesscontrol');
             app.use(accesscontrol.handle);
         }
 		// Only for development
@@ -76,7 +76,7 @@ function createApp(db, mongo, path) {
     // You may want to read this post which details some common express / multipart gotchas:
     // http://stackoverflow.com/questions/11295554/how-to-disable-express-bodyparser-for-file-uploads-node-js
     // Initialize Router with all the methods
-	var router = require('./lib/router')(db, mongo, path);
+	var router = require('../lib/router')(db, mongo, path);
 	
 	// GridFS Read Files
 	app.get('/:db/fs', router.getFiles, router.sendResponse);
