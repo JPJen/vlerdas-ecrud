@@ -33,7 +33,7 @@ app.get('/:db/:collection/transformForm', function (req, res) {
 
 app.get('/:db/fs/uploadForm', function (req, res) {
 	res.send(
-		'<center><img src="/images/vler_das_transform.gif"/></center><center><form action="http://localhost:3001/' + req.params.db +
+		'<center><img src="/images/vler_das_upload.gif"/></center><center><form action="http://localhost:3001/' + req.params.db +
 		'/fs" method="post" enctype="multipart/form-data">' +
 		'<input type="file" name="file" mulitple="multiple">' +
 		'<input type="submit" value="Upload">' +
