@@ -10,10 +10,9 @@ var express = require('express')
 var config = require('config')
 var mongo = require('mongodb');
 var MongoClient = mongo.MongoClient;
-var multipart = require('connect-multipart-gridform');
 // Export config, so that it can be used anywhere
 module.exports.config = config;
-
+var bodyParser = require("../lib/bodyParser");
 var tmp = require("temp");
 tmp.track();
 
@@ -36,31 +35,13 @@ function createApp(db, mongo, path) {
     app.configure(function () {
 		// Need to override for form-data
         app.use(express.methodOverride());
-		// Uses special Multipart processing through Formidable
-        app.use(multipart({
+		// Uses our custom bodyParser with special handling for multipart, xml, and text.
+        app.use(bodyParser({
             db: db, // Needs DB
             mongo: mongo
         }));
 		// Log
         app.use(express.logger());
-		// Use the body parser if its not multipart
-        app.use(express.bodyParser());
-		// Special processing for XML
-        app.use(function (req, res, next) {
-            req.rawBody = req.body;
-            if (req.is('application/xml') || req.is('text/plain')) {
-                req.rawBody = ''
-                req.setEncoding('utf8')
-                req.on('data', function (chunk) {
-                    req.rawBody += chunk
-                })
-                req.on('end', function (chunk) {
-                    next();
-                })
-            } else {
-                next();
-            }
-        });
         app.use(app.router);
 		// Simple Access Control - TODO: Preferences & Authorizations
         if (config.accessControl) {
@@ -77,7 +58,7 @@ function createApp(db, mongo, path) {
     // http://stackoverflow.com/questions/11295554/how-to-disable-express-bodyparser-for-file-uploads-node-js
     // Initialize Router with all the methods
 	var router = require('../lib/router')(db, mongo, path);
-	
+
 	// GridFS Read Files
 	app.get('/:db/fs', router.getFiles, router.sendResponse);
 	// GridFS Create Files
@@ -87,7 +68,7 @@ function createApp(db, mongo, path) {
 	// GridFS Delete Files
 	app.del('/:db/fs/:id', router.removeFile, router.sendResponse);
 	// Search for a text
-	app.get('/:db/:collection/search', router.searchText, router.sendResponse); 
+	app.get('/:db/:collection/search', router.searchText, router.sendResponse);
 	// Transform a new document
     app.post('/:db/:collection/transform', router.transformToCollection, router.sendCreatedResponse);
 	// Delete a document
@@ -98,7 +79,7 @@ function createApp(db, mongo, path) {
     app.post('/:db/:collection', router.postToCollection, router.sendCreatedResponse);
 	// Get a document
     app.get('/:db/:collection/:id?', router.getCollection, router.sendResponse);
-	// Listen 
+	// Listen
     app.listen(config.server.port, config.server.server, function () {
         console.log('eCRUD server listening on port ' + config.server.port);
     });
