@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "config": ">=0.4.30",
+    "connect": ">=2.9.0",
     "connect-multipart-gridform": "0.1.4",
     "csv-json": ">=0.1.0",
     "express": ">=3.4.0",
