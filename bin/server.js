@@ -15,6 +15,8 @@ module.exports.config = config;
 var bodyParser = require("../lib/bodyParser");
 var tmp = require("temp");
 tmp.track();
+var http = require('http');
+var https = require('https');
 
 // Create a temporary directory
 tmp.mkdir('eCrud', function (err, path) {
@@ -79,10 +81,38 @@ function createApp(db, mongo, path) {
     app.post('/:db/:collection', router.postToCollection, router.sendCreatedResponse);
 	// Get a document
     app.get('/:db/:collection/:id?', router.getCollection, router.sendResponse);
+
 	// Listen
+	http.createServer(app).listen(config.server.port, config.server.server, function() {
+		console.log("eCRUD server listening at http://" + config.server.server + ":" + config.server.port);
+	});
+	https.createServer(fixOptions(config.secureServer.options), app).listen(config.secureServer.port, config.secureServer.server, function() {
+		console.log("eCRUD server listening at https://" + config.secureServer.server + ":" + config.secureServer.port);
+	});
+
+	/*
     app.listen(config.server.port, config.server.server, function () {
         console.log('eCRUD server listening on port ' + config.server.port);
-    });
+    });*/
+}
+
+function fixOptions(configOptions)
+{
+	var options = {};
+
+	if (!_.isUndefined(configOptions.key) && _.isString(configOptions.key)) {
+		options.key = fs.readFileSync(configOptions.key);
+	}
+
+	if (!_.isUndefined(configOptions.cert) && _.isString(configOptions.cert)) {
+		options.cert = fs.readFileSync(configOptions.cert);
+	}
+
+	if (!_.isUndefined(configOptions.pfx) && _.isString(configOptions.pfx)) {
+		options.pfx = fs.readFileSync(configOptions.pfx);
+	}
+
+	return options;
 }
 
 // Default exception handler
