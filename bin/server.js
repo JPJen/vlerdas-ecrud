@@ -37,6 +37,11 @@ function createApp(db, mongo, path) {
     app.configure(function () {
 		// Need to override for form-data
         app.use(express.methodOverride());
+		// Simple Access Control - TODO: Preferences & Authorizations
+        if (config.accessControl) {
+            var accessControl = require('../lib/accesscontrol');
+            app.use(accessControl());
+        }
 		// Uses our custom bodyParser with special handling for multipart, xml, and text.
         app.use(bodyParser({
             db: db, // Needs DB
@@ -45,11 +50,6 @@ function createApp(db, mongo, path) {
 		// Log
         app.use(express.logger());
         app.use(app.router);
-		// Simple Access Control - TODO: Preferences & Authorizations
-        if (config.accessControl) {
-            var accesscontrol = require('../lib/accesscontrol');
-            app.use(accesscontrol.handle);
-        }
 		// Only for development
 		if(config.debug) {
 			app.use(express.errorHandler({ showStack: true, dumpExceptions: true }));
