@@ -83,12 +83,23 @@ function createApp(db, mongo, path) {
     app.get('/:db/:collection/:id?', router.getCollection, router.sendResponse);
 
 	// Listen
-	http.createServer(app).listen(config.server.port, config.server.server, function() {
-		console.log("eCRUD server listening at http://" + config.server.server + ":" + config.server.port);
-	});
-	https.createServer(fixOptions(config.secureServer.options), app).listen(config.secureServer.port, config.secureServer.server, function() {
-		console.log("eCRUD server listening at https://" + config.secureServer.server + ":" + config.secureServer.port);
-	});
+	if (!_.isUndefined(config.server) || !_.isUndefined(config.secureServer)) {
+		if (!_.isUndefined(config.server)) {
+			http.createServer(app).listen(config.server.port, config.server.host, function() {
+				console.log("eCRUD server listening at http://" + config.server.host + ":" + config.server.port);
+			});
+		}
+
+		if (!_.isUndefined(config.secureServer)) {
+			https.createServer(fixOptions(config.secureServer.options), app).listen(config.secureServer.port, config.secureServer.host, function() {
+				console.log("eCRUD server listening at https://" + config.secureServer.host + ":" + config.secureServer.port);
+			});
+		}
+	}
+	else {
+		console.error("Configuration must contain a server or secureServer.");
+		process.exit();
+	}
 
 	/*
     app.listen(config.server.port, config.server.server, function () {
