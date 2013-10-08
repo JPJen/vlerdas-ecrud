@@ -34,7 +34,8 @@
     "underscore": ">=1.5.2",
     "xmldom": ">=0.1.16",
     "xpath.js": ">=0.0.3",
-    "yaml": ">=0.2.3"
+    "yaml": ">=0.2.3",
+    "sax": ">=0.5.5"
   },
   "devDependencies": {
   },
