@@ -14,7 +14,7 @@
 			"cert": "config/server.crt"
 		}	
 	},
-	"accessControl": {
+	"accessControl.DISABLED": {
 		"testuser1": {
 			"accessKeyId": "testuser1",
 			"accessKeySecret": "pa$$w0rd1",
