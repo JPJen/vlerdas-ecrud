@@ -6,9 +6,25 @@
 		"port": 3001,
 		"host": "localhost"
 	},
+	"secureServer": {
+		"port": 3002,
+		"host": "localhost",
+		"options" : {
+			"key": "config/server.key",
+			"cert": "config/server.crt"
+		}	
+	},
 	"accessControl": {
-		"allowOrigin": "*",
-		"allowMethods": "GET,POST,PUT,DELETE,HEAD,OPTIONS"
+		"testuser1": {
+			"accessKeyId": "testuser1",
+			"accessKeySecret": "pa$$w0rd1",
+			"allowMethods": "*"
+		},
+		"testuser2": {
+			"accessKeyId": "testuser2",
+			"accessKeySecret": "pa$$w0rd2",
+			"allowMethods": "POST"
+		}
 	},
 	"debug": true
 }
