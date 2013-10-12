@@ -37,7 +37,9 @@
     "xpath.js": ">=0.0.3",
     "yaml": ">=0.2.3",
     "sax": ">=0.5.5",
-    "redis": ">=0.8.5"
+    "redis": ">=0.8.5",
+    "should": ">=2.0.1",
+    "supertest": ">=0.8.0"
   },
   "devDependencies": {
   },
