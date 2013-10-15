@@ -40,7 +40,7 @@
     "redis": ">=0.8.5",
     "should": ">=2.0.1",
     "supertest": ">=0.8.0",
-	"vcommons": ">=0.1.4"
+	"vcommons": ">=0.1.5"
   },
   "devDependencies": {
   },
