@@ -6,9 +6,10 @@ var should = require('should'),
     supertest = require('supertest');
 var request = supertest('localhost:3001');
 
-describe('eCFT POST', function() {
+var collectionName = 'eCFT';
+describe(collectionName+' POST', function() {
     it('a file', function(done) {
-       request.post('/core/eCFT/transform')
+       request.post('/core/'+collectionName+'/transform')
            .attach('file', 'test/attachments/eCFTCaseFile_minimal.xml')
            .end(function(err, res) {
                res.should.have.status(201); // 'created' success status
@@ -17,7 +18,7 @@ describe('eCFT POST', function() {
                res.text.should.include("nc:DocumentFileControlID");
                res.text.should.include("nc:DocumentFormatText");
                json = JSON.parse(res.text);
-               checkGET_CollectionExists(transformCollectionId = json[0]._id);
+               checkGET_CollectionExists(collectionName, transformCollectionId = json[0]._id);
                orginalGridFSDocId = json[0]['case:ElectronicCaseFile']['case:CommonData']['nc:Document']['nc:DocumentFileControlID'];
                checkGET_GridFSDocExists(orginalGridFSDocId);
                
@@ -27,9 +28,10 @@ describe('eCFT POST', function() {
     });
 });
 
-describe('DBQ POST', function() {
+var collectionName = 'DBQ';
+describe(collectionName+' POST', function() {
     it('a file', function(done) {
-       request.post('/core/eCFT/transform')
+       request.post('/core/'+collectionName+'/transform')
            .attach('file', 'test/attachments/DBQ_AnkleCondition.xml')
            .end(function(err, res) {
                res.should.have.status(201); // 'created' success status
@@ -38,7 +40,7 @@ describe('DBQ POST', function() {
                res.text.should.include("nc:DocumentFileControlID");
                res.text.should.include("nc:DocumentFormatText");
                json = JSON.parse(res.text);
-               checkGET_CollectionExists(transformCollectionId = json[0]._id);
+               checkGET_CollectionExists(collectionName, transformCollectionId = json[0]._id);
                orginalGridFSDocId = json[0]['cld:Claim']['cld:CommonData']['nc:Document']['nc:DocumentFileControlID'];
                checkGET_GridFSDocExists(orginalGridFSDocId);
                
@@ -61,12 +63,12 @@ function checkGET_GridFSDocExists(gridFSDocId) {
     });
 }
 
-function checkGET_CollectionExists(collectionId) {
-    console.log("collectionId: "+collectionId);
-    describe('GET /core/eCFT/:collectionId', function(){
+function checkGET_CollectionExists(collectionName, collectionId) {
+    console.log(collectionName+"/collectionId: "+collectionId);
+    describe('GET /core/'+collectionName+'/:collectionId', function(){
       it('respond with json', function(done){
         request
-          .get('/core/eCFT/'+collectionId)
+          .get('/core/'+collectionName+'/'+collectionId)
           .set('Accept', 'application/json')
           .expect('Content-Type', /json/)
           .expect(200, done);
