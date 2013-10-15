@@ -28,7 +28,7 @@
 	},
 	"notification": {
 		"eventHandler": {
-			"enabled": true,
+			"enabled": false,
 			"file": "../lib/redisQueueHandler.js",
 			"redis": {
 				"port":"6379",
