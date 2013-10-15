@@ -12,7 +12,7 @@ var mongo = require('mongodb');
 var MongoClient = mongo.MongoClient;
 // Export config, so that it can be used anywhere
 module.exports.config = config;
-var bodyParser = require("../lib/bodyParser");
+var bodyParser = require("../node_modules/vcommons/express/multipartBodyParser");
 var tmp = require("temp");
 tmp.track();
 var http = require('http');
@@ -61,6 +61,12 @@ function createApp(db, mongo, path) {
     // Initialize Router with all the methods
 	var router = require('../lib/router')(db, mongo, path);
 
+	// Async. Query of docs
+	app.get('/:db/:collection/async/:channel', router.asyncResponse);
+	// Search for a text
+	app.get('/:db/:collection/search', router.searchText, router.sendResponse);
+	// Transform a new document
+    app.post('/:db/:collection/transform', router.transformToCollection, router.sendCreatedResponse);
 	// GridFS Read Files
 	app.get('/:db/fs', router.getFiles, router.sendResponse);
 	// GridFS Create Files
@@ -69,10 +75,6 @@ function createApp(db, mongo, path) {
     app.get('/:db/fs/:id', router.downloadFile);
 	// GridFS Delete Files
 	app.del('/:db/fs/:id', router.removeFile, router.sendResponse);
-	// Search for a text
-	app.get('/:db/:collection/search', router.searchText, router.sendResponse);
-	// Transform a new document
-    app.post('/:db/:collection/transform', router.transformToCollection, router.sendCreatedResponse);
 	// Delete a document
     app.del('/:db/:collection/:id', router.deleteFromCollection, router.sendResponse);
 	// Update a document
