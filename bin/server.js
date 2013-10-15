@@ -39,7 +39,7 @@ function createApp(db, mongo, path) {
         app.use(express.methodOverride());
 		// Simple Access Control - TODO: Preferences & Authorizations
         if (config.accessControl) {
-            var accessControl = require('../lib/accesscontrol');
+            var accessControl = require('../node_modules/vcommons/access/accesscontrol');
             app.use(accessControl());
         }
 		// Uses our custom bodyParser with special handling for multipart, xml, and text.
