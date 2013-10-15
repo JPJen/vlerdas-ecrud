@@ -6,7 +6,7 @@ var should = require('should'),
     supertest = require('supertest');
 var request = supertest('localhost:3001');
 
-describe('upload', function() {
+describe('eCFT POST', function() {
     it('a file', function(done) {
        request.post('/core/eCFT/transform')
            .attach('file', 'test/attachments/eCFTCaseFile_minimal.xml')
@@ -27,7 +27,28 @@ describe('upload', function() {
     });
 });
 
+describe('DBQ POST', function() {
+    it('a file', function(done) {
+       request.post('/core/eCFT/transform')
+           .attach('file', 'test/attachments/DBQ_AnkleCondition.xml')
+           .end(function(err, res) {
+               res.should.have.status(201); // 'created' success status
+               
+               res.text.should.include("nc:Document");
+               res.text.should.include("nc:DocumentFileControlID");
+               res.text.should.include("nc:DocumentFormatText");
+               json = JSON.parse(res.text);
+               checkGET_CollectionExists(transformCollectionId = json[0]._id);
+               orginalGridFSDocId = json[0]['cld:Claim']['cld:CommonData']['nc:Document']['nc:DocumentFileControlID'];
+               checkGET_GridFSDocExists(orginalGridFSDocId);
+               
+               res.text.should.not.include("BinaryBase64Object");
+               done();
+           });
+    });
+});
 
+//------- Functions ------- 
 
 function checkGET_GridFSDocExists(gridFSDocId) {
     console.log("gridFSDocId: "+gridFSDocId);
