@@ -39,7 +39,8 @@
     "sax": ">=0.5.5",
     "redis": ">=0.8.5",
     "should": ">=2.0.1",
-    "supertest": ">=0.8.0"
+    "supertest": ">=0.8.0",
+	"vcommons": ">=0.1.4"
   },
   "devDependencies": {
   },
