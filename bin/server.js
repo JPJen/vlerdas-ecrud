@@ -62,27 +62,27 @@ function createApp(db, mongo, path) {
 	var router = require('../lib/router')(db, mongo, path);
 
 	// Async. Query of docs
-	app.get('/:db/:collection/async/:channel', router.asyncResponse);
+	app.get('/' + config.db.name + '/:collection/async/:channel', router.asyncResponse);
 	// Search for a text
-	app.get('/:db/:collection/search', router.searchText, router.sendResponse);
+	app.get('/' + config.db.name + '/:collection/search', router.searchText, router.sendResponse);
 	// Transform a new document
-    app.post('/:db/:collection/transform', router.transformToCollection, router.sendCreatedResponse);
+    app.post('/' + config.db.name + '/:collection/transform', router.transformToCollection, router.sendCreatedResponse);
 	// GridFS Read Files
-	app.get('/:db/fs', router.getFiles, router.sendResponse);
+	app.get('/' + config.db.name + '/fs', router.getFiles, router.sendResponse);
 	// GridFS Create Files
-    app.post('/:db/fs', router.sendCreatedResponse);
+    app.post('/' + config.db.name + '/fs', router.sendCreatedResponse);
 	// GridFS Download Files
-    app.get('/:db/fs/:id', router.downloadFile);
+    app.get('/' + config.db.name + '/fs/:id', router.downloadFile);
 	// GridFS Delete Files
-	app.del('/:db/fs/:id', router.removeFile, router.sendResponse);
+	app.del('/' + config.db.name + '/fs/:id', router.removeFile, router.sendResponse);
 	// Delete a document
-    app.del('/:db/:collection/:id', router.deleteFromCollection, router.sendResponse);
+    app.del('/' + config.db.name + '/:collection/:id', router.deleteFromCollection, router.sendResponse);
 	// Update a document
-    app.put('/:db/:collection/:id', router.putToCollection, router.sendCreatedResponse);
+    app.put('/' + config.db.name + '/:collection/:id', router.putToCollection, router.sendCreatedResponse);
 	// Create a new document
-    app.post('/:db/:collection', router.postToCollection, router.sendCreatedResponse);
+    app.post('/' + config.db.name + '/:collection', router.postToCollection, router.sendCreatedResponse);
 	// Get a document
-    app.get('/:db/:collection/:id?', router.getCollection, router.sendResponse);
+    app.get('/' + config.db.name + '/:collection/:id?', router.getCollection, router.sendResponse);
 
 	// Listen
 	if (!_.isUndefined(config.server) || !_.isUndefined(config.secureServer)) {
