@@ -16,6 +16,10 @@ describe('upload', function() {
                res.text.should.include("nc:Document");
                res.text.should.include("nc:DocumentFileControlID");
                res.text.should.include("nc:DocumentFormatText");
+               json = JSON.parse(res.text);
+               checkGET_CollectionExists(transformCollectionId = json[0]._id);
+               orginalGridFSDocId = json[0]['case:ElectronicCaseFile']['case:CommonData']['nc:Document']['nc:DocumentFileControlID'];
+               checkGET_GridFSDocExists(orginalGridFSDocId);
                
                res.text.should.not.include("BinaryBase64Object");
                done();
@@ -23,29 +27,31 @@ describe('upload', function() {
     });
 });
 
-describe('GET /core/fs', function(){
-  it('respond with json', function(done){
-    request
-      .get('/core/fs')
-      .set('Accept', 'application/json')
-      .expect('Content-Type', /json/)
-      .expect(200, done);
-      //TODO: assert that the transformed file exists
-      //TODO: download file, compare with uploaded file
-  });
-});
 
 
-describe('GET /core/eCFT', function(){
-  it('respond with json', function(done){
-    request
-      .get('/core/eCFT')
-      .set('Accept', 'application/json')
-      .expect('Content-Type', /json/)
-      .expect(200, done);
-      //TODO: assert that the parsed collection exists
-  });
-});
+function checkGET_GridFSDocExists(gridFSDocId) {
+    console.log("gridFSDocId: "+gridFSDocId);
+    describe('GET /core/fs/:gridFSDocId', function(){
+      it('respond with json', function(done){
+        request
+          .get('/core/fs/'+gridFSDocId)
+          .expect(200, done);
+      });
+    });
+}
+
+function checkGET_CollectionExists(collectionId) {
+    console.log("collectionId: "+collectionId);
+    describe('GET /core/eCFT/:collectionId', function(){
+      it('respond with json', function(done){
+        request
+          .get('/core/eCFT/'+collectionId)
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(200, done);
+      });
+    });
+}
 
 //TODO: test with very large generated XML file
 
