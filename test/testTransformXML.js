@@ -18,9 +18,15 @@ describe(collectionName+' POST', function() {
                res.text.should.include("nc:DocumentFileControlID");
                res.text.should.include("nc:DocumentFormatText");
                json = JSON.parse(res.text);
-               checkGET_CollectionExists(collectionName, transformCollectionId = json[0]._id);
+               checkGET_Collection(collectionName, transformCollectionId = json[0]._id, 200);
+               checkDELETE_Collection(collectionName, transformCollectionId = json[0]._id, 200);
+               checkGET_Collection(collectionName, transformCollectionId = json[0]._id, 404);
+               
                orginalGridFSDocId = json[0]['case:ElectronicCaseFile']['case:CommonData']['nc:Document']['nc:DocumentFileControlID'];
-               checkGET_GridFSDocExists(orginalGridFSDocId);
+               checkGET_GridFSDoc(orginalGridFSDocId, 200);
+               checkGET_GridFSDoc(orginalGridFSDocId, 200);
+               checkDELETE_GridFSDoc(orginalGridFSDocId, 200);
+               checkGET_GridFSDoc(orginalGridFSDocId, 404);
                
                res.text.should.not.include("BinaryBase64Object");
                done();
@@ -40,9 +46,14 @@ describe(collectionName+' POST', function() {
                res.text.should.include("nc:DocumentFileControlID");
                res.text.should.include("nc:DocumentFormatText");
                json = JSON.parse(res.text);
-               checkGET_CollectionExists(collectionName, transformCollectionId = json[0]._id);
+               checkGET_Collection(collectionName, transformCollectionId = json[0]._id, 200);
+               checkDELETE_Collection(collectionName, transformCollectionId = json[0]._id, 200);
+               checkGET_Collection(collectionName, transformCollectionId = json[0]._id, 404);
+               
                orginalGridFSDocId = json[0]['cld:Claim']['cld:CommonData']['nc:Document']['nc:DocumentFileControlID'];
-               checkGET_GridFSDocExists(orginalGridFSDocId);
+               checkGET_GridFSDoc(orginalGridFSDocId, 200);
+               checkDELETE_GridFSDoc(orginalGridFSDocId, 200);
+               checkGET_GridFSDoc(orginalGridFSDocId, 404);
                
                res.text.should.not.include("BinaryBase64Object");
                done();
@@ -52,29 +63,49 @@ describe(collectionName+' POST', function() {
 
 //------- Functions ------- 
 
-function checkGET_GridFSDocExists(gridFSDocId) {
-    console.log("gridFSDocId: "+gridFSDocId);
-    describe('GET /core/fs/:gridFSDocId', function(){
+function checkGET_GridFSDoc(gridFSDocId, httpCode) {
+    describe('GET /core/fs/'+gridFSDocId, function(){
       it('respond with json', function(done){
         request
           .get('/core/fs/'+gridFSDocId)
-          .expect(200, done);
+          .expect(httpCode, done);
       });
     });
 }
 
-function checkGET_CollectionExists(collectionName, collectionId) {
-    console.log(collectionName+"/collectionId: "+collectionId);
-    describe('GET /core/'+collectionName+'/:collectionId', function(){
+function checkGET_Collection(collectionName, collectionId, httpCode) {
+    describe('GET /core/'+collectionName+'/'+collectionId, function(){
       it('respond with json', function(done){
         request
           .get('/core/'+collectionName+'/'+collectionId)
-          .set('Accept', 'application/json')
-          .expect('Content-Type', /json/)
-          .expect(200, done);
+//          .set('Accept', 'application/json')
+//          .expect('Content-Type', /json/)
+          .expect(httpCode, done);
       });
     });
 }
+
+function checkDELETE_GridFSDoc(gridFSDocId, httpCode) {
+    describe('DELETE /core/fs/'+gridFSDocId, function(){
+      it('respond with json', function(done){
+        request
+          .del('/core/fs/'+gridFSDocId)
+          .expect(httpCode, done);
+      });
+    });
+}
+
+function checkDELETE_Collection(collectionName, collectionId, httpCode) {
+    describe('DELETE /core/'+collectionName+'/'+collectionId, function(){
+      it('respond with json', function(done){
+        request
+          .del('/core/'+collectionName+'/'+collectionId)
+          .expect(httpCode, done);
+      });
+    });
+}
+
+
 
 //TODO: test with very large generated XML file
 
