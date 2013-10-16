@@ -29,7 +29,7 @@
 	},
 	"notification": {
 		"eventHandler": {
-			"enabled": false,
+			"enabled": true,
 			"file": "../lib/redisQueueHandler.js",
 			"redis": {
 				"port":"6379",
@@ -47,6 +47,21 @@
 				"port":"6379",
 				"host":"127.0.0.1"
 			}
+		}
+	},
+	"transform": {
+		"adapters": {
+			"application/xml":"../adapters/niem/niem2collection.js",
+			"application/pdf":"../adapters/pdf/pdf2collection.js",
+			"application/x-msdownload":"../adapters/pdf/pdf2collection.js",
+			"image/gif":"../adapters/image/img2collection.js",
+			"image/jpeg":"../adapters/image/img2collection.js",
+			"image/pjpeg":"../adapters/image/img2collection.js",
+			"image/png":"../adapters/image/img2collection.js",
+			"image/svg+xml":"../adapters/image/img2collection.js",
+			"image/tiff":"../adapters/image/img2collection.js",
+			"application/vnd.ms-excel":"../adapters/csv/csv2collection.js",
+			"application/json":"../adapters/jsonfile/json2collection.js"
 		}
 	},
 	"debug": true

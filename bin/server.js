@@ -22,16 +22,17 @@ var https = require('https');
 tmp.mkdir('eCrud', function (err, path) {
 	if(err) throw err;
 	console.log('Temporary Directory:' + path);
+	config.tempdir = path;
 	MongoClient.connect(config.db.url, function (err, db) {
 		if (err) throw err;
-		createApp(db, mongo, path);
+		createApp(db, mongo);
 	});
 });
 
 
 // Establish an initial connection to MongoDB - Needed for Multipart data
 
-function createApp(db, mongo, path) {
+function createApp(db, mongo) {
     var app = express();
 
     app.configure(function () {
@@ -59,7 +60,7 @@ function createApp(db, mongo, path) {
     // You may want to read this post which details some common express / multipart gotchas:
     // http://stackoverflow.com/questions/11295554/how-to-disable-express-bodyparser-for-file-uploads-node-js
     // Initialize Router with all the methods
-	var router = require('../lib/router')(db, mongo, path);
+	var router = require('../lib/router')(db, mongo);
 
 	// Async. Query of docs
 	app.get('/' + config.db.name + '/:collection/async/:channel', router.asyncResponse);
