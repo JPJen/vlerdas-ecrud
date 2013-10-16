@@ -17,6 +17,7 @@
     "test": "node ./test.js"
   },
   "dependencies": {
+  	"gridfs-stream": ">=0.4.0",
     "config": ">=0.4.30",
     "connect": ">=2.9.0",
     "connect-multipart-gridform": "0.1.4",
