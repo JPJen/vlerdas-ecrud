@@ -1,5 +1,6 @@
 /**
  * PDF to JSON to MongoDB Collection Adapter
+ *
  * @author Julian Jewel
  */
 
@@ -8,6 +9,8 @@ _ = require('underscore');
 var PFParser = require("pdf2json");
 var multipart = require('connect-multipart-gridform');
 var fs = require('fs');
+var jsonpath = require("JSONPath").eval;
+var querystring = require("querystring");
 
 module.exports = exports = function () {
     return {
@@ -25,28 +28,33 @@ module.exports = exports = function () {
 				// Recognise text of any language in any format
 				var pdfParser = new PFParser();
 				pdfParser.on("pdfParser_dataReady", function (evtData) {
-					textData = JSON.stringify(evtData.data);
-					
-					db.collection(req.params.collection, function (err, collection) {
-						// Extract Text portion and save it in a separate node
-						var data = jsonpath(JSON.parse(JSON.stringify(textData)), "$..T");
-						var aggregateData = '';
-						for (var i = 0; i < data.length; i++) {
-							aggregateData += data[i];
-						}
-						aggregateData = querystring.unescape(aggregateData);
-						textData.text = aggregateData;
-						textData.uploadDate = new Date();
-						collection.insert(Array.isArray(textData) ? textData[0] : textData, function (err, docs) {
-							if (err) return next(err);
-							res.locals.items = textData;
-							evtData.destroy();
-							evtData = null;
-							if(config.notification.eventHandler.enabled)
-								event.emit("i", config.notification.eventHandler.channel, req.params.collection, docs);
-							return next();
+					try {
+						var textData = evtData.data;
+						db.collection(req.params.collection, function (err, collection) {
+							// Extract Text portion and save it in a separate node
+							var data = jsonpath(textData, "$..T");
+							var aggregateData = '';
+							for (var i = 0; i < data.length; i++) {
+								aggregateData += data[i];
+							}
+							aggregateData = querystring.unescape(aggregateData);
+							textData.text = aggregateData;
+							textData.uploadDate = new Date();
+							collection.insert(Array.isArray(textData) ? textData[0] : textData, function (err, docs) {
+								if (err) return next(err);
+								res.locals.items = textData;
+								if(config.notification.eventHandler.enabled)
+									event.emit("i", config.notification.eventHandler.channel, req.params.collection, docs);
+								return next();
+							});
 						});
-					});
+						evtData.destroy();
+						evtData = null;
+					} catch(err) {
+						// Ignore promise being closed
+						if(config.debug)
+							console.log(err);
+					}
 				});
 				pdfParser.on("pdfParser_dataError", function (evtData) {
 					evtData.destroy();
@@ -56,7 +64,6 @@ module.exports = exports = function () {
 					}
 					return next();
 				});
-		
 				pdfParser.loadPDF(newPath);
 			});
 		}
