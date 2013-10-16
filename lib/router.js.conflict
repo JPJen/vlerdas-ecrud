@@ -201,6 +201,137 @@ module.exports = exports = function (db, mongo) {
 			});
 		},
         transformToCollection: function (req, res, next) {
+<<<<<<< HEAD
+			var readstream = multipart.gridform.gridfsStream(db, mongo).createReadStream(req.files.file.id);
+            
+            function createCollection(json) {
+                db.collection(req.params.collection, function (err, collection) {
+                    if(err) return next(err);
+                    if(!_.isUndefined(json)) {
+                        json.uploadDate = new Date();
+                        collection.insert(json, function (err, docs) {
+                            if(err) return next(err);
+                            res.locals.items = docs;
+                            if(config.notification.eventHandler.enabled)
+                                event.emit("i", req.params.collection, docs);
+                            return next();
+                        });
+                    }
+                });
+            }
+                
+
+			readstream.on('open', function () {
+                var store = readstream._store;
+				var newPath = tempPath + '/' + req.files.file.id + '_' + store.filename;
+				console.log(newPath);
+				// Stage file
+				var writestream = fs.createWriteStream(newPath);
+				readstream.pipe(writestream);
+				// Recognise text of any language in any format
+				var contentType = req.files.file.type;
+
+				if (S(contentType).startsWith('application/pdf') || S(contentType).startsWith('application/x-msdownload')) {
+					var _onPFBinDataReady = function (evtData) {
+						var textData = evtData.data;
+						db.collection(req.params.collection, function (err, collection) {
+							// Extract Text portion and save it in a separate node
+							var data = jsonpath(JSON.parse(JSON.stringify(textData)), "$..T");
+							var aggregateData = '';
+							for (var i = 0; i < data.length; i++) {
+								aggregateData += data[i];
+							}
+							aggregateData = querystring.unescape(aggregateData);
+							textData.text = aggregateData;
+							textData.uploadDate = new Date();
+
+							collection.insert(Array.isArray(textData) ? textData[0] : textData, function (err, docs) {
+								if (err) return next(err);
+								res.locals.items = textData;
+								evtData.destroy();
+								evtData = null;
+								if(config.notification.eventHandler.enabled)
+									event.emit("i", req.params.collection, docs);
+								return next();
+							});
+						});
+					};
+
+					var _onPFBinDataError = function (evtData) {
+						evtData.destroy();
+						evtData = null;
+						return next();
+					};
+
+					var pdfParser = new PFParser();
+					pdfParser.on("pdfParser_dataReady", _.bind(_onPFBinDataReady, {}));
+					pdfParser.on("pdfParser_dataError", _.bind(_onPFBinDataError, {}));
+					pdfParser.loadPDF(newPath);
+				} else if (S(contentType).startsWith('image')) {
+					nodecr.process(newPath, function (err, text) {
+						if (err) {
+							throw err;
+						} else {
+							var toInsert = {
+								// TODO: Remove hardcoding
+								"text": text
+							};
+							toInsert.uploadDate = new Date();
+
+							db.collection(req.params.collection, function (err, collection) {
+								collection.insert(Array.isArray(toInsert) ? toInsert[0] : toInsert, function (err, docs) {
+									res.locals.id = docs[0]._id.toHexString();
+									res.locals.items = toInsert;
+									if(config.notification.eventHandler.enabled)
+										event.emit("i", req.params.collection, docs);
+									return next();
+								});
+							});
+						}
+					});
+				} else if (S(contentType).startsWith('application/vnd.ms-excel')) {
+					csvjs.parseCsv(newPath, {
+							options: { //Options:
+								delimiter: ','
+							}
+						},
+						function (err, json, stats) {
+							if(err) return next(err);
+							db.collection(req.params.collection, function (err, collection) {
+								if(err) return next(err);
+								if(!_.isUndefined(json)) {
+									json.uploadDate = new Date();
+									collection.insert(json, function (err, docs) {
+										res.locals.items = docs;
+										if(config.notification.eventHandler.enabled)
+											event.emit("i", req.params.collection, docs);
+										return next();
+									});
+								}
+							});
+						}
+					);
+				} else if (S(store.filename).endsWith('json')) {
+					fs.readFile(newPath, function (err,data) {
+						if (err) return next(err);
+						var json = JSON.parse(data);
+						// Documents is the delimiter
+						var json = json.documents;
+						createCollection(json);
+					});
+				} else if (S(store.filename).endsWith('xml')) {
+
+					require("./transformXML.js")(db, mongo).transform(req.files.file.id, readstream, createCollection);
+
+				} else {
+					throw new Error('{"error": "404 - Content Type:' + contentType + ' is not supported"}');
+					//TODO: do we want to error here or just log and return?
+					console.log("!!Content type is unkown. Cannot transform!!");
+                    return next();
+
+				}
+			});
+=======
 			if(_.isUndefined(req.files) || _.isEmpty(req.files)) {
 				throw new Error("No files were uploaded as part of the transform");
 			}
@@ -213,6 +344,7 @@ module.exports = exports = function (db, mongo) {
 			} else {
 				throw new Error('{"Error": "404 - Content Type:' + req.files.file.type + ' is not supported"}');
 			}
+>>>>>>> upstream/master
         },
 		sendResponse: function(req, res, next) {
 			if(!res.locals.items) {
