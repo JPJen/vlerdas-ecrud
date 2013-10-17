@@ -60,7 +60,8 @@ function createApp(db, mongo) {
     // You may want to read this post which details some common express / multipart gotchas:
     // http://stackoverflow.com/questions/11295554/how-to-disable-express-bodyparser-for-file-uploads-node-js
     // Initialize Router with all the methods
-	var router = require('../lib/router')(db, mongo);
+	var Router = require('../lib/router');
+	var router = new Router(db, mongo);
 
 	// Async. Query of docs
 	app.get('/' + config.db.name + '/:collection/async/:channel', router.asyncResponse);
@@ -84,6 +85,15 @@ function createApp(db, mongo) {
     app.post('/' + config.db.name + '/:collection', router.postToCollection, router.sendCreatedResponse);
 	// Get a document
     app.get('/' + config.db.name + '/:collection/:id?', router.getCollection, router.sendResponse);
+
+	var eventHandler = require(config.notification.eventHandler.file)();
+	router.on("i", eventHandler.onInsert);
+	router.on("u", eventHandler.onUpdate);
+	router.on("d", eventHandler.onDelete);
+
+	// Needed for async responses
+	var asyncEventHandler = require(config.async.eventHandler.file)();
+	router.on("g", asyncEventHandler.onGet);
 
 	// Listen
 	if (!_.isUndefined(config.server) || !_.isUndefined(config.secureServer)) {
