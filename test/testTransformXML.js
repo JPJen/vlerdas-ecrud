@@ -5,6 +5,7 @@
 var should = require('should'),
     supertest = require('supertest');
 var request = supertest('localhost:3001');
+var Jsonpath = require('JSONPath');
 
 var collectionName = 'eCFT';
 describe(collectionName+' POST', function() {
@@ -24,9 +25,17 @@ describe(collectionName+' POST', function() {
                
                orginalGridFSDocId = json[0]['case:ElectronicCaseFile']['case:CommonData']['nc:Document']['nc:DocumentFileControlID'];
                checkGET_GridFSDoc(orginalGridFSDocId, 200);
-               checkGET_GridFSDoc(orginalGridFSDocId, 200);
                checkDELETE_GridFSDoc(orginalGridFSDocId, 200);
                checkGET_GridFSDoc(orginalGridFSDocId, 404);
+               
+               var jsonAttachments = Jsonpath.eval(json, '$..nc:Attachment');
+               for (var i = 0; i < jsonAttachments.length; i++) {
+                   var attachmentGridFSId = jsonAttachments[i]['nc:BinaryLocationURI'];
+                   checkGET_GridFSDoc(attachmentGridFSId, 200);
+                   checkDELETE_GridFSDoc(attachmentGridFSId, 200);
+                   checkGET_GridFSDoc(attachmentGridFSId, 404);
+               }
+               jsonAttachments.length.should.equal(2);
                
                res.text.should.not.include("BinaryBase64Object");
                done();
@@ -54,6 +63,15 @@ describe(collectionName+' POST', function() {
                checkGET_GridFSDoc(orginalGridFSDocId, 200);
                checkDELETE_GridFSDoc(orginalGridFSDocId, 200);
                checkGET_GridFSDoc(orginalGridFSDocId, 404);
+               
+               var jsonAttachments = Jsonpath.eval(json, '$..nc:Attachment');
+               for (var i = 0; i < jsonAttachments.length; i++) {
+                   var attachmentGridFSId = jsonAttachments[i]['nc:BinaryLocationURI'];
+                   checkGET_GridFSDoc(attachmentGridFSId, 200);
+                   checkDELETE_GridFSDoc(attachmentGridFSId, 200);
+                   checkGET_GridFSDoc(attachmentGridFSId, 404);
+               }
+               jsonAttachments.length.should.equal(1);
                
                res.text.should.not.include("BinaryBase64Object");
                done();

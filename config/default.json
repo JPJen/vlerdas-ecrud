@@ -52,6 +52,7 @@
 	"transform": {
 		"adapters": {
 			"application/xml":"../adapters/niem/niem2collection.js",
+			"text/xml":"../adapters/niem/niem2collection.js",
 			"application/pdf":"../adapters/pdf/pdf2collection.js",
 			"application/x-msdownload":"../adapters/pdf/pdf2collection.js",
 			"image/gif":"../adapters/image/img2collection.js",
