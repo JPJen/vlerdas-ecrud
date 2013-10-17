@@ -12,7 +12,7 @@ var mongo = require('mongodb');
 var MongoClient = mongo.MongoClient;
 // Export config, so that it can be used anywhere
 module.exports.config = config;
-var bodyParser = require("../node_modules/vcommons/express/multipartBodyParser");
+var bodyParser = require('vcommons').multipartBodyParser;
 var tmp = require("temp");
 tmp.track();
 var http = require('http');
@@ -40,7 +40,7 @@ function createApp(db, mongo) {
         app.use(express.methodOverride());
 		// Simple Access Control - TODO: Preferences & Authorizations
         if (config.accessControl) {
-            var accessControl = require('../node_modules/vcommons/access/accesscontrol');
+            var accessControl = require('vcommons').accessControl;
             app.use(accessControl());
         }
 		// Uses our custom bodyParser with special handling for multipart, xml, and text.
@@ -76,7 +76,7 @@ function createApp(db, mongo) {
 	// GridFS Download Files
     app.get('/' + config.db.name + '/fs/:id', router.downloadFile.bind(router));
 	// GridFS Delete Files
-	app.del('/' + config.db.name + '/fs/:id', router.removeFile, router.sendResponse.bind(router));
+	app.del('/' + config.db.name + '/fs/:id', router.removeFile.bind(router), router.sendResponse.bind(router));
 	// Delete a document
     app.del('/' + config.db.name + '/:collection/:id', router.deleteFromCollection.bind(router), router.sendResponse.bind(router));
 	// Update a document
@@ -140,9 +140,11 @@ function fixOptions(configOptions)
 }
 
 // Default exception handler
+/*
 process.on('uncaughtException', function (err) {
     console.log('Caught exception: ' + err);
 });
+*/
 
 process.on( 'SIGINT', function() {
   console.log( "\nShutting down from  SIGINT (Crtl-C)" )
