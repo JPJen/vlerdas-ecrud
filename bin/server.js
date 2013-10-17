@@ -95,15 +95,6 @@ function createApp(db, mongo) {
 	var asyncEventHandler = require(config.async.eventHandler.file)();
 	router.on("g", asyncEventHandler.onGet);
 
-	var eventHandler = require(config.notification.eventHandler.file)();
-	router.on("i", eventHandler.onInsert);
-	router.on("u", eventHandler.onUpdate);
-	router.on("d", eventHandler.onDelete);
-
-	// Needed for async responses
-	var asyncEventHandler = require(config.async.eventHandler.file)();
-	router.on("g", asyncEventHandler.onGet);
-
 	// Listen
 	if (!_.isUndefined(config.server) || !_.isUndefined(config.secureServer)) {
 		if (!_.isUndefined(config.server)) {
