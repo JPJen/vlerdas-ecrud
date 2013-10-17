@@ -60,30 +60,40 @@ function createApp(db, mongo) {
     // You may want to read this post which details some common express / multipart gotchas:
     // http://stackoverflow.com/questions/11295554/how-to-disable-express-bodyparser-for-file-uploads-node-js
     // Initialize Router with all the methods
-	var router = require('../lib/router')(db, mongo);
+	var Router = require('../lib/router');
+	var router = new Router(db, mongo);
 
 	// Async. Query of docs
-	app.get('/' + config.db.name + '/:collection/async/:channel', router.asyncResponse);
+	app.get('/' + config.db.name + '/:collection/async/:channel', router.asyncResponse.bind(router));
 	// Search for a text
-	app.get('/' + config.db.name + '/:collection/search', router.searchText, router.sendResponse);
+	app.get('/' + config.db.name + '/:collection/search', router.searchText.bind(router), router.sendResponse.bind(router));
 	// Transform a new document
-    app.post('/' + config.db.name + '/:collection/transform', router.transformToCollection, router.sendCreatedResponse);
+    app.post('/' + config.db.name + '/:collection/transform', router.transformToCollection.bind(router), router.sendCreatedResponse.bind(router));
 	// GridFS Read Files
-	app.get('/' + config.db.name + '/fs', router.getFiles, router.sendResponse);
+	app.get('/' + config.db.name + '/fs', router.getFiles.bind(router), router.sendResponse.bind(router));
 	// GridFS Create Files
-    app.post('/' + config.db.name + '/fs', router.sendCreatedResponse);
+    app.post('/' + config.db.name + '/fs', router.sendCreatedResponse.bind(router));
 	// GridFS Download Files
-    app.get('/' + config.db.name + '/fs/:id', router.downloadFile);
+    app.get('/' + config.db.name + '/fs/:id', router.downloadFile.bind(router));
 	// GridFS Delete Files
-	app.del('/' + config.db.name + '/fs/:id', router.removeFile, router.sendResponse);
+	app.del('/' + config.db.name + '/fs/:id', router.removeFile, router.sendResponse.bind(router));
 	// Delete a document
-    app.del('/' + config.db.name + '/:collection/:id', router.deleteFromCollection, router.sendResponse);
+    app.del('/' + config.db.name + '/:collection/:id', router.deleteFromCollection.bind(router), router.sendResponse.bind(router));
 	// Update a document
-    app.put('/' + config.db.name + '/:collection/:id', router.putToCollection, router.sendCreatedResponse);
+    app.put('/' + config.db.name + '/:collection/:id', router.putToCollection.bind(router), router.sendCreatedResponse.bind(router));
 	// Create a new document
-    app.post('/' + config.db.name + '/:collection', router.postToCollection, router.sendCreatedResponse);
+    app.post('/' + config.db.name + '/:collection', router.postToCollection.bind(router), router.sendCreatedResponse.bind(router));
 	// Get a document
-    app.get('/' + config.db.name + '/:collection/:id?', router.getCollection, router.sendResponse);
+    app.get('/' + config.db.name + '/:collection/:id?', router.getCollection.bind(router), router.sendResponse.bind(router));
+
+	var eventHandler = require(config.notification.eventHandler.file)();
+	router.on("i", eventHandler.onInsert);
+	router.on("u", eventHandler.onUpdate);
+	router.on("d", eventHandler.onDelete);
+
+	// Needed for async responses
+	var asyncEventHandler = require(config.async.eventHandler.file)();
+	router.on("g", asyncEventHandler.onGet);
 
 	// Listen
 	if (!_.isUndefined(config.server) || !_.isUndefined(config.secureServer)) {
