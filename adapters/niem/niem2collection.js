@@ -63,19 +63,19 @@ module.exports = exports = function () {
                         if (openTagLinkInside != lastOpenTag) {
                             openTagLinkInside = lastOpenTag;
                             attachmentI++;
+
                             attachStreams[attachmentI] = gfs.createWriteStream({
-                                _id: new mongo.ObjectID(),
-                                filename: attachmentI+'attach.txt',
-                                root: '/core/fs'
+                                mode: 'w'
+                                //TODO: use the locationURI file name sent to us if set, otherwise use something else
+                                ,filename: attachmentI+'attach.txt'
+                                ,root: 'fs'
                             });;
                             attachStreams[attachmentI].write(text);
-                            console.log("attachStreams[attachmentI]:"+attachStreams[attachmentI]._store._id+
+                            console.log("attachStreams[attachmentI]:"+attachStreams[attachmentI].id+
                                                 " " + attachStreams[attachmentI]._store.filename);
-                            //TODO: start GridFS Storage for attachment
-							//newGridStream = createFile()
-							//xmlStr += "<"+attachmentLocationTag+">" + newGridStream.id + "</"+attachmentLocationTag+">";
+                            
 						} else {
-							//TODO: store the base64 content in GridFS
+						    attachStreams[attachmentI].write(text);
 						}
 					} else {
 						xmlStr += text;
@@ -103,23 +103,28 @@ module.exports = exports = function () {
 				});
 
 				saxStream.on("end", function (comment) {
-				  //console.log("xmlStr:" + xmlStr);
-				  json = xotree.parseXML(xmlStr);
-
-					db.collection(req.params.collection, function (err, collection) {
-						if(err) return next(err);
-						if(!_.isUndefined(json)) {
-							json.uploadDate = new Date();
-							collection.insert(json, function (err, docs) {
-								if(err) return next(err);
-								res.locals.items = docs;
-								if(config.notification.eventHandler.enabled)
-									event.emit("i", config.notification.eventHandler.channel, req.params.collection, docs);
-								return next();
-							});
-						}
-					});
-				  
+                    //console.log("xmlStr:" + xmlStr);
+                    json = xotree.parseXML(xmlStr); 
+                    for (var i = 0; i < attachStreams.length; i++) { 
+                        attachStreams[i].end();
+                        //TODO: assign attachStreams[i].id into the LocationURI
+                    }
+                    
+                    db.collection(req.params.collection, function(err, collection) {
+                        if (err)
+                            return next(err);
+                        if (!_.isUndefined(json)) {
+                            json.uploadDate = new Date();
+                            collection.insert(json, function(err, docs) {
+                                if (err)
+                                    return next(err);
+                                res.locals.items = docs;
+                                if (config.notification.eventHandler.enabled)
+                                    event.emit("i", config.notification.eventHandler.channel, req.params.collection, docs);
+                                return next();
+                            });
+                        }
+                    }); 
 				  //console.log("xmlStr-JSON:" + JSON.stringify(json));
 				  //console.log("gridFS ID: "+fsId);
 				});
