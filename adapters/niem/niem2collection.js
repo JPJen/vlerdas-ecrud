@@ -22,7 +22,7 @@ module.exports = exports = function () {
                 var strict = true,
                     saxStream = require("sax").createStream(strict);
                 var gfs = Grid(db, mongo);
-                
+
                 var xmlStr = '<?xml version="1.0" encoding="UTF-8"?>';
                 var lastOpenTag = '';
                 var attachmentStarted = false;
@@ -37,9 +37,9 @@ module.exports = exports = function () {
                 var attachmentTag = 'nc:Attachment';
                 var attachmentGridFSIdTag = 'nc:BinaryLocationURI';
                 var attachmentContentType = 'nc:BinaryFormatStandardName';
-				
+
                 var attachmentI = -1;
-				
+
 				saxStream.on("opentag", function (tag) {
 					if (attachmentStarted) return;
 					lastOpenTag = tag.name;
@@ -97,15 +97,15 @@ module.exports = exports = function () {
 				saxStream.on("comment", function (comment) {
 				  xmlStr += "<!--"+comment+"-->";
 				});
-				
-				saxStream.on("end", function (comment) {
-                    json = xotree.parseXML(xmlStr); 
 
-                    
+				saxStream.on("end", function (comment) {
+                    json = xotree.parseXML(xmlStr);
+
+
                     //set attachment(s) properties, close/end each attachments write streams
                     var jsonAttachments = Jsonpath.eval(json, '$..'+attachmentTag);
                     for (var i = 0; i < attachStreams.length; i++) {
-                        attachStreams[i]._store.filename = jsonAttachments[i][attachmentGridFSIdTag];  
+                        attachStreams[i]._store.filename = jsonAttachments[i][attachmentGridFSIdTag];
                         jsonAttachments[i][attachmentGridFSIdTag] = attachStreams[i].id;
                         attachStreams[i].options.content_type = jsonAttachments[i][attachmentContentType];
                         //TODO: figure out a solution for base64 decoding
@@ -117,7 +117,7 @@ module.exports = exports = function () {
                           console.log('success');
                         });*/
                     }
-                    
+
                     //write extracted/transformed xml to mongo collection
                     db.collection(req.params.collection, function(err, collection) {
                         if (err)
@@ -128,22 +128,22 @@ module.exports = exports = function () {
                                 if (err)
                                     return next(err);
                                 res.locals.items = docs;
-                                if (config.notification.eventHandler.enabled)
-                                    event.emit("i", config.notification.eventHandler.channel, req.params.collection, docs);
+                                res.locals.docs = docs;
+                                event.emit("i", req, res);
                                 return next();
                             });
                         }
                     });
 				});
-				
+
 				saxStream.on("error", function (err) {
 					console.error("error!", err);
 					this._parser.error = null;
 					this._parser.resume();
 				});
-				
+
 				readstream.pipe(saxStream);
-				
+
 			});
         }
     };

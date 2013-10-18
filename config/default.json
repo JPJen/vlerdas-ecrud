@@ -70,28 +70,6 @@
 			}
 		}
 	],
-	"notification": {
-		"eventHandler": {
-			"enabled": true,
-			"file": "../lib/consoleEventHandler",
-			"redis": {
-				"port":"6379",
-				"host":"127.0.0.1"
-			},
-			"exclude":["log", "fs", "audit"],
-			"operation":["i", "u", "d"],
-			"channel":"core.6379"
-		}
-	},
-	"async": {
-		"eventHandler": {
-			"file": "../lib/consoleAsyncHandler.js",
-			"redis": {
-				"port":"6379",
-				"host":"127.0.0.1"
-			}
-		}
-	},
 	"transform": {
 		"adapters": {
 			"application/xml":"../adapters/niem/niem2collection.js",
