@@ -129,12 +129,14 @@ function fixOptions(configOptions)
 
 function setupEventHandlers(router)
 {
-	for (var i = 0;  i < config.eventHandlers.length;  ++i) {
-		var eh = config.eventHandlers[i];
-		var module = require(eh.module)(eh.options);
-		for (var j = 0;  j < eh.events.length;  ++j) {
-			var e = eh.events[j];
-			router.on(e.event, module[e.method]);
+	if (!_.isUndefined(config.eventHandlers) && _.isArray(config.evenetHandlers)) {
+		for (var i = 0;  i < config.eventHandlers.length;  ++i) {
+			var eh = config.eventHandlers[i];
+			var module = require(eh.module)(eh.options);
+			for (var j = 0;  j < eh.events.length;  ++j) {
+				var e = eh.events[j];
+				router.on(e.event, module[e.method]);
+			}
 		}
 	}
 }
