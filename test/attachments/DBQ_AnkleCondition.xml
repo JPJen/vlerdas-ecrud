@@ -1,0 +1,224 @@
+<cld:Claim xmlns:ac="http://vler.va.gov/vler/schemas/health/clinicalDocuments/clinicalAssessments/cpExams/1.0/AnkleConditions" xmlns:nc="http://niem.gov/niem/niem-core/2.0" xmlns:niem-xsd="http://niem.gov/niem/proxy/xsd/2.0" xmlns:s="http://niem.gov/niem/structures/2.0" xmlns:vler="http://va.gov/vler/schemas/vlerSupersetSchema/0.7/vler" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cld="http://vler.va.gov/vler/schemas/health/clinicalDocuments/clinicalAssessments/cpExams/1.0" xsi:schemaLocation="http://vler.va.gov/vler/schemas/health/clinicalDocuments/clinicalAssessments/cpExams/1.0 Cld.xsd">
+	<cld:DocumentTypeVersion>1.0</cld:DocumentTypeVersion>
+	<cld:ClaimID>2013-0000722</cld:ClaimID>
+	<cld:CommonData>
+		<nc:Document>
+			<nc:DocumentCreationDate>
+				<nc:DateTime>2013-10-13T19:05:52-04:00</nc:DateTime>
+			</nc:DocumentCreationDate>
+			<nc:DocumentDescriptionText>Ankle Conditions</nc:DocumentDescriptionText>
+			<nc:DocumentIdentification>
+				<nc:IdentificationID>7f0bb13b-f9b1-4ec5-977c-e1a14f60ff0d</nc:IdentificationID>
+			</nc:DocumentIdentification>
+			<nc:DocumentStatus>
+				<nc:StatusText>Completed</nc:StatusText>
+			</nc:DocumentStatus>
+			<nc:DocumentTitleText>Ankle Conditions</nc:DocumentTitleText>
+		</nc:Document>
+		<vler:Client s:id="client">
+			<vler:ClientIdentifier>
+				<nc:IdentificationID>999428888</nc:IdentificationID>
+				<vler:AssigningAuthority>2.16.840.1.113883.4.349</vler:AssigningAuthority>
+			</vler:ClientIdentifier>
+			<vler:ClientStatus>
+				<vler:ClientStatusText>OK</vler:ClientStatusText>
+			</vler:ClientStatus>
+			<nc:RoleOfPersonReference s:ref="one"/>
+		</vler:Client>
+		<vler:ServiceProvider s:id="service_provider">
+			<vler:PersonIdentifier>
+				<nc:IdentificationID>10010</nc:IdentificationID>
+				<nc:IdentificationJurisdictionText>DAS SoapUI Sync</nc:IdentificationJurisdictionText>
+			</vler:PersonIdentifier>
+			<vler:ServiceProviderRoleTitle>Physician</vler:ServiceProviderRoleTitle>
+			<nc:RoleOfPersonReference s:ref="two"/>
+		</vler:ServiceProvider>
+		<nc:Person s:id="two">
+			<nc:PersonName>
+				<nc:PersonGivenName>Physician First Name</nc:PersonGivenName>
+				<nc:PersonMiddleName>Physician Middle Initial</nc:PersonMiddleName>
+				<nc:PersonSurName>Physician Last Name</nc:PersonSurName>
+			</nc:PersonName>
+		</nc:Person>
+		<nc:Person s:id="one">
+			<nc:PersonBirthDate>
+				<nc:Date>1978-07-05</nc:Date>
+			</nc:PersonBirthDate>
+			<nc:PersonName>
+				<nc:PersonGivenName>test</nc:PersonGivenName>
+				<nc:PersonMiddleName/>
+				<nc:PersonSurName>XML</nc:PersonSurName>
+			</nc:PersonName>
+			<nc:PersonSexCode>M</nc:PersonSexCode>
+			<nc:PersonSSNIdentification>
+				<nc:IdentificationID>999428888</nc:IdentificationID>
+			</nc:PersonSSNIdentification>
+		</nc:Person>
+		<nc:Facility>
+			<nc:FacilityIdentification>
+				<nc:IdentificationID>644</nc:IdentificationID>
+				<nc:IdentificationJurisdictionText>PHOENIX.MED.VA.GOV</nc:IdentificationJurisdictionText>
+			</nc:FacilityIdentification>
+			<nc:FacilityName>CARL T. HAYDEN VA MEDICAL CENTER</nc:FacilityName>
+		</nc:Facility>
+		<vler:ServiceProviderClientAssociation>
+			<vler:ServiceProviderReference s:ref="service_provider"/>
+			<vler:ClientReference s:ref="client"/>
+		</vler:ServiceProviderClientAssociation>
+	</cld:CommonData>
+	<cld:MedicalData>
+		<ac:AnkleConditionsForm>
+			<ac:AnkleDiagnosisAdditionalDiagnosis>1C. IF THERE ARE ADDITIONAL DIAGNOSES PERTAINING TO ANKLE CONDITIONS, LIST USING ABOVE FORMAT</ac:AnkleDiagnosisAdditionalDiagnosis>
+			<ac:AnkleDiagnosisDiagnosis1SideAffected>Right</ac:AnkleDiagnosisDiagnosis1SideAffected>
+			<ac:AnkleDiagnosisDiagnosis2>Diagnosis 2</ac:AnkleDiagnosisDiagnosis2>
+			<ac:AnkleDiagnosisDiagnosis2Date>
+				<nc:Date>2012-09-03</nc:Date>
+			</ac:AnkleDiagnosisDiagnosis2Date>
+			<ac:AnkleDiagnosisDiagnosis2Icd>Diagnosis 2 ICD</ac:AnkleDiagnosisDiagnosis2Icd>
+			<ac:AnkleDiagnosisDiagnosis2SideAffected>Left</ac:AnkleDiagnosisDiagnosis2SideAffected>
+			<ac:AnkleDiagnosisDiagnosis3>Diagnosis 3</ac:AnkleDiagnosisDiagnosis3>
+			<ac:AnkleDiagnosisDiagnosis3Date>
+				<nc:Date>2012-09-06</nc:Date>
+			</ac:AnkleDiagnosisDiagnosis3Date>
+			<ac:AnkleDiagnosisDiagnosis3Icd>Diagnosis 3 ICD</ac:AnkleDiagnosisDiagnosis3Icd>
+			<ac:AnkleDiagnosisDiagnosis3SideAffected>Left</ac:AnkleDiagnosisDiagnosis3SideAffected>
+			<ac:AnkleDiagnosisDisgnosis1>Diagnosis 1</ac:AnkleDiagnosisDisgnosis1>
+			<ac:AnkleDiagnosisDisgnosis1Date>
+				<nc:Date>2012-08-07</nc:Date>
+			</ac:AnkleDiagnosisDisgnosis1Date>
+			<ac:AnkleDiagnosisDisgnosis1Icd>Diagnosis 1 ICD</ac:AnkleDiagnosisDisgnosis1Icd>
+			<ac:AnkleDiagnosisHaveAnkleConditions>yes</ac:AnkleDiagnosisHaveAnkleConditions>
+			<ac:AnkleMedicalHistoryBriefSummary>2. DESCRIBE THE HISTORY (including onset and course)OF THE VETERAN&amp;apos;S ANKLE CONDITION (brief summary)</ac:AnkleMedicalHistoryBriefSummary>
+			<ac:AnkleFlareUpsDescribe>IF YES, DOCUMENT THE VETERAN&amp;apos;S DESCRIPTION OF THE IMPACT OF FLARE-UPS IN HIS OR HER OWN WORDS</ac:AnkleFlareUpsDescribe>
+			<ac:AnkleFlareUpsFlareUpsImpactAnkle>yes</ac:AnkleFlareUpsFlareUpsImpactAnkle>
+			<ac:AnkleRomMeasurementsExplain>4E. IF ROM DOES NOT CONFORM TO THE NORMAL RANGE OF MOTION IDENTIFIED ABOVE BUT IS NORMAL FOR THIS VETERAN (for reasons other than an ankle condition, such as age, body habitus, neurologic disease),EXPLAIN</ac:AnkleRomMeasurementsExplain>
+			<ac:AnkleRomMeasurementsLeftAnkleExtensionEnds>10</ac:AnkleRomMeasurementsLeftAnkleExtensionEnds>
+			<ac:AnkleRomMeasurementsLeftAnkleExtensionPainfulBegins>5</ac:AnkleRomMeasurementsLeftAnkleExtensionPainfulBegins>
+			<ac:AnkleRomMeasurementsLeftPlantarFlexionEnds>20</ac:AnkleRomMeasurementsLeftPlantarFlexionEnds>
+			<ac:AnkleRomMeasurementsLeftPlantarFlexionPainfulBegins>15</ac:AnkleRomMeasurementsLeftPlantarFlexionPainfulBegins>
+			<ac:AnkleRomMeasurementsRightAnkleExtensionEnds>20 or greater</ac:AnkleRomMeasurementsRightAnkleExtensionEnds>
+			<ac:AnkleRomMeasurementsRightAnkleExtensionPainfulBegins>5</ac:AnkleRomMeasurementsRightAnkleExtensionPainfulBegins>
+			<ac:AnkleRomMeasurementsRightPlantarFlexionEnds>10</ac:AnkleRomMeasurementsRightPlantarFlexionEnds>
+			<ac:AnkleRomMeasurementsRightPlantarFlexionPainfulBegins>0</ac:AnkleRomMeasurementsRightPlantarFlexionPainfulBegins>
+			<ac:AnkleRomAfterRepetitiveUseTestingAbleToPerformWith3Repetitions>yes</ac:AnkleRomAfterRepetitiveUseTestingAbleToPerformWith3Repetitions>
+			<ac:AnkleRomAfterRepetitiveUseTestingLeftAnkleExtensionEnds>10</ac:AnkleRomAfterRepetitiveUseTestingLeftAnkleExtensionEnds>
+			<ac:AnkleRomAfterRepetitiveUseTestingLeftPlantarFlexionEnds>5</ac:AnkleRomAfterRepetitiveUseTestingLeftPlantarFlexionEnds>
+			<ac:AnkleRomAfterRepetitiveUseTestingRightAnkleExtensionEnds>10</ac:AnkleRomAfterRepetitiveUseTestingRightAnkleExtensionEnds>
+			<ac:AnkleRomAfterRepetitiveUseTestingRightPlantarFlexionEnds>5</ac:AnkleRomAfterRepetitiveUseTestingRightPlantarFlexionEnds>
+			<ac:AnkleRomAfterRepetitiveUseTestingUnableReason>A. IS THE VETERAN ABLE TO PERFORM REPETITIVE-USE TESTING WITH 3 REPETITIONS?	  Yes   No&#13;
+IF UNABLE, PROVIDE REASON</ac:AnkleRomAfterRepetitiveUseTestingUnableReason>
+			<ac:AnkleFunctionalLossAtrophyOfDisuse>no</ac:AnkleFunctionalLossAtrophyOfDisuse>
+			<ac:AnkleFunctionalLossAtrophyOfDisuseSide>Both</ac:AnkleFunctionalLossAtrophyOfDisuseSide>
+			<ac:AnkleFunctionalLossDeformity>no</ac:AnkleFunctionalLossDeformity>
+			<ac:AnkleFunctionalLossDeformitySide>Right</ac:AnkleFunctionalLossDeformitySide>
+			<ac:AnkleFunctionalLossDisturbanceOfLocomotion>no</ac:AnkleFunctionalLossDisturbanceOfLocomotion>
+			<ac:AnkleFunctionalLossDisturbanceOfLocomotionSide>Left</ac:AnkleFunctionalLossDisturbanceOfLocomotionSide>
+			<ac:AnkleFunctionalLossExcessFatigability>yes</ac:AnkleFunctionalLossExcessFatigability>
+			<ac:AnkleFunctionalLossExcessFatigabilitySide>Left</ac:AnkleFunctionalLossExcessFatigabilitySide>
+			<ac:AnkleFunctionalLossHaveAdditionalLimitation>yes</ac:AnkleFunctionalLossHaveAdditionalLimitation>
+			<ac:AnkleFunctionalLossHaveFunctionalLoss>yes</ac:AnkleFunctionalLossHaveFunctionalLoss>
+			<ac:AnkleFunctionalLossIncoordination>yes</ac:AnkleFunctionalLossIncoordination>
+			<ac:AnkleFunctionalLossIncoordinationSide>Both</ac:AnkleFunctionalLossIncoordinationSide>
+			<ac:AnkleFunctionalLossInstabilityOfStation>no</ac:AnkleFunctionalLossInstabilityOfStation>
+			<ac:AnkleFunctionalLossInstabilityOfStationSide>Left</ac:AnkleFunctionalLossInstabilityOfStationSide>
+			<ac:AnkleFunctionalLossInterference>yes</ac:AnkleFunctionalLossInterference>
+			<ac:AnkleFunctionalLossInterferenceSide>Left</ac:AnkleFunctionalLossInterferenceSide>
+			<ac:AnkleFunctionalLossLessMovementThanNormal>yes</ac:AnkleFunctionalLossLessMovementThanNormal>
+			<ac:AnkleFunctionalLossLessMovementThanNormalSide>Right</ac:AnkleFunctionalLossLessMovementThanNormalSide>
+			<ac:AnkleFunctionalLossMoreMovementThanNormal>yes</ac:AnkleFunctionalLossMoreMovementThanNormal>
+			<ac:AnkleFunctionalLossMoreMovementThanNormalSide>Left</ac:AnkleFunctionalLossMoreMovementThanNormalSide>
+			<ac:AnkleFunctionalLossNoLossForLeft>yes</ac:AnkleFunctionalLossNoLossForLeft>
+			<ac:AnkleFunctionalLossNoLossForRight>yes</ac:AnkleFunctionalLossNoLossForRight>
+			<ac:AnkleFunctionalLossOther>yes</ac:AnkleFunctionalLossOther>
+			<ac:AnkleFunctionalLossOtherDescribe>Yes   No&#13;
+Other Describe</ac:AnkleFunctionalLossOtherDescribe>
+			<ac:AnkleFunctionalLossPainOnMovement>no</ac:AnkleFunctionalLossPainOnMovement>
+			<ac:AnkleFunctionalLossPainOnMovementSide>Left</ac:AnkleFunctionalLossPainOnMovementSide>
+			<ac:AnkleFunctionalLossSwellingSide>Left</ac:AnkleFunctionalLossSwellingSide>
+			<ac:AnkleFunctionalLossWeakenedMovement>yes</ac:AnkleFunctionalLossWeakenedMovement>
+			<ac:AnkleFunctionalLossWeakenedMovementSide>Right</ac:AnkleFunctionalLossWeakenedMovementSide>
+			<ac:AnklePainHavePain>yes</ac:AnklePainHavePain>
+			<ac:AnklePainSide>Right</ac:AnklePainSide>
+			<ac:AnkleJointStabilityAnteriorDrawerTest>Yes</ac:AnkleJointStabilityAnteriorDrawerTest>
+			<ac:AnkleJointStabilityAnteriorSide>Right</ac:AnkleJointStabilityAnteriorSide>
+			<ac:AnkleJointStabilityTalarSide>Left</ac:AnkleJointStabilityTalarSide>
+			<ac:AnkleJointStabilityTalarTiltTest>No</ac:AnkleJointStabilityTalarTiltTest>
+			<ac:AnkleJointReplacementAnkleSurgerySide>Left</ac:AnkleJointReplacementAnkleSurgerySide>
+			<ac:AnkleJointReplacementDescribeResiduals>If yes, describe residuals</ac:AnkleJointReplacementDescribeResiduals>
+			<ac:AnkleJointReplacementHadAnkleSurgery>yes</ac:AnkleJointReplacementHadAnkleSurgery>
+			<ac:AnkleJointReplacementHaveJointReplacement>yes</ac:AnkleJointReplacementHaveJointReplacement>
+			<ac:AnkleJointReplacementHaveSymptomsDueSurgery>yes</ac:AnkleJointReplacementHaveSymptomsDueSurgery>
+			<ac:AnkleJointReplacementHaveSymptomsDueSurgerySide>Left</ac:AnkleJointReplacementHaveSymptomsDueSurgerySide>
+			<ac:AnkleJointReplacementLeftAnkle>yes</ac:AnkleJointReplacementLeftAnkle>
+			<ac:AnkleJointReplacementLeftAnkleSurgeryDate>
+				<nc:Date>2012-09-04</nc:Date>
+			</ac:AnkleJointReplacementLeftAnkleSurgeryDate>
+			<ac:AnkleJointReplacementLeftResiduals>Chronic residuals consisting of severe painful motion and/or weakness</ac:AnkleJointReplacementLeftResiduals>
+			<ac:AnkleJointReplacementLeftResidualsOther>Other, describe</ac:AnkleJointReplacementLeftResidualsOther>
+			<ac:AnkleJointReplacementRightAnkle>yes</ac:AnkleJointReplacementRightAnkle>
+			<ac:AnkleJointReplacementRightAnkleSurgeryDate>
+				<nc:Date>2012-09-04</nc:Date>
+			</ac:AnkleJointReplacementRightAnkleSurgeryDate>
+			<ac:AnkleJointReplacementRightResiduals>Intermediate degrees of residual weakness, pain and/or limitation of motion</ac:AnkleJointReplacementRightResiduals>
+			<ac:AnkleJointReplacementRightResidualsOther>ther, describe</ac:AnkleJointReplacementRightResidualsOther>
+			<ac:AnkleJointReplacementSurgeryDate>
+				<nc:Date>2012-09-04</nc:Date>
+			</ac:AnkleJointReplacementSurgeryDate>
+			<ac:AnkleJointReplacementSurgeryType>Surgery Type</ac:AnkleJointReplacementSurgeryType>
+			<ac:AnkleOtherDescribe>DIAGNOSIS?	  Yes   No&#13;
+IF YES, DESCRIBE(brief summary)</ac:AnkleOtherDescribe>
+			<ac:AnkleOtherHaveOtherFindings>yes</ac:AnkleOtherHaveOtherFindings>
+			<ac:AnkleOtherHaveScars>yes</ac:AnkleOtherHaveScars>
+			<ac:AnkleOtherScarsPainful>yes</ac:AnkleOtherScarsPainful>
+			<ac:AnkleAssistiveDevicesBraces>yes</ac:AnkleAssistiveDevicesBraces>
+			<ac:AnkleAssistiveDevicesBracesFrequency>Occasional</ac:AnkleAssistiveDevicesBracesFrequency>
+			<ac:AnkleAssistiveDevicesCanes>yes</ac:AnkleAssistiveDevicesCanes>
+			<ac:AnkleAssistiveDevicesCanesFrequency>Occasional</ac:AnkleAssistiveDevicesCanesFrequency>
+			<ac:AnkleAssistiveDevicesCondition>14B. IF THE VETERAN USES ANY ASSISTIVE DEVICES, SPECIFY THE CONDITION AND IDENTIFY THE ASSISTIVE DEVICE USED FOR EACH CONDITION</ac:AnkleAssistiveDevicesCondition>
+			<ac:AnkleAssistiveDevicesCrutches>yes</ac:AnkleAssistiveDevicesCrutches>
+			<ac:AnkleAssistiveDevicesCrutchesFrequency>Regular</ac:AnkleAssistiveDevicesCrutchesFrequency>
+			<ac:AnkleAssistiveDevicesOther>yes</ac:AnkleAssistiveDevicesOther>
+			<ac:AnkleAssistiveDevicesOtherDescribe>OTHER DESCRIBE</ac:AnkleAssistiveDevicesOtherDescribe>
+			<ac:AnkleAssistiveDevicesOtherFrequency>Occasional</ac:AnkleAssistiveDevicesOtherFrequency>
+			<ac:AnkleAssistiveDevicesUseAssistiveDevices>yes</ac:AnkleAssistiveDevicesUseAssistiveDevices>
+			<ac:AnkleAssistiveDevicesWalker>yes</ac:AnkleAssistiveDevicesWalker>
+			<ac:AnkleAssistiveDevicesWalkerFrequency>Regular</ac:AnkleAssistiveDevicesWalkerFrequency>
+			<ac:AnkleAssistiveDevicesWheelchair>yes</ac:AnkleAssistiveDevicesWheelchair>
+			<ac:AnkleAssistiveDevicesWheelchairFrequency>Regular</ac:AnkleAssistiveDevicesWheelchairFrequency>
+			<ac:AnkleRemainingEffectiveFunctionAmputateLeft>yes</ac:AnkleRemainingEffectiveFunctionAmputateLeft>
+			<ac:AnkleRemainingEffectiveFunctionAmputateRight>yes</ac:AnkleRemainingEffectiveFunctionAmputateRight>
+			<ac:AnkleRemainingEffectiveFunctionBriefSummary>FOR EACH CHECKED EXTREMITY, IDENTIFY THE CONDITION CAUSING LOSS OF FUNCTION, DESCRIBE LOSS OF EFFECTIVE FUNCTION AND PROVIDE SPECIFIC EXAMPLES (brief summary)</ac:AnkleRemainingEffectiveFunctionBriefSummary>
+			<ac:AnkleRemainingEffectiveFunctionShouldAmputate>yes</ac:AnkleRemainingEffectiveFunctionShouldAmputate>
+			<ac:AnkleDiagnosticTestingAbnormalFindings>yes</ac:AnkleDiagnosticTestingAbnormalFindings>
+			<ac:AnkleDiagnosticTestingAnkylosis>yes</ac:AnkleDiagnosticTestingAnkylosis>
+			<ac:AnkleDiagnosticTestingAnkylosisSide>Left</ac:AnkleDiagnosticTestingAnkylosisSide>
+			<ac:AnkleDiagnosticTestingArthritisSide>Left</ac:AnkleDiagnosticTestingArthritisSide>
+			<ac:AnkleDiagnosticTestingBriefSummary>16B. ARE THERE ANY OTHER SIGNIFICANT DIAGNOSTIC TEST FINDINGS AND/OR RESULTS?	  &#13;
+IF YES, PROVIDE TYPE OF TEST OR PROCEDURE, DATE AND RESULTS (brief summary)</ac:AnkleDiagnosticTestingBriefSummary>
+			<ac:AnkleDiagnosticTestingOther>yes</ac:AnkleDiagnosticTestingOther>
+			<ac:AnkleDiagnosticTestingOtherDescribe>Other Describe</ac:AnkleDiagnosticTestingOtherDescribe>
+			<ac:AnkleDiagnosticTestingOtherSide>Right</ac:AnkleDiagnosticTestingOtherSide>
+			<ac:AnkleDiagnosticTestingOtherTestFindings>yes</ac:AnkleDiagnosticTestingOtherTestFindings>
+			<ac:AnkleDiagnosticTestingStudiesPerformed>yes</ac:AnkleDiagnosticTestingStudiesPerformed>
+			<ac:AnkleFunctionalImpactDescribe>17. DOES THE VETERAN&amp;apos;S ANKLE CONDITION IMPACT HIS OR HER ABILITY TO WORK?	  Yes   No&#13;
+IF YES, DESCRIBE THE IMPACT OF EACH OF THE VETERAN&amp;apos;S ANKLE CONDITIONS, PROVIDING ONE OR MORE EXAMPLES</ac:AnkleFunctionalImpactDescribe>
+			<ac:AnkleFunctionalImpactImpactWorkAbility>yes</ac:AnkleFunctionalImpactImpactWorkAbility>
+			<ac:AnkleRemarksRemarks>18. REMARKS (If any)18. REMARKS (If any)18. REMARKS (If any)18. REMARKS (If any)18. REMARKS (If any)18. REMARKS (If any)18. REMARKS (If any)18. REMARKS (If any)18. REMARKS (If any)18. REMARKS (If any)18. REMARKS (If any)18. REMARKS (If any)18. REMARKS (If any)18. REMARKS (If any)18. REMARKS (If any)18. REMARKS (If any)18. REMARKS (If any)18. REMARKS (If any)</ac:AnkleRemarksRemarks>
+			<ac:AnklePhysiciansCertificationAddress>19F. PHYSICIAN&amp;apos;S ADDRESS</ac:AnklePhysiciansCertificationAddress>
+			<ac:AnklePhysiciansCertificationFax>Office FAX No.</ac:AnklePhysiciansCertificationFax>
+			<ac:AnklePhysiciansCertificationLicenseNumber>19E. PHYSICIAN&amp;apos;S MEDICAL LICENSE NUMBER</ac:AnklePhysiciansCertificationLicenseNumber>
+			<ac:AnklePhysiciansCertificationName>19B. PHYSICIAN&amp;apos;S PRINTED NAME</ac:AnklePhysiciansCertificationName>
+			<ac:AnklePhysiciansCertificationPhone>19D. PHYSICIAN&amp;apos;S PHONE AND FAX NUMBER</ac:AnklePhysiciansCertificationPhone>
+		</ac:AnkleConditionsForm>
+	</cld:MedicalData>
+    <cld:Attachments>
+        <nc:Attachment>
+            <nc:BinaryBase64Object>GpM7</nc:BinaryBase64Object>		
+            <nc:BinaryDescriptionText>Leg</nc:BinaryDescriptionText>            
+            <nc:BinaryFormatStandardName>image/jpeg</nc:BinaryFormatStandardName>
+            <nc:BinaryLocationURI>AnkleXRay.jpg</nc:BinaryLocationURI>
+            <nc:BinarySizeValue>10241024</nc:BinarySizeValue>
+            <nc:BinaryCategoryText>X-Rays</nc:BinaryCategoryText>
+        </nc:Attachment>
+    </cld:Attachments>
+</cld:Claim>
