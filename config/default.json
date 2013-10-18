@@ -27,6 +27,49 @@
 			"allowMethods": "POST"
 		}
 	},
+	"eventHandlers": [
+		{
+			"name": "Console",
+			"module": "../lib/consoleEventHandler",
+			"events": [
+				{"event": "i", "method": "onInsert"},
+				{"event": "u", "method": "onUpdate"},
+				{"event": "d", "method": "onDelete"}
+			],
+			"options": {
+				"port":"6379",
+				"host":"127.0.0.1",
+				"exclude":["log", "fs", "audit"],
+				"operation":["i", "u", "d"],
+				"channel":"core.6379"
+			}
+		},
+		{
+			"name": "Async",
+			"module": "../lib/consoleAsyncHandler",
+			"events": [
+				{"event": "g", "method": "onGet"}
+			],
+			"options": {
+				"port":"6379",
+				"host":"127.0.0.1"
+			}			
+		},
+		{
+			"name": "Audit",
+			"module": "../lib/consoleAuditHandler",
+			"events": [
+				{"event": "i", "method": "onInsert"},
+				{"event": "u", "method": "onUpdate"},
+				{"event": "d", "method": "onDelete"},
+				{"event": "r", "method": "onRead"},
+				{"event": "g", "method": "onGet"}
+			],
+			"options": {
+				"url": "http://localhost:3003/audit/audit"
+			}
+		}
+	],
 	"notification": {
 		"eventHandler": {
 			"enabled": true,

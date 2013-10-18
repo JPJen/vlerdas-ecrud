@@ -86,14 +86,7 @@ function createApp(db, mongo) {
 	// Get a document
     app.get('/' + config.db.name + '/:collection/:id?', router.getCollection.bind(router), router.sendResponse.bind(router));
 
-	var eventHandler = require(config.notification.eventHandler.file)();
-	router.on("i", eventHandler.onInsert);
-	router.on("u", eventHandler.onUpdate);
-	router.on("d", eventHandler.onDelete);
-
-	// Needed for async responses
-	var asyncEventHandler = require(config.async.eventHandler.file)();
-	router.on("g", asyncEventHandler.onGet);
+	setupEventHandlers(router);
 
 	// Listen
 	if (!_.isUndefined(config.server) || !_.isUndefined(config.secureServer)) {
@@ -113,11 +106,6 @@ function createApp(db, mongo) {
 		console.error("Configuration must contain a server or secureServer.");
 		process.exit();
 	}
-
-	/*
-    app.listen(config.server.port, config.server.server, function () {
-        console.log('eCRUD server listening on port ' + config.server.port);
-    });*/
 }
 
 function fixOptions(configOptions)
@@ -137,6 +125,18 @@ function fixOptions(configOptions)
 	}
 
 	return options;
+}
+
+function setupEventHandlers(router)
+{
+	for (var i = 0;  i < config.eventHandlers.length;  ++i) {
+		var eh = config.eventHandlers[i];
+		var module = require(eh.module)(eh.options);
+		for (var j = 0;  j < eh.events.length;  ++j) {
+			var e = eh.events[j];
+			router.on(e.event, module[e.method]);
+		}
+	}
 }
 
 // Default exception handler
