@@ -8,8 +8,6 @@ var fs = require("fs"),
     sys = require("sys")
 var express = require('express')
 var config = require('config')
-var mongo = require('mongodb');
-var MongoClient = mongo.MongoClient;
 // Export config, so that it can be used anywhere
 module.exports.config = config;
 var bodyParser = require('vcommons').multipartBodyParser;
@@ -17,22 +15,22 @@ var tmp = require("temp");
 tmp.track();
 var http = require('http');
 var https = require('https');
+var Router = require('../lib/router');
 
 // Create a temporary directory
 tmp.mkdir('eCrud', function (err, path) {
 	if(err) throw err;
 	console.log('Temporary Directory:' + path);
 	config.tempdir = path;
-	MongoClient.connect(config.db.url, function (err, db) {
-		if (err) throw err;
-		createApp(db, mongo);
+	new Router(config.db, function (router) {
+		createApp(router);
 	});
 });
 
 
 // Establish an initial connection to MongoDB - Needed for Multipart data
 
-function createApp(db, mongo) {
+function createApp(router) {
     var app = express();
 
     app.configure(function () {
@@ -45,8 +43,8 @@ function createApp(db, mongo) {
         }
 		// Uses our custom bodyParser with special handling for multipart, xml, and text.
         app.use(bodyParser({
-            db: db, // Needs DB
-            mongo: mongo
+            db: router.db, // Needs DB
+            mongo: router.mongo
         }));
 		// Log
         app.use(express.logger());
@@ -60,8 +58,6 @@ function createApp(db, mongo) {
     // You may want to read this post which details some common express / multipart gotchas:
     // http://stackoverflow.com/questions/11295554/how-to-disable-express-bodyparser-for-file-uploads-node-js
     // Initialize Router with all the methods
-	var Router = require('../lib/router');
-	var router = new Router(db, mongo);
 
 	// Async. Query of docs
 	app.get('/' + config.db.name + '/:collection/async/:channel', router.asyncResponse.bind(router));
@@ -129,7 +125,7 @@ function fixOptions(configOptions)
 
 function setupEventHandlers(router)
 {
-	if (!_.isUndefined(config.eventHandlers) && _.isArray(config.evenetHandlers)) {
+	if (!_.isUndefined(config.eventHandlers) && _.isArray(config.eventHandlers)) {
 		for (var i = 0;  i < config.eventHandlers.length;  ++i) {
 			var eh = config.eventHandlers[i];
 			var module = require(eh.module)(eh.options);
@@ -142,11 +138,9 @@ function setupEventHandlers(router)
 }
 
 // Default exception handler
-/*
 process.on('uncaughtException', function (err) {
     console.log('Caught exception: ' + err);
 });
-*/
 
 process.on( 'SIGINT', function() {
   console.log( "\nShutting down from  SIGINT (Crtl-C)" )
