@@ -106,7 +106,24 @@
 			"image/tiff":"../adapters/image/img2collection.js",
 			"application/vnd.ms-excel":"../adapters/csv/csv2collection.js",
 			"application/json":"../adapters/jsonfile/json2collection.js"
-		}
+		},
+		"xmlTags": {
+			"default": "niem",
+			"niem": {
+				"doc": {
+					"name": "nc:Document",
+					"gridFSId": "nc:DocumentFileControlID",
+					"contentType": "nc:DocumentFormatText"
+				},
+				"attachment": {
+					"name": "nc:Attachment",
+					"fileName": "nc:BinaryLocationURI",
+					"gridFSId": "nc:BinaryLocationURI",
+					"contentType": "nc:BinaryFormatStandardName",
+					"base64": "nc:BinaryBase64Object"
+				}
+			}
+		}	
 	},
 	"debug": true
 }

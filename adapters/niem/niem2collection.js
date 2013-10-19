@@ -29,8 +29,9 @@ module.exports = exports = function () {
                 //TODO: use config file to store and retrieve the tag information
                 var niemNS = "nc:",
                        NS = niemNS;
-                var attachmentBase64Tag = NS+"BinaryBase64Object";
-                var attachmentLocationTag = NS+"BinaryLocationURI";
+                var xmlScheme = config['transform']['xmlTags']['default'];
+                var attachmentBase64Tag = config['transform']['xmlTags'][xmlScheme]['attachment']['base64'];
+                var attachmentFileNameTag = NS+"BinaryLocationURI";
                 var originalDocIDTag = NS+"DocumentFileControlID";
                 var orginalDocFormatTag = NS+"DocumentFormatText";
                 var docTag = NS+"Document";
@@ -105,7 +106,7 @@ module.exports = exports = function () {
                     //set attachment(s) properties, close/end each attachments write streams
                     var jsonAttachments = Jsonpath.eval(json, '$..'+attachmentTag);
                     for (var i = 0; i < attachStreams.length; i++) {
-                        attachStreams[i]._store.filename = jsonAttachments[i][attachmentGridFSIdTag];  
+                        attachStreams[i]._store.filename = jsonAttachments[i][attachmentFileNameTag];  
                         jsonAttachments[i][attachmentGridFSIdTag] = attachStreams[i].id;
                         attachStreams[i].options.content_type = jsonAttachments[i][attachmentContentType];
                         //TODO: figure out a solution for base64 decoding
