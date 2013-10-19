@@ -26,26 +26,26 @@ module.exports = exports = function () {
                 var xmlStr = '<?xml version="1.0" encoding="UTF-8"?>';
                 var lastOpenTag = '';
                 var attachmentStarted = false;
-                //TODO: use config file to store and retrieve the tag information
-                var niemNS = "nc:",
-                       NS = niemNS;
-                var xmlScheme = config['transform']['xmlTags']['default'];
-                var attachmentBase64Tag = config['transform']['xmlTags'][xmlScheme]['attachment']['base64'];
-                var attachmentFileNameTag = NS+"BinaryLocationURI";
-                var originalDocIDTag = NS+"DocumentFileControlID";
-                var orginalDocFormatTag = NS+"DocumentFormatText";
-                var docTag = NS+"Document";
-                var attachmentTag = 'nc:Attachment';
-                var attachmentGridFSIdTag = 'nc:BinaryLocationURI';
-                var attachmentContentType = 'nc:BinaryFormatStandardName';
-				
+
+                var xmlSchemeHeader = 'Content-Desc';
+                var xmlScheme = req.header(xmlSchemeHeader);
+                if (!xmlScheme)
+                    xmlScheme = config.transform.xmlTags.defaultScheme;
+                if (!config.transform.xmlTags[xmlScheme]) {
+                    res.send('{"Error": "404 - '+xmlSchemeHeader+': ' + xmlScheme + ' is not supported"}', 404);
+                    return;
+                }    
+                var attachmentTags = config.transform.xmlTags[xmlScheme].attachment;
+                var docTags = config.transform.xmlTags[xmlScheme].doc;
+                
                 var attachmentI = -1;
+                var attachStreams = [];
 				
 				saxStream.on("opentag", function (tag) {
 					if (attachmentStarted) return;
 					lastOpenTag = tag.name;
 					//console.log(tag.name);
-					if (S(lastOpenTag.toLowerCase()).contains(attachmentBase64Tag.toLowerCase())){
+					if (S(lastOpenTag.toLowerCase()).contains(attachmentTags.base64.toLowerCase())){
 						attachmentStarted = true;
                         attachmentI++;
                         attachStreams[attachmentI] = gfs.createWriteStream({
@@ -64,15 +64,9 @@ module.exports = exports = function () {
 
 				saxStream.on("text", ontext);
 				saxStream.on("doctype", ontext);
-                //var onTextI = 0;
-                var openTagLinkInside = null;
-                var attachStreams = [];
+
                 function ontext (text) {
-                    /* Proof that large text bodies come in chunks
-                    onTextI++;
-                    console.log(lastOpenTag + ', ' + onTextI + ', ' + text.length);
-                    */
-                    if ( S(lastOpenTag.toLowerCase()).contains(attachmentBase64Tag.toLowerCase()) ){
+                    if ( S(lastOpenTag.toLowerCase()).contains(attachmentTags.base64.toLowerCase()) ){
                         attachStreams[attachmentI].write(text);
 					} else {
 						xmlStr += text;
@@ -83,11 +77,6 @@ module.exports = exports = function () {
 				  if (lastOpenTag == tag)
 					attachmentStarted = false;
 				  if (attachmentStarted) return;
-				  //console.log(tag);
-				  if ( tag.toLowerCase() == docTag.toLowerCase() ) {
-					  xmlStr += "<"+originalDocIDTag+">"+req.files.file.id+"</"+originalDocIDTag+">";
-					  xmlStr += "<"+orginalDocFormatTag+">application/xml</"+orginalDocFormatTag+">";
-				  }
 				  xmlStr += "</"+tag+">";
 				});
 
@@ -101,14 +90,18 @@ module.exports = exports = function () {
 				
 				saxStream.on("end", function (comment) {
                     json = xotree.parseXML(xmlStr); 
-
+                    var jsonDoc = Jsonpath.eval(json, '$..'+docTags.name);
+                    console.log(jsonDoc);
+                    console.log(req.files.file.id);
+                    jsonDoc[0][docTags.gridFSId] = req.files.file.id;
+                    jsonDoc[0][docTags.contentType] = req.files.file.type;
                     
                     //set attachment(s) properties, close/end each attachments write streams
-                    var jsonAttachments = Jsonpath.eval(json, '$..'+attachmentTag);
+                    var jsonAttachments = Jsonpath.eval(json, '$..'+attachmentTags.name);
                     for (var i = 0; i < attachStreams.length; i++) {
-                        attachStreams[i]._store.filename = jsonAttachments[i][attachmentFileNameTag];  
-                        jsonAttachments[i][attachmentGridFSIdTag] = attachStreams[i].id;
-                        attachStreams[i].options.content_type = jsonAttachments[i][attachmentContentType];
+                        attachStreams[i]._store.filename = jsonAttachments[i][attachmentTags.fileName];  
+                        jsonAttachments[i][attachmentTags.gridFSId] = attachStreams[i].id;
+                        attachStreams[i].options.content_type = jsonAttachments[i][attachmentTags.contentType];
                         //TODO: figure out a solution for base64 decoding
                         //var streamForDecode = gfs.createWriteStream( { mode: 'w', root: 'fs', filename: 'temp_loc_for_decode.dat' });
                         //attachStreams[i].pipe(base64.decode()).pipe(streamForDecode).pipe(attachStreams[i]);
