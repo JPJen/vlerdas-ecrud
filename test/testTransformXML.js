@@ -11,6 +11,8 @@ var collectionName = 'eCFT';
 describe(collectionName+' POST', function() {
     it('a file', function(done) {
        request.post('/core/'+collectionName+'/transform')
+           .set('Content-Desc', 'niem/xml')
+           .set('Content-Type', 'application/xml')
            .attach('file', 'test/attachments/eCFTCaseFile_minimal.xml')
            .end(function(err, res) {
                res.should.have.status(201); // 'created' success status
@@ -42,6 +44,16 @@ describe(collectionName+' POST', function() {
            });
     });
 });
+
+describe(collectionName+' POST', function() {
+    it('Header w/ Content-Desc: unicorn/xml', function(done) {
+       request.post('/core/'+collectionName+'/transform')
+           .set('Content-Desc', 'unicorn/xml')
+           .attach('file', 'test/attachments/eCFTCaseFile_minimal.xml')
+           .expect(404, done);
+    });
+});
+
 
 var collectionName = 'DBQ';
 describe(collectionName+' POST', function() {
