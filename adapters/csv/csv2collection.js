@@ -33,8 +33,8 @@ module.exports = exports = function () {
 								json.uploadDate = new Date();
 								collection.insert(json, function (err, docs) {
 									res.locals.items = docs;
-									if(config.notification.eventHandler.enabled)
-										event.emit("i", config.notification.eventHandler.channel, req.params.collection, docs);
+									res.locals.docs = docs;
+									event.emit("i", req, res);
 									return next();
 								});
 							}

@@ -34,15 +34,15 @@ module.exports = exports = function () {
 							collection.insert(json, function (err, docs) {
 								if(err) return next(err);
 								res.locals.items = docs;
-								if(config.notification.eventHandler.enabled)
-									event.emit("i", config.notification.eventHandler.channel, req.params.collection, docs);
+								res.locals.docs = docs;
+								event.emit("i", req, res);
 								return next();
 							});
 						}
 					});
 
 				});
-			});			
+			});
 		}
     };
 };

@@ -1,129 +1,107 @@
 {
-	"db": {
-		"name": "core",
-		"url":"mongodb://localhost:27017/core?connectTimeoutMS=300000"
-	},
-	"server": {
-		"port": 3001,
-		"host": "localhost"
-	},
-	"secureServer": {
-		"port": 3002,
-		"host": "localhost",
-		"options" : {
-			"key": "config/server.key",
-			"cert": "config/server.crt"
-		}	
-	},
-	"accessControl.DISABLED": {
-		"testuser1": {
-			"accessKeyId": "testuser1",
-			"accessKeySecret": "pa$$w0rd1",
-			"allowMethods": "*"
-		},
-		"testuser2": {
-			"accessKeyId": "testuser2",
-			"accessKeySecret": "pa$$w0rd2",
-			"allowMethods": "POST"
-		}
-	},
-	"eventHandlers": [
-		{
-			"name": "Console",
-			"module": "../lib/consoleEventHandler",
-			"events": [
-				{"event": "i", "method": "onInsert"},
-				{"event": "u", "method": "onUpdate"},
-				{"event": "d", "method": "onDelete"}
-			],
-			"options": {
-				"port":"6379",
-				"host":"127.0.0.1",
-				"exclude":["log", "fs", "audit"],
-				"operation":["i", "u", "d"],
-				"channel":"core.6379"
-			}
-		},
-		{
-			"name": "Async",
-			"module": "../lib/consoleAsyncHandler",
-			"events": [
-				{"event": "g", "method": "onGet"}
-			],
-			"options": {
-				"port":"6379",
-				"host":"127.0.0.1"
-			}			
-		},
-		{
-			"name": "Audit",
-			"module": "../lib/consoleAuditHandler",
-			"events": [
-				{"event": "i", "method": "onInsert"},
-				{"event": "u", "method": "onUpdate"},
-				{"event": "d", "method": "onDelete"},
-				{"event": "r", "method": "onRead"},
-				{"event": "g", "method": "onGet"}
-			],
-			"options": {
-				"url": "http://localhost:3003/audit/audit"
-			}
-		}
-	],
-	"notification": {
-		"eventHandler": {
-			"enabled": true,
-			"file": "../lib/consoleEventHandler",
-			"redis": {
-				"port":"6379",
-				"host":"127.0.0.1"
-			},
-			"exclude":["log", "fs", "audit"],
-			"operation":["i", "u", "d"],
-			"channel":"core.6379"
-		}
-	},
-	"async": {
-		"eventHandler": {
-			"file": "../lib/consoleAsyncHandler.js",
-			"redis": {
-				"port":"6379",
-				"host":"127.0.0.1"
-			}
-		}
-	},
-	"transform": {
-		"adapters": {
-			"application/xml":"../adapters/xml/xml2collection.js",
-			"text/xml":"../adapters/xml/xml2collection.js",
-			"application/pdf":"../adapters/pdf/pdf2collection.js",
-			"application/x-msdownload":"../adapters/pdf/pdf2collection.js",
-			"image/gif":"../adapters/image/img2collection.js",
-			"image/jpeg":"../adapters/image/img2collection.js",
-			"image/pjpeg":"../adapters/image/img2collection.js",
-			"image/png":"../adapters/image/img2collection.js",
-			"image/svg+xml":"../adapters/image/img2collection.js",
-			"image/tiff":"../adapters/image/img2collection.js",
-			"application/vnd.ms-excel":"../adapters/csv/csv2collection.js",
-			"application/json":"../adapters/jsonfile/json2collection.js"
-		},
-		"xmlTags": {
-			"defaultScheme": "niem/xml",
-			"niem/xml": {
-				"doc": {
-					"name": "nc:Document",
-					"gridFSId": "nc:DocumentFileControlID",
-					"contentType": "nc:DocumentFormatText"
-				},
-				"attachment": {
-					"name": "nc:Attachment",
-					"fileName": "nc:BinaryLocationURI",
-					"gridFSId": "nc:BinaryLocationURI",
-					"contentType": "nc:BinaryFormatStandardName",
-					"base64": "nc:BinaryBase64Object"
-				}
-			}
-		}	
-	},
-	"debug": true
+        "db": {
+                "name": "core",
+                "url":"mongodb://localhost:27017/core?connectTimeoutMS=300000"
+        },
+        "server": {
+                "port": 3001,
+                "host": "localhost"
+        },
+        "secureServer": {
+                "port": 3002,
+                "host": "localhost",
+                "options" : {
+                        "key": "config/server.key",
+                        "cert": "config/server.crt"
+                }        
+        },
+        "accessControl.DISABLED": {
+                "testuser1": {
+                        "accessKeyId": "testuser1",
+                        "accessKeySecret": "pa$$w0rd1",
+                        "allowMethods": "*"
+                },
+                "testuser2": {
+                        "accessKeyId": "testuser2",
+                        "accessKeySecret": "pa$$w0rd2",
+                        "allowMethods": "POST"
+                }
+        },
+        "eventHandlers": [
+                {
+                        "name": "Console",
+                        "module": "../lib/consoleEventHandler",
+                        "events": [
+                                {"event": "i", "method": "onInsert"},
+                                {"event": "u", "method": "onUpdate"},
+                                {"event": "d", "method": "onDelete"}
+                        ],
+                        "options": {
+                                "port":"6379",
+                                "host":"127.0.0.1",
+                                "exclude":["log", "fs", "audit"],
+                                "operation":["i", "u", "d"],
+                                "channel":"core.6379"
+                        }
+                },
+                {
+                        "name": "Async",
+                        "module": "../lib/consoleAsyncHandler",
+                        "events": [
+                                {"event": "g", "method": "onGet"}
+                        ],
+                        "options": {
+                                "port":"6379",
+                                "host":"127.0.0.1"
+                        }                        
+                },
+                {
+                        "name": "Audit",
+                        "module": "../lib/consoleAuditHandler",
+                        "events": [
+                                {"event": "i", "method": "onInsert"},
+                                {"event": "u", "method": "onUpdate"},
+                                {"event": "d", "method": "onDelete"},
+                                {"event": "r", "method": "onRead"},
+                                {"event": "g", "method": "onGet"}
+                        ],
+                        "options": {
+                                "url": "http://localhost:3003/audit/audit"
+                        }
+                }
+        ],
+        "transform": {
+                "adapters": {
+                        "application/xml":"../adapters/xml/xml2collection.js",
+                        "text/xml":"../adapters/xml/xml2collection.js",
+                        "application/pdf":"../adapters/pdf/pdf2collection.js",
+                        "application/x-msdownload":"../adapters/pdf/pdf2collection.js",
+                        "image/gif":"../adapters/image/img2collection.js",
+                        "image/jpeg":"../adapters/image/img2collection.js",
+                        "image/pjpeg":"../adapters/image/img2collection.js",
+                        "image/png":"../adapters/image/img2collection.js",
+                        "image/svg+xml":"../adapters/image/img2collection.js",
+                        "image/tiff":"../adapters/image/img2collection.js",
+                        "application/vnd.ms-excel":"../adapters/csv/csv2collection.js",
+                        "application/json":"../adapters/jsonfile/json2collection.js"
+                },
+				"xmlTags": {
+					"defaultScheme": "niem/xml",
+					"niem/xml": {
+						"doc": {
+							"name": "nc:Document",
+							"gridFSId": "nc:DocumentFileControlID",
+							"contentType": "nc:DocumentFormatText"
+						},
+						"attachment": {
+							"name": "nc:Attachment",
+							"fileName": "nc:BinaryLocationURI",
+							"gridFSId": "nc:BinaryLocationURI",
+							"contentType": "nc:BinaryFormatStandardName",
+							"base64": "nc:BinaryBase64Object"
+						}
+					}
+				}                
+        },
+        "debug": true
 }

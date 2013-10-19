@@ -12,6 +12,7 @@ describe(collectionName+' POST', function() {
     it('a file', function(done) {
        request.post('/core/'+collectionName+'/transform')
            .set('Content-Desc', 'niem/xml')
+           .set('Content-Type', 'application/xml')
            .attach('file', 'test/attachments/eCFTCaseFile_minimal.xml')
            .end(function(err, res) {
                res.should.have.status(201); // 'created' success status

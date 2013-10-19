@@ -23,7 +23,7 @@ module.exports = exports = function () {
 				readstream.pipe(writestream);
 				if(config.debug)
 					console.log('File stored in a new location:' + newPath);
-									
+
 				nodecr.process(newPath, function (err, text) {
 					if (err) {
 						throw err;
@@ -38,8 +38,8 @@ module.exports = exports = function () {
 							collection.insert(Array.isArray(toInsert) ? toInsert[0] : toInsert, function (err, docs) {
 								res.locals.id = docs[0]._id.toHexString();
 								res.locals.items = toInsert;
-								if(config.notification.eventHandler.enabled)
-									event.emit("i", config.notification.eventHandler.channel, req.params.collection, docs);
+								res.locals.docs = docs;
+								event.emit("i", req, res);
 								return next();
 							});
 						});
