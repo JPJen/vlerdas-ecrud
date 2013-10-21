@@ -10,6 +10,9 @@ var express = require('express')
 var config = require('config')
 // Export config, so that it can be used anywhere
 module.exports.config = config;
+var Log = require('vcommons').log;
+var logger = Log.getLogger('eCrud', config.log);
+module.exports.logger = logger;
 var bodyParser = require('vcommons').multipartBodyParser;
 var tmp = require("temp");
 tmp.track();
@@ -20,7 +23,7 @@ var Router = require('../lib/router');
 // Create a temporary directory
 tmp.mkdir('eCrud', function (err, path) {
 	if(err) throw err;
-	console.log('Temporary Directory:' + path);
+	logger.info('Temporary Directory:' + path);
 	config.tempdir = path;
 	new Router(config.db, function (router) {
 		createApp(router);
@@ -34,6 +37,13 @@ function createApp(router) {
     var app = express();
 
     app.configure(function () {
+		// enable web server logging; pipe those log messages through winston
+		var winstonStream = {
+			write: function(message, encoding){
+				logger.trace(message);
+			}
+		};
+
 		// Need to override for form-data
         app.use(express.methodOverride());
 		// Simple Access Control - TODO: Preferences & Authorizations
@@ -47,7 +57,7 @@ function createApp(router) {
             mongo: router.mongo
         }));
 		// Log
-        app.use(express.logger());
+        app.use(express.logger({stream: winstonStream}));
         app.use(app.router);
 		// Only for development
 		if(config.debug) {
@@ -88,18 +98,18 @@ function createApp(router) {
 	if (!_.isUndefined(config.server) || !_.isUndefined(config.secureServer)) {
 		if (!_.isUndefined(config.server)) {
 			http.createServer(app).listen(config.server.port, config.server.host, function() {
-				console.log("eCRUD server listening at http://" + config.server.host + ":" + config.server.port);
+				logger.info("eCRUD server listening at http://" + config.server.host + ":" + config.server.port);
 			});
 		}
 
 		if (!_.isUndefined(config.secureServer)) {
 			https.createServer(fixOptions(config.secureServer.options), app).listen(config.secureServer.port, config.secureServer.host, function() {
-				console.log("eCRUD server listening at https://" + config.secureServer.host + ":" + config.secureServer.port);
+				logger.info("eCRUD server listening at https://" + config.secureServer.host + ":" + config.secureServer.port);
 			});
 		}
 	}
 	else {
-		console.error("Configuration must contain a server or secureServer.");
+		logger.error("Configuration must contain a server or secureServer.");
 		process.exit();
 	}
 }
@@ -139,12 +149,12 @@ function setupEventHandlers(router)
 
 // Default exception handler
 process.on('uncaughtException', function (err) {
-    console.log('Caught exception: ' + err);
+    logger.error('Caught exception: ' + err);
 });
 
 process.on( 'SIGINT', function() {
-  console.log( "\nShutting down from  SIGINT (Crtl-C)" )
-  process.exit( )
+  logger.info("Shutting down from  SIGINT (Crtl-C)");
+  process.exit();
 })
 // Default exception handler
 process.on('exit', function (err) {
