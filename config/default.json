@@ -103,5 +103,16 @@
 					}
 				}                
         },
+	"log" : {
+		"console" : {
+			"level" : "trace",
+			"colorize" : true,
+			"label": "eCrud", 
+			"timestamp": true
+		},
+		"file" : {
+			"filename" : "eCrud.log"
+		}
+	},
         "debug": true
 }
