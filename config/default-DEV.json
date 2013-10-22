@@ -30,24 +30,35 @@
         "eventHandlers": [
                 {
                         "name": "Console",
-                        "module": "../lib/consoleEventHandler",
+                        "module": "../lib/redisEventHandler",
                         "events": [
                                 {"event": "i", "method": "onInsert"},
                                 {"event": "u", "method": "onUpdate"},
                                 {"event": "d", "method": "onDelete"}
                         ],
                         "options": {
+							"redis": {
+								"host" : "127.0.0.1",
+								"port" : "6379",
+								"auth" : "pass1",
+	                            "channel":"core.6379"
+							},
 							"operation":["i", "u", "d"],
 							"include":["serviceTreatmentRecords", "disabilityBenefitsQuestionnaires"]
                         }
                 },
                 {
                         "name": "Async",
-                        "module": "../lib/consoleAsyncHandler",
+                        "module": "../lib/redisAsyncHandler",
                         "events": [
                                 {"event": "g", "method": "onGet"}
                         ],
                         "options": {
+							"redis": {
+								"host" : "127.0.0.1",
+								"port" : "6379",
+								"auth" : "pass1"
+							}                        
 						}                        
                 },
                 {
