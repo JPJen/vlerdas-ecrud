@@ -37,11 +37,14 @@
                                 {"event": "d", "method": "onDelete"}
                         ],
                         "options": {
-                                "port":"6379",
-                                "host":"127.0.0.1",
-                                "exclude":["log", "fs", "audit"],
-                                "operation":["i", "u", "d"],
-                                "channel":"core.6379"
+							"redis": {
+								"host" : "127.0.0.1",
+								"port" : "6379",
+								"auth" : "pass1",
+	                            "channel":"core.6379"
+							},
+							"operation":["i", "u", "d"],
+							"include":["serviceTreatmentRecords", "disabilityBenefitsQuestionnaire"]
                         }
                 },
                 {
@@ -51,9 +54,12 @@
                                 {"event": "g", "method": "onGet"}
                         ],
                         "options": {
-                                "port":"6379",
-                                "host":"127.0.0.1"
-                        }                        
+							"redis": {
+								"host" : "127.0.0.1",
+								"port" : "6379",
+								"auth" : "pass1"
+							}                        
+						}                        
                 },
                 {
                         "name": "Audit",
@@ -103,16 +109,16 @@
 					}
 				}                
         },
-	"log" : {
-		"console" : {
-			"level" : "trace",
-			"colorize" : true,
-			"label": "eCrud", 
-			"timestamp": true
-		},
-		"file" : {
-			"filename" : "eCrud.log"
+		"debug": true,
+		"log" : {
+			"console" : {
+				"level" : "trace",
+				"colorize" : true,
+				"label": "eCrud", 
+				"timestamp": true
+			},
+			"file" : {
+				"filename" : "eCrud.log"
+			}
 		}
-	},
-        "debug": true
 }

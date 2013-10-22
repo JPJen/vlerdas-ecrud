@@ -45,7 +45,8 @@
     "request": ">=2.27.0",
     "should": ">=2.0.1",
     "supertest": ">=0.8.0",
-	"vcommons": ">=0.1.6"
+	"node-uuid": ">=1.4.1",
+	"vcommons": ">=0.1.8"
   },
   "devDependencies": {
   },

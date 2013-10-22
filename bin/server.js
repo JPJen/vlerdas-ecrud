@@ -160,4 +160,5 @@ process.on( 'SIGINT', function() {
 process.on('exit', function (err) {
 	// Clean up
 	tmp.cleanup();
+	logger.info( "Exit" )
 });
