@@ -10,7 +10,7 @@ var Jsonpath = require('JSONPath');
 var collectionName = 'eCFT';
 describe(collectionName+' POST', function() {
     it('a file', function(done) {
-       request.post('/core/'+collectionName+'/transform')
+       request.post('/ecrud/v1/core/'+collectionName+'/transform')
            .set('Content-Desc', 'niem/xml')
            .set('Content-Type', 'application/xml')
            .attach('file', 'test/attachments/eCFTCaseFile_minimal.xml')
@@ -30,7 +30,7 @@ describe(collectionName+' POST', function() {
                checkDELETE_GridFSDoc(orginalGridFSDocId, 200);
                checkGET_GridFSDoc(orginalGridFSDocId, 404);
                
-               var jsonAttachments = Jsonpath.eval(json, '$..nc:Attachment');
+               var jsonAttachments = Jsonpath.eval(json, '$..nc:Attachment')[0];
                for (var i = 0; i < jsonAttachments.length; i++) {
                    var attachmentGridFSId = jsonAttachments[i]['nc:BinaryLocationURI'];
                    checkGET_GridFSDoc(attachmentGridFSId, 200);
@@ -47,7 +47,7 @@ describe(collectionName+' POST', function() {
 
 describe(collectionName+' POST', function() {
     it('Header w/ Content-Desc: unicorn/xml', function(done) {
-       request.post('/core/'+collectionName+'/transform')
+       request.post('/ecrud/v1/core/'+collectionName+'/transform')
            .set('Content-Desc', 'unicorn/xml')
            .attach('file', 'test/attachments/eCFTCaseFile_minimal.xml')
            .expect(404, done);
@@ -58,7 +58,7 @@ describe(collectionName+' POST', function() {
 var collectionName = 'DBQ';
 describe(collectionName+' POST', function() {
     it('a file', function(done) {
-       request.post('/core/'+collectionName+'/transform')
+       request.post('/ecrud/v1/core/'+collectionName+'/transform')
            .attach('file', 'test/attachments/DBQ_AnkleCondition.xml')
            .end(function(err, res) {
                res.should.have.status(201); // 'created' success status
@@ -94,20 +94,20 @@ describe(collectionName+' POST', function() {
 //------- Functions ------- 
 
 function checkGET_GridFSDoc(gridFSDocId, httpCode) {
-    describe('GET /core/fs/'+gridFSDocId, function(){
+    describe('GET /ecrud/v1/core/fs/'+gridFSDocId, function(){
       it('respond with json', function(done){
         request
-          .get('/core/fs/'+gridFSDocId)
+          .get('/ecrud/v1/core/fs/'+gridFSDocId)
           .expect(httpCode, done);
       });
     });
 }
 
 function checkGET_Collection(collectionName, collectionId, httpCode) {
-    describe('GET /core/'+collectionName+'/'+collectionId, function(){
+    describe('GET /ecrud/v1/core/'+collectionName+'/'+collectionId, function(){
       it('respond with json', function(done){
         request
-          .get('/core/'+collectionName+'/'+collectionId)
+          .get('/ecrud/v1/core/'+collectionName+'/'+collectionId)
 //          .set('Accept', 'application/json')
 //          .expect('Content-Type', /json/)
           .expect(httpCode, done);
@@ -116,20 +116,20 @@ function checkGET_Collection(collectionName, collectionId, httpCode) {
 }
 
 function checkDELETE_GridFSDoc(gridFSDocId, httpCode) {
-    describe('DELETE /core/fs/'+gridFSDocId, function(){
+    describe('DELETE /ecrud/v1/core/fs/'+gridFSDocId, function(){
       it('respond with json', function(done){
         request
-          .del('/core/fs/'+gridFSDocId)
+          .del('/ecrud/v1/core/fs/'+gridFSDocId)
           .expect(httpCode, done);
       });
     });
 }
 
 function checkDELETE_Collection(collectionName, collectionId, httpCode) {
-    describe('DELETE /core/'+collectionName+'/'+collectionId, function(){
+    describe('DELETE /ecrud/v1/core/'+collectionName+'/'+collectionId, function(){
       it('respond with json', function(done){
         request
-          .del('/core/'+collectionName+'/'+collectionId)
+          .del('/ecrud/v1/core/'+collectionName+'/'+collectionId)
           .expect(httpCode, done);
       });
     });
