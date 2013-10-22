@@ -12,11 +12,15 @@ var Grid = require('gridfs-stream');
 var Jsonpath = require('JSONPath');
 var base64 = require('base64-stream');
 
+
 module.exports = exports = function() {
     return {
         transform : function(req, res, next, db, mongo, config, event) {
-            var readstream = multipart.gridform.gridfsStream(db, mongo).createReadStream(req.files.file.id);
             var gfs = Grid(db, mongo);
+            var xmlScheme = getXmlScheme();
+            if (!xmlScheme)
+                return;
+            var readstream = multipart.gridform.gridfsStream(db, mongo).createReadStream(req.files.file.id);
             readstream.on('open', function() {
                 var strict = true, 
                     saxStream = require("sax").createStream(strict);
@@ -25,15 +29,11 @@ module.exports = exports = function() {
                 var lastOpenTag = '';
                 var attachmentStarted = false;
 
-                var xmlScheme = getXmlScheme();
-                if (!xmlScheme)
-                    return;
-                
                 var attachmentTags = config.transform.xmlTags[xmlScheme].attachment;
                 var docTags = config.transform.xmlTags[xmlScheme].doc;
 
                 var attachmentI = -1;
-                var attachStreams = [];
+                var attachStreamsTemp = [];
 
                 saxStream.on("opentag", function(tag) {
                     if (attachmentStarted)
@@ -43,7 +43,7 @@ module.exports = exports = function() {
                     if (S(lastOpenTag.toLowerCase()).contains(attachmentTags.base64.toLowerCase())) {
                         attachmentStarted = true;
                         attachmentI++;
-                        attachStreams[attachmentI] = gfs.createWriteStream( { mode : 'w', root : 'fs' } );
+                        attachStreamsTemp[attachmentI] = gfs.createWriteStream( { mode : 'w', root : 'fs' } );
                     }
                     xmlStr += "<" + tag.name;
                     for (var i in tag.attributes) {
@@ -58,7 +58,7 @@ module.exports = exports = function() {
                 function ontext(text) {
                     if (S(lastOpenTag.toLowerCase()).contains(attachmentTags.base64.toLowerCase())) {
                         console.log("aI="+attachmentI+" TL= "+text.length);
-                        attachStreams[attachmentI].write(text);
+                        attachStreamsTemp[attachmentI].write(text);
                     } else {
                         xmlStr += text;
                     }
@@ -90,38 +90,40 @@ module.exports = exports = function() {
                     var jsonAttachments = Jsonpath.eval(json, '$..' + attachmentTags.name);
                     if (jsonAttachments[0][0]) //only support 1 attachments section for now
                         jsonAttachments = jsonAttachments[0];
-                    
-                    for (var i = 0; i < attachStreams.length; i++) {
-                        var tempId = attachStreams[i].id;
-                        attachStreams[i].end();
+                    //console.log(jsonAttachments);
+                    for (var i = 0; i < attachStreamsTemp.length; i++) {
+                        var tempId = attachStreamsTemp[i].id;
 
-                        var writeDecodedStream = gfs.createWriteStream( { mode: 'w', root: 'fs' });
-                        writeDecodedStream._store.filename = jsonAttachments[i][attachmentTags.fileName];
-                        writeDecodedStream.options.content_type = jsonAttachments[i][attachmentTags.contentType];
-                        jsonAttachments[i][attachmentTags.gridFSId] = writeDecodedStream.id;
+                        var decodedWriteStream = gfs.createWriteStream( { mode: 'w', root: 'fs' } );
+                        var permId = decodedWriteStream.id;
+                        decodedWriteStream._store.filename = jsonAttachments[i][attachmentTags.fileName];
+                        decodedWriteStream.options.content_type = jsonAttachments[i][attachmentTags.contentType];
                         
-                        var readStreamEncoded = gfsGetReadStream(tempId);
-                        //console.log(readStreamEncoded);
-                        readStreamEncoded.pipe(base64.decode()).pipe(writeDecodedStream._store);
+                        jsonAttachments[i][attachmentTags.gridFSId] = permId;
 
-                        writeDecodedStream.end();
-                        console.log('tempId='+tempId);
-                        //gfsRemove(tempId); //TODO: make gfsRemove work, doesn't currently remove the file...
-                        readStreamEncoded = null;
-                        writeDecodedStream = null;
+                        decodeAttachment(tempId, permId, attachStreamsTemp[i], decodedWriteStream);
+                        attachStreamsTemp[i].end();
                     }
                     
-                    function gfsGetReadStream(fileId) {
-                        return gfs.createReadStream( { id: fileId, root: 'fs' } );
-                    }
-                    
-                    function gfsRemove(fileId) {
-                        gfs.remove( { _id: fileId, root: 'fs' }, function (err) {
-                            if (err) return handleError(err);
-                            console.log('Deleted temp gridFS file: '+fileId);
+                    function decodeAttachment(tempId, permId, attachStream, decodedWriteStream) {
+                        /*  WARNING: the order and method of ending the streams, calling in this
+                         *          function matters. Took over a full day to get the correct temp
+                         *          stream to write to the correct permanant stream.
+                         *          And then delete the temp gridFS files correctly.
+                         *          So be ware if you change this up.
+                         *          TODO: Should create mocha tests to verify the correct file sizes on return
+                         *          TODO: and that the temp files have been deleted  
+                         */ 
+                        attachStream.on('close', function(file) {
+                            var readStreamEncoded = gfs.createReadStream( { _id: tempId, root: 'fs' } );
+                            readStreamEncoded.on('open', function() {
+                                readStreamEncoded.pipe(base64.decode()).pipe(decodedWriteStream._store);
+                                decodedWriteStream.end();
+                                gfsRemove(tempId);
+                            });
                         });
                     }
-
+                    
                     writeToCollection(json);
                 });
 
@@ -134,6 +136,15 @@ module.exports = exports = function() {
                 readstream.pipe(saxStream);
 
             });
+            
+            //**** transform() Functions ****
+            
+            function gfsRemove(fileId) {
+                gfs.remove( { _id: fileId, root: 'fs' }, function (err) {
+                    if (err) return handleError(err);
+                    console.log('Deleted temp gridFS file: '+fileId);
+                });
+            }
             
             function writeToCollection(json) {
                 db.collection(req.params.collection, function(err, collection) {
@@ -159,13 +170,14 @@ module.exports = exports = function() {
                 if (!xmlScheme)
                     xmlScheme = config.transform.xmlTags.defaultScheme;
                 if (!config.transform.xmlTags[xmlScheme]) {
+                    gfsRemove(req.files.file.id); 
                     res.send('{"Error": "404 - ' + xmlSchemeHeader + ': ' + xmlScheme + ' is not supported"}', 404);
                     return;
                 }
                 return xmlScheme;
             }
             
-            
         }
+        
     };
 }; 
