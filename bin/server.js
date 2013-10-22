@@ -70,27 +70,27 @@ function createApp(router) {
     // Initialize Router with all the methods
 
 	// Async. Query of docs
-	app.get('/ecrud/v1/' + config.db.name + '/:collection/async/:channel', router.asyncResponse.bind(router));
+	app.get(config.server.prefix + config.db.name + '/:collection/async/:channel', router.asyncResponse.bind(router));
 	// Search for a text
-	app.get('/ecrud/v1/' + config.db.name + '/:collection/search', router.searchText.bind(router), router.sendResponse.bind(router));
+	app.get(config.server.prefix + config.db.name + '/:collection/search', router.searchText.bind(router), router.sendResponse.bind(router));
 	// Transform a new document
-    app.post('/ecrud/v1/' + config.db.name + '/:collection/transform', router.transformToCollection.bind(router), router.sendCreatedResponse.bind(router));
+    app.post(config.server.prefix + config.db.name + '/:collection/transform', router.transformToCollection.bind(router), router.sendCreatedResponse.bind(router));
 	// GridFS Read Files
-	app.get('/ecrud/v1/' + config.db.name + '/fs', router.getFiles.bind(router), router.sendResponse.bind(router));
+	app.get(config.server.prefix + config.db.name + '/fs', router.getFiles.bind(router), router.sendResponse.bind(router));
 	// GridFS Create Files
-    app.post('/ecrud/v1/' + config.db.name + '/fs', router.sendCreatedResponse.bind(router));
+    app.post(config.server.prefix + config.db.name + '/fs', router.sendCreatedResponse.bind(router));
 	// GridFS Download Files
-    app.get('/ecrud/v1/' + config.db.name + '/fs/:id', router.downloadFile.bind(router));
+    app.get(config.server.prefix + config.db.name + '/fs/:id', router.downloadFile.bind(router));
 	// GridFS Delete Files
-	app.del('/ecrud/v1/' + config.db.name + '/fs/:id', router.removeFile.bind(router), router.sendResponse.bind(router));
+	app.del(config.server.prefix + config.db.name + '/fs/:id', router.removeFile.bind(router), router.sendResponse.bind(router));
 	// Delete a document
-    app.del('/ecrud/v1/' + config.db.name + '/:collection/:id', router.deleteFromCollection.bind(router), router.sendResponse.bind(router));
+    app.del(config.server.prefix + config.db.name + '/:collection/:id', router.deleteFromCollection.bind(router), router.sendResponse.bind(router));
 	// Update a document
-    app.put('/ecrud/v1/' + config.db.name + '/:collection/:id', router.putToCollection.bind(router), router.sendCreatedResponse.bind(router));
+    app.put(config.server.prefix + config.db.name + '/:collection/:id', router.putToCollection.bind(router), router.sendCreatedResponse.bind(router));
 	// Create a new document
-    app.post('/ecrud/v1/' + config.db.name + '/:collection', router.postToCollection.bind(router), router.sendCreatedResponse.bind(router));
+    app.post(config.server.prefix + config.db.name + '/:collection', router.postToCollection.bind(router), router.sendCreatedResponse.bind(router));
 	// Get a document
-    app.get('/ecrud/v1/' + config.db.name + '/:collection/:id?', router.getCollection.bind(router), router.sendResponse.bind(router));
+    app.get(config.server.prefix + config.db.name + '/:collection/:id?', router.getCollection.bind(router), router.sendResponse.bind(router));
 
 	setupEventHandlers(router);
 
