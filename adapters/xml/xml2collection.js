@@ -16,23 +16,19 @@ module.exports = exports = function() {
     return {
         transform : function(req, res, next, db, mongo, config, event) {
             var readstream = multipart.gridform.gridfsStream(db, mongo).createReadStream(req.files.file.id);
+            var gfs = Grid(db, mongo);
             readstream.on('open', function() {
-                // Recognise text of any language in any format
-                var strict = true, saxStream = require("sax").createStream(strict);
-                var gfs = Grid(db, mongo);
+                var strict = true, 
+                    saxStream = require("sax").createStream(strict);
 
                 var xmlStr = '<?xml version="1.0" encoding="UTF-8"?>';
                 var lastOpenTag = '';
                 var attachmentStarted = false;
 
-                var xmlSchemeHeader = 'Content-Desc';
-                var xmlScheme = req.header(xmlSchemeHeader);
+                var xmlScheme = getXmlScheme();
                 if (!xmlScheme)
-                    xmlScheme = config.transform.xmlTags.defaultScheme;
-                if (!config.transform.xmlTags[xmlScheme]) {
-                    res.send('{"Error": "404 - ' + xmlSchemeHeader + ': ' + xmlScheme + ' is not supported"}', 404);
                     return;
-                }
+                
                 var attachmentTags = config.transform.xmlTags[xmlScheme].attachment;
                 var docTags = config.transform.xmlTags[xmlScheme].doc;
 
@@ -47,12 +43,7 @@ module.exports = exports = function() {
                     if (S(lastOpenTag.toLowerCase()).contains(attachmentTags.base64.toLowerCase())) {
                         attachmentStarted = true;
                         attachmentI++;
-                        attachStreams[attachmentI] = gfs.createWriteStream({
-                            mode : 'w'
-                            //, filename: attachmentI+'attach.txt'
-                            ,
-                            root : 'fs'
-                        });
+                        attachStreams[attachmentI] = gfs.createWriteStream( { mode : 'w', root : 'fs' } );
                     }
                     xmlStr += "<" + tag.name;
                     for (var i in tag.attributes) {
@@ -64,15 +55,14 @@ module.exports = exports = function() {
 
                 saxStream.on("text", ontext);
                 saxStream.on("doctype", ontext);
-
                 function ontext(text) {
                     if (S(lastOpenTag.toLowerCase()).contains(attachmentTags.base64.toLowerCase())) {
+                        console.log("aI="+attachmentI+" TL= "+text.length);
                         attachStreams[attachmentI].write(text);
                     } else {
                         xmlStr += text;
                     }
                 }
-
 
                 saxStream.on("closetag", function(tag) {
                     if (lastOpenTag == tag)
@@ -98,36 +88,41 @@ module.exports = exports = function() {
 
                     //set attachment(s) properties, close/end each attachments write streams
                     var jsonAttachments = Jsonpath.eval(json, '$..' + attachmentTags.name);
+                    if (jsonAttachments[0][0]) //only support 1 attachments section for now
+                        jsonAttachments = jsonAttachments[0];
+                    
                     for (var i = 0; i < attachStreams.length; i++) {
-                        attachStreams[i]._store.filename = jsonAttachments[i][attachmentTags.fileName];
-                        jsonAttachments[i][attachmentTags.gridFSId] = attachStreams[i].id;
-                        attachStreams[i].options.content_type = jsonAttachments[i][attachmentTags.contentType];
-                        //TODO: figure out a solution for base64 decoding
-                        //var streamForDecode = gfs.createWriteStream( { mode: 'w', root: 'fs', filename: 'temp_loc_for_decode.dat' });
-                        //attachStreams[i].pipe(base64.decode()).pipe(streamForDecode).pipe(attachStreams[i]);
+                        var tempId = attachStreams[i].id;
                         attachStreams[i].end();
-                        /*gfs.remove({_id: streamForDecode.id}, function (err) {
-                         if (err) return handleError(err);
-                         console.log('success');
-                         });*/
+
+                        var writeDecodedStream = gfs.createWriteStream( { mode: 'w', root: 'fs' });
+                        writeDecodedStream._store.filename = jsonAttachments[i][attachmentTags.fileName];
+                        writeDecodedStream.options.content_type = jsonAttachments[i][attachmentTags.contentType];
+                        jsonAttachments[i][attachmentTags.gridFSId] = writeDecodedStream.id;
+                        
+                        var readStreamEncoded = gfsGetReadStream(tempId);
+                        //console.log(readStreamEncoded);
+                        readStreamEncoded.pipe(base64.decode()).pipe(writeDecodedStream._store);
+
+                        writeDecodedStream.end();
+                        console.log('tempId='+tempId);
+                        //gfsRemove(tempId); //TODO: make gfsRemove work, doesn't currently remove the file...
+                        readStreamEncoded = null;
+                        writeDecodedStream = null;
+                    }
+                    
+                    function gfsGetReadStream(fileId) {
+                        return gfs.createReadStream( { id: fileId, root: 'fs' } );
+                    }
+                    
+                    function gfsRemove(fileId) {
+                        gfs.remove( { _id: fileId, root: 'fs' }, function (err) {
+                            if (err) return handleError(err);
+                            console.log('Deleted temp gridFS file: '+fileId);
+                        });
                     }
 
-                    //write extracted/transformed xml to mongo collection
-                    db.collection(req.params.collection, function(err, collection) {
-                        if (err)
-                            return next(err);
-                        if (!_.isUndefined(json)) {
-                            json.uploadDate = new Date();
-                            collection.insert(json, function(err, docs) {
-                                if (err)
-                                    return next(err);
-                                res.locals.items = docs;
-                                res.locals.docs = docs;
-                                event.emit("i", req, res);
-                                return next();
-                            });
-                        }
-                    });
+                    writeToCollection(json);
                 });
 
                 saxStream.on("error", function(err) {
@@ -139,6 +134,38 @@ module.exports = exports = function() {
                 readstream.pipe(saxStream);
 
             });
+            
+            function writeToCollection(json) {
+                db.collection(req.params.collection, function(err, collection) {
+                    if (err)
+                        return next(err);
+                    if (!_.isUndefined(json)) {
+                        json.uploadDate = new Date();
+                        collection.insert(json, function(err, docs) {
+                            if (err)
+                                return next(err);
+                            res.locals.items = docs;
+                            res.locals.docs = docs;
+                            event.emit("i", req, res);
+                            return next();
+                        });
+                    }
+                });
+            }
+            
+            function getXmlScheme() {
+                var xmlSchemeHeader = 'Content-Desc';
+                var xmlScheme = req.header(xmlSchemeHeader);
+                if (!xmlScheme)
+                    xmlScheme = config.transform.xmlTags.defaultScheme;
+                if (!config.transform.xmlTags[xmlScheme]) {
+                    res.send('{"Error": "404 - ' + xmlSchemeHeader + ': ' + xmlScheme + ' is not supported"}', 404);
+                    return;
+                }
+                return xmlScheme;
+            }
+            
+            
         }
     };
 }; 

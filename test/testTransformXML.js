@@ -30,7 +30,7 @@ describe(collectionName+' POST', function() {
                checkDELETE_GridFSDoc(orginalGridFSDocId, 200);
                checkGET_GridFSDoc(orginalGridFSDocId, 404);
                
-               var jsonAttachments = Jsonpath.eval(json, '$..nc:Attachment');
+               var jsonAttachments = Jsonpath.eval(json, '$..nc:Attachment')[0];
                for (var i = 0; i < jsonAttachments.length; i++) {
                    var attachmentGridFSId = jsonAttachments[i]['nc:BinaryLocationURI'];
                    checkGET_GridFSDoc(attachmentGridFSId, 200);
