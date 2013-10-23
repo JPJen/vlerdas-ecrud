@@ -20,12 +20,15 @@ module.exports = exports = function() {
             var xmlScheme = getXmlScheme();
             if (!xmlScheme)
                 return;
-            var readstream = multipart.gridform.gridfsStream(db, mongo).createReadStream(req.files.file.id);
+            var readstream = multipart.gridform.gridfsStream(db, mongo).createReadStream(req.files.file.id); //, { encoding: 'utf8' }
+            //readstream._store.setEncoding('utf8');
+            //console.log(readstream);
             readstream.on('open', function() {
+                
                 var strict = true, 
                     saxStream = require("sax").createStream(strict);
 
-                var xmlStr = '<?xml version="1.0" encoding="UTF-8"?>';
+                var xmlStr = '';//'<?xml version="1.0" encoding="UTF-8"?>';
                 var lastOpenTag = '';
                 var attachmentStarted = false;
 
@@ -57,7 +60,7 @@ module.exports = exports = function() {
                 saxStream.on("doctype", ontext);
                 function ontext(text) {
                     if (S(lastOpenTag.toLowerCase()).contains(attachmentTags.base64.toLowerCase())) {
-                        console.log("aI="+attachmentI+" TL= "+text.length);
+                        //console.log("aI="+attachmentI+" TL= "+text.length);
                         attachStreamsTemp[attachmentI].write(text);
                     } else {
                         xmlStr += text;
