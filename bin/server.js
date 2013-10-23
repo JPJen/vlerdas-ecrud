@@ -22,12 +22,12 @@ var Router = require('../lib/router');
 
 // Create a temporary directory
 tmp.mkdir('eCrud', function (err, path) {
-	if(err) throw err;
-	logger.info('Temporary Directory:' + path);
-	config.tempdir = path;
-	new Router(config.db, function (router) {
-		createApp(router);
-	});
+        if(err) throw err;
+        logger.info('Temporary Directory:' + path);
+        config.tempdir = path;
+        new Router(config.db, function (router) {
+                createApp(router);
+        });
 });
 
 
@@ -37,114 +37,116 @@ function createApp(router) {
     var app = express();
 
     app.configure(function () {
-		// enable web server logging; pipe those log messages through winston
-		var winstonStream = {
-			write: function(message, encoding){
-				logger.trace(message);
-			}
-		};
+                var mountPoint = (_.isUndefined(config.context) ? '' : config.context) + '/' + config.db.name;
 
-		// Need to override for form-data
-        app.use(express.methodOverride());
-		// Simple Access Control - TODO: Preferences & Authorizations
+                // enable web server logging; pipe those log messages through winston
+                var winstonStream = {
+                        write: function(message, encoding){
+                                logger.trace(message);
+                        }
+                };
+
+                // Need to override for form-data
+        app.use(mountPoint, express.methodOverride());
+                // Simple Access Control - TODO: Preferences & Authorizations
         if (config.accessControl) {
             var accessControl = require('vcommons').accessControl;
-            app.use(accessControl());
+            app.use(mountPoint, accessControl());
         }
-		// Uses our custom bodyParser with special handling for multipart, xml, and text.
-        app.use(bodyParser({
+                // Uses our custom bodyParser with special handling for multipart, xml, and text.
+        app.use(mountPoint, bodyParser({
             db: router.db, // Needs DB
             mongo: router.mongo
         }));
-		// Log
+                // Log
         app.use(express.logger({stream: winstonStream}));
-        app.use(app.router);
-		// Only for development
-		if(config.debug) {
-			app.use(express.errorHandler({ showStack: true, dumpExceptions: true }));
-		}
+        app.use(mountPoint, app.router);
+                // Only for development
+                if(config.debug) {
+                        app.use(express.errorHandler({ showStack: true, dumpExceptions: true }));
+                }
     });
 
     // You may want to read this post which details some common express / multipart gotchas:
     // http://stackoverflow.com/questions/11295554/how-to-disable-express-bodyparser-for-file-uploads-node-js
     // Initialize Router with all the methods
 
-	// Async. Query of docs
-	app.get(config.server.prefix + config.db.name + '/:collection/async/:channel', router.asyncResponse.bind(router));
-	// Search for a text
-	app.get(config.server.prefix + config.db.name + '/:collection/search', router.searchText.bind(router), router.sendResponse.bind(router));
-	// Transform a new document
-    app.post(config.server.prefix + config.db.name + '/:collection/transform', router.transformToCollection.bind(router), router.sendCreatedResponse.bind(router));
-	// GridFS Read Files
-	app.get(config.server.prefix + config.db.name + '/fs', router.getFiles.bind(router), router.sendResponse.bind(router));
-	// GridFS Create Files
-    app.post(config.server.prefix + config.db.name + '/fs', router.sendCreatedResponse.bind(router));
-	// GridFS Download Files
-    app.get(config.server.prefix + config.db.name + '/fs/:id', router.downloadFile.bind(router));
-	// GridFS Delete Files
-	app.del(config.server.prefix + config.db.name + '/fs/:id', router.removeFile.bind(router), router.sendResponse.bind(router));
-	// Delete a document
-    app.del(config.server.prefix + config.db.name + '/:collection/:id', router.deleteFromCollection.bind(router), router.sendResponse.bind(router));
-	// Update a document
-    app.put(config.server.prefix + config.db.name + '/:collection/:id', router.putToCollection.bind(router), router.sendCreatedResponse.bind(router));
-	// Create a new document
-    app.post(config.server.prefix + config.db.name + '/:collection', router.postToCollection.bind(router), router.sendCreatedResponse.bind(router));
-	// Get a document
-    app.get(config.server.prefix + config.db.name + '/:collection/:id?', router.getCollection.bind(router), router.sendResponse.bind(router));
+        // Async. Query of docs
+        app.get('/:collection/async/:channel', router.asyncResponse.bind(router));
+        // Search for a text
+        app.get('/:collection/search', router.searchText.bind(router), router.sendResponse.bind(router));
+        // Transform a new document
+    app.post('/:collection/transform', router.transformToCollection.bind(router), router.sendCreatedResponse.bind(router));
+        // GridFS Read Files
+        app.get('/fs', router.getFiles.bind(router), router.sendResponse.bind(router));
+        // GridFS Create Files
+    app.post('/fs', router.sendCreatedResponse.bind(router));
+        // GridFS Download Files
+    app.get('/fs/:id', router.downloadFile.bind(router));
+        // GridFS Delete Files
+        app.del('/fs/:id', router.removeFile.bind(router), router.sendResponse.bind(router));
+        // Delete a document
+    app.del('/:collection/:id', router.deleteFromCollection.bind(router), router.sendResponse.bind(router));
+        // Update a document
+    app.put('/:collection/:id', router.putToCollection.bind(router), router.sendCreatedResponse.bind(router));
+        // Create a new document
+    app.post('/:collection', router.postToCollection.bind(router), router.sendCreatedResponse.bind(router));
+        // Get a document
+    app.get('/:collection/:id?', router.getCollection.bind(router), router.sendResponse.bind(router));
 
-	setupEventHandlers(router);
+        setupEventHandlers(router);
 
-	// Listen
-	if (!_.isUndefined(config.server) || !_.isUndefined(config.secureServer)) {
-		if (!_.isUndefined(config.server)) {
-			http.createServer(app).listen(config.server.port, config.server.host, function() {
-				logger.info("eCRUD server listening at http://" + config.server.host + ":" + config.server.port);
-			});
-		}
+        // Listen
+        if (!_.isUndefined(config.server) || !_.isUndefined(config.secureServer)) {
+                if (!_.isUndefined(config.server)) {
+                        http.createServer(app).listen(config.server.port, config.server.host, function() {
+                                logger.info("eCRUD server listening at http://" + config.server.host + ":" + config.server.port);
+                        });
+                }
 
-		if (!_.isUndefined(config.secureServer)) {
-			https.createServer(fixOptions(config.secureServer.options), app).listen(config.secureServer.port, config.secureServer.host, function() {
-				logger.info("eCRUD server listening at https://" + config.secureServer.host + ":" + config.secureServer.port);
-			});
-		}
-	}
-	else {
-		logger.error("Configuration must contain a server or secureServer.");
-		process.exit();
-	}
+                if (!_.isUndefined(config.secureServer)) {
+                        https.createServer(fixOptions(config.secureServer.options), app).listen(config.secureServer.port, config.secureServer.host, function() {
+                                logger.info("eCRUD server listening at https://" + config.secureServer.host + ":" + config.secureServer.port);
+                        });
+                }
+        }
+        else {
+                logger.error("Configuration must contain a server or secureServer.");
+                process.exit();
+        }
 }
 
 function fixOptions(configOptions)
 {
-	var options = {};
+        var options = {};
 
-	if (!_.isUndefined(configOptions.key) && _.isString(configOptions.key)) {
-		options.key = fs.readFileSync(configOptions.key);
-	}
+        if (!_.isUndefined(configOptions.key) && _.isString(configOptions.key)) {
+                options.key = fs.readFileSync(configOptions.key);
+        }
 
-	if (!_.isUndefined(configOptions.cert) && _.isString(configOptions.cert)) {
-		options.cert = fs.readFileSync(configOptions.cert);
-	}
+        if (!_.isUndefined(configOptions.cert) && _.isString(configOptions.cert)) {
+                options.cert = fs.readFileSync(configOptions.cert);
+        }
 
-	if (!_.isUndefined(configOptions.pfx) && _.isString(configOptions.pfx)) {
-		options.pfx = fs.readFileSync(configOptions.pfx);
-	}
+        if (!_.isUndefined(configOptions.pfx) && _.isString(configOptions.pfx)) {
+                options.pfx = fs.readFileSync(configOptions.pfx);
+        }
 
-	return options;
+        return options;
 }
 
 function setupEventHandlers(router)
 {
-	if (!_.isUndefined(config.eventHandlers) && _.isArray(config.eventHandlers)) {
-		for (var i = 0;  i < config.eventHandlers.length;  ++i) {
-			var eh = config.eventHandlers[i];
-			var module = require(eh.module)(eh.options);
-			for (var j = 0;  j < eh.events.length;  ++j) {
-				var e = eh.events[j];
-				router.on(e.event, module[e.method]);
-			}
-		}
-	}
+        if (!_.isUndefined(config.eventHandlers) && _.isArray(config.eventHandlers)) {
+                for (var i = 0;  i < config.eventHandlers.length;  ++i) {
+                        var eh = config.eventHandlers[i];
+                        var module = require(eh.module)(eh.options);
+                        for (var j = 0;  j < eh.events.length;  ++j) {
+                                var e = eh.events[j];
+                                router.on(e.event, module[e.method]);
+                        }
+                }
+        }
 }
 
 // Default exception handler
@@ -158,7 +160,7 @@ process.on( 'SIGINT', function() {
 })
 // Default exception handler
 process.on('exit', function (err) {
-	// Clean up
-	tmp.cleanup();
-	logger.info( "Exit" )
+        // Clean up
+        tmp.cleanup();
+        logger.info( "Exit" )
 });
