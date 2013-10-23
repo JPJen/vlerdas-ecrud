@@ -1,4 +1,4 @@
-﻿<case:ElectronicCaseFile xmlns:vler="http://va.gov/vler/schemas/vlerSupersetSchema/0.7/vler" xmlns:nc="http://niem.gov/niem/niem-core/2.0" xmlns:case="http://vler.va.gov/vler/schemas/health/clinicalDocuments/electronicCaseFiles/1.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:s="http://niem.gov/niem/structures/2.0">
+<case:ElectronicCaseFile xmlns:vler="http://va.gov/vler/schemas/vlerSupersetSchema/0.7/vler" xmlns:nc="http://niem.gov/niem/niem-core/2.0" xmlns:case="http://vler.va.gov/vler/schemas/health/clinicalDocuments/electronicCaseFiles/1.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:s="http://niem.gov/niem/structures/2.0">
 	<case:CommonData>
 		<nc:Document>
 			<nc:DocumentTitleText>Neck (Cervical Spine) Conditions (0960M-13)</nc:DocumentTitleText>

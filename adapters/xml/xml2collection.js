@@ -12,17 +12,16 @@ var Grid = require('gridfs-stream');
 var Jsonpath = require('JSONPath');
 var base64 = require('base64-stream');
 
-
 module.exports = exports = function() {
     return {
         transform : function(req, res, next, db, mongo, config, event) {
             var gfs = Grid(db, mongo);
+
             var xmlScheme = getXmlScheme();
             if (!xmlScheme)
                 return;
+
             var readstream = multipart.gridform.gridfsStream(db, mongo).createReadStream(req.files.file.id); //, { encoding: 'utf8' }
-            //readstream._store.setEncoding('utf8');
-            //console.log(readstream);
             readstream.on('open', function() {
                 
                 var strict = true, 
@@ -136,8 +135,29 @@ module.exports = exports = function() {
                     this._parser.resume();
                 });
 
-                readstream.pipe(saxStream);
-
+                //stream transform to strip out the BOM TODO: refactor to a class
+                var parserStripBOM = new require('stream').Transform();
+                var dataCounter = 0;
+                parserStripBOM._transform = function(data, encoding, done) {
+                  console.log('dataCounter: '+dataCounter);
+                  if (dataCounter == 0) {
+                    //utf8 signature on a utf8 file is 0xef, 0xbb, 0xbf
+                    //could try and edit the Buffer directly instead of converting to string
+                    //but this was faster to implement at the moment...
+                    data = data.toString('utf8');
+                    var firstChar = data.substring(0, 1);
+                    var bomChar = '\uFEFF'; //Byte Order Mark character
+                    if (firstChar == bomChar) {
+                        data = data.substring(1);
+                        data = new Buffer(data, 'utf8');
+                    }
+                  }
+                  dataCounter++;
+                  this.push(data);
+                  done();
+                };
+                
+                readstream.pipe(parserStripBOM).pipe(saxStream);
             });
             
             //**** transform() Functions ****
