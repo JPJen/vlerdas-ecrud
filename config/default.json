@@ -6,7 +6,7 @@
         },
         "server": {
                 "port": 3001,
-                "host": "localhost",
+                "host": "localhost"
         },
         "secureServer": {
                 "port": 3002,
