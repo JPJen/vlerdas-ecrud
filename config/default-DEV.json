@@ -1,5 +1,6 @@
 {
-        "db": {
+		"context": "/ecrud/v1",
+		"db": {
                 "name": "core",
                 "url":"mongodb://localhost:27017/core?connectTimeoutMS=300000"
         },
