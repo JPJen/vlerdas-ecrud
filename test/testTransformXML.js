@@ -54,6 +54,15 @@ describe(collectionName+' POST', function() {
     });
 });
 
+var fileUTF8_WithBOM = "VLERDoc-UTF8wBOM.xml"; //BOM = utf8 Byte Order Mark
+describe(collectionName+' POST', function() {
+    it('Header w/ Content-Desc: unicorn/xml', function(done) {
+       request.post('/ecrud/v1/core/'+collectionName+'/transform')
+           .attach('file', 'test/attachments/'+fileUTF8_WithBOM)
+           .expect(201, done);
+    });
+});
+
 
 var collectionName = 'DBQ';
 describe(collectionName+' POST', function() {
