@@ -56,7 +56,7 @@ describe(collectionName+' POST', function() {
 
 var fileUTF8_WithBOM = "VLERDoc-UTF8wBOM.xml"; //BOM = utf8 Byte Order Mark
 describe(collectionName+' POST', function() {
-    it('Header w/ Content-Desc: unicorn/xml', function(done) {
+    it('Transform utf8 w/ Byte Order Mark', function(done) {
        request.post('/ecrud/v1/core/'+collectionName+'/transform')
            .attach('file', 'test/attachments/'+fileUTF8_WithBOM)
            .expect(201, done);
@@ -99,6 +99,16 @@ describe(collectionName+' POST', function() {
            });
     });
 });
+
+var fileBadXml = "bad.xml"; 
+describe(collectionName+' POST', function() {
+    it('Test bad XML document', function(done) {
+       request.post('/ecrud/v1/core/'+collectionName+'/transform')
+           .attach('file', 'test/attachments/'+fileBadXml)
+           .expect(404, done);
+    });
+});
+
 
 //------- Functions ------- 
 

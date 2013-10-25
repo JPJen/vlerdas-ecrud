@@ -131,15 +131,18 @@ module.exports = exports = function() {
 
                 saxStream.on("error", function(err) {
                     console.error("error!", err);
-                    this._parser.error = null;
-                    this._parser.resume();
+                    //this._parser.error = null;
+                    //this._parser.resume();
+                    res.send('{"Error": "404 - XML Parse error: ' + err + '"}', 404);
+                    this._parser.stop();
+                    return;
                 });
 
                 //stream transform to strip out the BOM TODO: refactor to a class
                 var parserStripBOM = new require('stream').Transform();
                 var dataCounter = 0;
                 parserStripBOM._transform = function(data, encoding, done) {
-                  console.log('dataCounter: '+dataCounter);
+                  //console.log('dataCounter: '+dataCounter); 
                   if (dataCounter == 0) {
                     //utf8 signature on a utf8 file is 0xef, 0xbb, 0xbf
                     //could try and edit the Buffer directly instead of converting to string
