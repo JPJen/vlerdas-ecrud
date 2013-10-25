@@ -193,7 +193,7 @@ module.exports = exports = function() {
                 if (!xmlScheme)
                     xmlScheme = config.transform.xmlTags.defaultScheme;
                 if (!config.transform.xmlTags[xmlScheme]) {
-                    gfsRemove(req.files.file.id); 
+                    //gfsRemove(req.files.file.id); 
                     res.send('{"Error": "404 - ' + xmlSchemeHeader + ': ' + xmlScheme + ' is not supported"}', 404);
                     return;
                 }
