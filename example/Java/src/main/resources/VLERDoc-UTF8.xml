@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<case:ElectronicCaseFile xmlns:s="http://niem.gov/niem/structures/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:case="http://vler.va.gov/vler/schemas/health/clinicalDocuments/electronicCaseFiles/1.3" xmlns:nc="http://niem.gov/niem/niem-core/2.0" xmlns:vler="http://va.gov/vler/schemas/vlerSupersetSchema/0.7/vler">
+  <case:CommonData>
+    <nc:Document>
+      <nc:DocumentCreationDate>
+        <nc:DateTime>2013-10-02T12:38:23Z</nc:DateTime>
+      </nc:DocumentCreationDate>
+      <nc:DocumentDescriptionText>testUpload.txt</nc:DocumentDescriptionText>
+      <nc:DocumentIdentification>
+        <nc:IdentificationID>29</nc:IdentificationID>
+      </nc:DocumentIdentification>
+      <nc:DocumentIdentification>
+        <nc:IdentificationID />
+        <nc:IdentificationCategoryText>VTA Tracking Identifier</nc:IdentificationCategoryText>
+        <nc:IdentificationCategoryDescriptionText />
+      </nc:DocumentIdentification>
+      <nc:DocumentIdentification>
+        <nc:IdentificationID>20131002-001</nc:IdentificationID>
+        <nc:IdentificationCategoryText>eCFT Case ID</nc:IdentificationCategoryText>
+        <nc:IdentificationCategoryDescriptionText />
+      </nc:DocumentIdentification>
+      <nc:DocumentStatus>
+        <nc:StatusText />
+      </nc:DocumentStatus>
+      <nc:DocumentTitleText />
+      <nc:DocumentVersion />
+      <nc:DocumentFileControlID />
+      <nc:DocumentFormatText />
+    </nc:Document>
+    <nc:DocumentSource>
+      <nc:EntityOrganization>
+        <nc:OrganizationName>DoD</nc:OrganizationName>
+      </nc:EntityOrganization>
+    </nc:DocumentSource>
+    <nc:MilitarySummary>
+      <nc:MilitaryBranchName>ARMY</nc:MilitaryBranchName>
+    </nc:MilitarySummary>
+    <vler:Client s:id="client">
+      <vler:ClientIdentifier>
+        <nc:IdentificationID />
+        <vler:AssigningAuthority />
+      </vler:ClientIdentifier>
+      <vler:ClientIdentifier>
+        <nc:IdentificationID />
+        <vler:AssigningAuthority />
+      </vler:ClientIdentifier>
+      <vler:ClientIdentifier>
+        <nc:IdentificationID>0000000004</nc:IdentificationID>
+        <vler:AssigningAuthority>2.16.840.1.113883.3.42.10001.100001.12</vler:AssigningAuthority>
+      </vler:ClientIdentifier>
+      <vler:ClientStatus>
+        <vler:ClientStatusText />
+      </vler:ClientStatus>
+      <nc:RoleOfPersonReference s:ref="p1" />
+    </vler:Client>
+    <nc:Person s:id="p1">
+      <nc:PersonBirthDate>
+        <nc:Date>1991-06-03</nc:Date>
+      </nc:PersonBirthDate>
+      <nc:PersonName>
+        <nc:PersonGivenName>Tommy</nc:PersonGivenName>
+        <nc:PersonMiddleName />
+        <nc:PersonSurName>Tee</nc:PersonSurName>
+      </nc:PersonName>
+      <nc:PersonSexCode>M</nc:PersonSexCode>
+      <nc:PersonSSNIdentification>
+        <nc:IdentificationID>123000999</nc:IdentificationID>
+      </nc:PersonSSNIdentification>
+    </nc:Person>
+    <nc:Facility>
+      <nc:FacilityIdentification>
+        <nc:IdentificationID />
+        <nc:IdentificationJurisdictionText />
+        <nc:FacilityName />
+      </nc:FacilityIdentification>
+    </nc:Facility>
+    <vler:ServiceProviderClientAssociation>
+      <vler:ServiceProviderReference s:ref="service_provider" />
+      <vler:ClientReference s:ref="client" />
+    </vler:ServiceProviderClientAssociation>
+  </case:CommonData>
+  <case:Attachments>
+    <nc:Attachment>
+      <nc:BinaryBase64Object>VGVzdCBkb2N1bWVudCA=</nc:BinaryBase64Object>
+      <nc:BinaryDescriptionText />
+      <nc:BinaryFormatStandardName>text/plain</nc:BinaryFormatStandardName>
+      <nc:BinaryLocationURI />
+      <nc:BinarySizeValue>13</nc:BinarySizeValue>
+      <nc:BinaryCategoryText />
+    </nc:Attachment>
+  </case:Attachments>
+</case:ElectronicCaseFile>
