@@ -19,20 +19,38 @@ tmp.track();
 var http = require('http');
 var https = require('https');
 var Router = require('../lib/router');
+var cluster = require('cluster');
+var numCPUs = require('os').cpus().length;
 
-// Create a temporary directory
-tmp.mkdir('eCrud', function (err, path) {
-        if(err) throw err;
-        logger.info('Temporary Directory:' + path);
-        config.tempdir = path;
-        new Router(config.db, function (router) {
-                createApp(router);
-        });
-});
+if (cluster.isMaster) {
+  // Fork workers.
+  for (var i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
+
+  cluster.on('online', function(worker) {
+    logger.info('A worker with #' + worker.id);
+  });
+  cluster.on('listening', function(worker, address) {
+    logger.info('A worker is now connected to ' + address.address + ':' + address.port);
+  });
+  cluster.on('exit', function(worker, code, signal) {
+    logger.info('worker ' + worker.process.pid + ' died');
+  });
+} else {
+	// Create a temporary directory
+	tmp.mkdir('eCrud', function (err, path) {
+			if(err) throw err;
+			logger.info('Temporary Directory:' + path);
+			config.tempdir = path;
+			new Router(config.db, function (router) {
+					createApp(router);
+			});
+	});
+}
 
 
 // Establish an initial connection to MongoDB - Needed for Multipart data
-
 function createApp(router) {
     var app = express();
 
