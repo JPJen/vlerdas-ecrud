@@ -50,7 +50,16 @@ describe(collectionName+' POST', function() {
        request.post('/ecrud/v1/core/'+collectionName+'/transform')
            .set('Content-Desc', 'unicorn/xml')
            .attach('file', 'test/attachments/eCFTCaseFile_minimal.xml')
-           .expect(404, done);
+           .expect(415, done);
+    });
+});
+
+var fileUTF8_WithBOM = "VLERDoc-UTF8wBOM.xml"; //BOM = utf8 Byte Order Mark
+describe(collectionName+' POST', function() {
+    it('Transform utf8 w/ Byte Order Mark', function(done) {
+       request.post('/ecrud/v1/core/'+collectionName+'/transform')
+           .attach('file', 'test/attachments/'+fileUTF8_WithBOM)
+           .expect(201, done);
     });
 });
 
@@ -88,6 +97,32 @@ describe(collectionName+' POST', function() {
                res.text.should.not.include("BinaryBase64Object");
                done();
            });
+    });
+});
+
+var fileBadXml = "bad.xml"; 
+describe(collectionName+' POST', function() {
+    it('Test bad XML document', function(done) {
+       request.post('/ecrud/v1/core/'+collectionName+'/transform')
+           .attach('file', 'test/attachments/'+fileBadXml)
+           .expect(400, done);
+    });
+});
+
+describe(collectionName+' POST', function() {
+    it('Test Error when NOT name="file" ', function(done) {
+       request.post('/ecrud/v1/core/'+collectionName+'/transform')
+           .attach('name!=file', 'test/attachments/'+fileUTF8_WithBOM)
+           .expect(400, done);
+    });
+});
+
+
+describe(collectionName+' POST', function() {
+    it('Test Error invalid attachment content type ', function(done) {
+       request.post('/ecrud/v1/core/'+collectionName+'/transform')
+           .attach('file', 'test/attachments/afile.bunk')
+           .expect(415, done);
     });
 });
 
