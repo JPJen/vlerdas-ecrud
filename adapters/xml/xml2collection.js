@@ -133,8 +133,7 @@ module.exports = exports = function() {
                     console.error("error!", err);
                     //this._parser.error = null;
                     //this._parser.resume();
-                    res.send('{"Error": "404 - XML Parse error: ' + err + '"}', 404);
-                    this._parser.stop();
+                    res.send('{"Error": "400 - XML Parse error: ' + err + '"}', 400);
                     return;
                 });
 
@@ -197,7 +196,7 @@ module.exports = exports = function() {
                     xmlScheme = config.transform.xmlTags.defaultScheme;
                 if (!config.transform.xmlTags[xmlScheme]) {
                     //gfsRemove(req.files.file.id); 
-                    res.send('{"Error": "404 - ' + xmlSchemeHeader + ': ' + xmlScheme + ' is not supported"}', 404);
+                    res.send('{"Error": "415 - ' + xmlSchemeHeader + ': ' + xmlScheme + ' is not supported"}', 415);
                     return;
                 }
                 return xmlScheme;
