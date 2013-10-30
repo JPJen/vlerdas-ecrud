@@ -4,7 +4,7 @@
 
 // Initialize ObjTree library for XML/JSON Conversion
 UTIL = {};
-UTIL.XML = require('../../node_modules/vcommons/xml/js-ObjTree');
+UTIL.XML = require('vcommons').objTree;
 var S = require('string');
 var xotree = new UTIL.XML.ObjTree();
 var multipart = require('connect-multipart-gridform');
@@ -85,7 +85,7 @@ module.exports = exports = function() {
                 saxStream.on("end", function(comment) {
                     json = xotree.parseXML(xmlStr);
                     var jsonDoc = Jsonpath.eval(json, '$..' + docTags.name);
-                    jsonDoc[0][docTags.gridFSId] = req.files.file.id;
+                    jsonDoc[0][docTags.gridFSId] = req.files.file.id.toHexString();
                     jsonDoc[0][docTags.contentType] = req.files.file.type;
 
                     //set attachment(s) properties, close/end each attachments write streams
@@ -101,7 +101,7 @@ module.exports = exports = function() {
                         decodedWriteStream._store.filename = jsonAttachments[i][attachmentTags.fileName];
                         decodedWriteStream.options.content_type = jsonAttachments[i][attachmentTags.contentType];
                         
-                        jsonAttachments[i][attachmentTags.gridFSId] = permId;
+                        jsonAttachments[i][attachmentTags.gridFSId] = permId.toHexString();
 
                         decodeAttachment(tempId, permId, attachStreamsTemp[i], decodedWriteStream);
                         attachStreamsTemp[i].end();
