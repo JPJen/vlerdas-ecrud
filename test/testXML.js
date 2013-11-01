@@ -129,21 +129,14 @@ describe('Get from ' + collection, function() {
 });
 
 describe('Create empty in ' + collection, function() {
-	it('should return status of 200.', function(done) {
+	it('should return status of 400.', function(done) {
 		request.post(collection)
 			.set('Content-Type', 'application/xml')
 			.set('Accept', 'application/json')
 			.send('')
-			.expect(201)
+			.expect(400)
 			.end(function (err, res) {
 				if (err) return done(err);
-				res.body.should.have.property('document');
-				var document = res.body.document;
-				document.should.have.property('id');
-				document.should.have.property('uploadDate');
-				document.should.have.property('path');
-				docId = res.body.document.id;
-				docUploadDate = res.body.document.uploadDate;
 				done();
 			});
 	});
