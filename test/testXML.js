@@ -127,3 +127,17 @@ describe('Get from ' + collection, function() {
 			.expect(404, done);
 	});
 });
+
+describe('Create empty in ' + collection, function() {
+	it('should return status of 400.', function(done) {
+		request.post(collection)
+			.set('Content-Type', 'application/xml')
+			.set('Accept', 'application/json')
+			.send('')
+			.expect(400)
+			.end(function (err, res) {
+				if (err) return done(err);
+				done();
+			});
+	});
+});
