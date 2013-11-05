@@ -11,6 +11,7 @@ var mountPoint = '/ecrud/v1/core';
 var collection = mountPoint + '/fs';
 
 var request = supertest(server);
+var libtest = require("./libtest.js")(request);
 var docId;
 var docUploadDate;
 
@@ -74,17 +75,5 @@ form.append('file', "Some Text Data", { contentType: 'text/plain', filename: 'te
 function requestCallback(err, res, body) {
     res.statusCode.should.equal(201);
     var json = JSON.parse(body);
-    checkDELETE_GridFSDoc(json.file.id, 200);
+    libtest.checkDELETE_GridFSDoc(json.file.id, 200);
 }
-
-//TODO: make common function, this was copied from testTransform.xml
-function checkDELETE_GridFSDoc(gridFSDocId, httpCode) {
-    describe('DELETE /ecrud/v1/core/fs/'+gridFSDocId, function(){
-      it('respond with json', function(done){
-        request
-          .del('/ecrud/v1/core/fs/'+gridFSDocId)
-          .expect(httpCode, done);
-      });
-    });
-}
-
