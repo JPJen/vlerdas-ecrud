@@ -5,10 +5,8 @@
 var should = require('should'),
     supertest = require('supertest');
 var request = supertest('localhost:3001');
+var libtest = require("./libtest.js")(request);
 var Jsonpath = require('JSONPath');
-UTIL = {};
-UTIL.XML = require('vcommons').objTree;
-var xotree = new UTIL.XML.ObjTree();
 
 
 var collectionName = 'eCFT';
@@ -25,21 +23,21 @@ describe(collectionName+' POST', function() {
                res.text.should.include("nc:DocumentFileControlID");
                res.text.should.include("nc:DocumentFormatText");
                json = JSON.parse(res.text);
-               checkGET_Collection(collectionName, transformCollectionId = json[0]._id, 200);
-               checkDELETE_Collection(collectionName, transformCollectionId = json[0]._id, 200);
-               checkGET_Collection(collectionName, transformCollectionId = json[0]._id, 404);
+               libtest.checkGET_Collection(collectionName, transformCollectionId = json[0]._id, 200);
+               libtest.checkDELETE_Collection(collectionName, transformCollectionId = json[0]._id, 200);
+               libtest.checkGET_Collection(collectionName, transformCollectionId = json[0]._id, 404);
                
                orginalGridFSDocId = json[0]['case:ElectronicCaseFile']['case:CommonData']['nc:Document']['nc:DocumentFileControlID'];
-               checkGET_GridFSDoc(orginalGridFSDocId, 200);
-               checkDELETE_GridFSDoc(orginalGridFSDocId, 200);
-               checkGET_GridFSDoc(orginalGridFSDocId, 404);
+               libtest.checkGET_GridFSDoc(orginalGridFSDocId, 200);
+               libtest.checkDELETE_GridFSDoc(orginalGridFSDocId, 200);
+               libtest.checkGET_GridFSDoc(orginalGridFSDocId, 404);
                
                var jsonAttachments = Jsonpath.eval(json, '$..nc:Attachment')[0];
                for (var i = 0; i < jsonAttachments.length; i++) {
                    var attachmentGridFSId = jsonAttachments[i]['nc:BinaryLocationURI'];
-                   checkGET_GridFSDoc(attachmentGridFSId, 200);
-                   checkDELETE_GridFSDoc(attachmentGridFSId, 200);
-                   checkGET_GridFSDoc(attachmentGridFSId, 404);
+                   libtest.checkGET_GridFSDoc(attachmentGridFSId, 200);
+                   libtest.checkDELETE_GridFSDoc(attachmentGridFSId, 200);
+                   libtest.checkGET_GridFSDoc(attachmentGridFSId, 404);
                }
                jsonAttachments.length.should.equal(2);
                
@@ -80,24 +78,24 @@ describe(collectionName+' POST', function() {
                res.text.should.include("nc:DocumentFileControlID");
                res.text.should.include("nc:DocumentFormatText");
                json = JSON.parse(res.text);
-               checkXmlDocIds(collectionName, transformCollectionId = json[0]._id, json);              
-               checkGET_Collection(collectionName, transformCollectionId = json[0]._id, 200);
-               checkDELETE_Collection(collectionName, transformCollectionId = json[0]._id, 200);
-               checkGET_Collection(collectionName, transformCollectionId = json[0]._id, 404);
+               libtest.checkXmlDocIds(collectionName, transformCollectionId = json[0]._id, json);              
+               libtest.checkGET_Collection(collectionName, transformCollectionId = json[0]._id, 200);
+               libtest.checkDELETE_Collection(collectionName, transformCollectionId = json[0]._id, 200);
+               libtest.checkGET_Collection(collectionName, transformCollectionId = json[0]._id, 404);
                
                
                
                orginalGridFSDocId = json[0]['cld:Claim']['cld:CommonData']['nc:Document']['nc:DocumentFileControlID'];
-               checkGET_GridFSDoc(orginalGridFSDocId, 200);
-               checkDELETE_GridFSDoc(orginalGridFSDocId, 200);
-               checkGET_GridFSDoc(orginalGridFSDocId, 404);
+               libtest.checkGET_GridFSDoc(orginalGridFSDocId, 200);
+               libtest.checkDELETE_GridFSDoc(orginalGridFSDocId, 200);
+               libtest.checkGET_GridFSDoc(orginalGridFSDocId, 404);
                
                var jsonAttachments = Jsonpath.eval(json, '$..nc:Attachment');
                for (var i = 0; i < jsonAttachments.length; i++) {
                    var attachmentGridFSId = jsonAttachments[i]['nc:BinaryLocationURI'];
-                   checkGET_GridFSDoc(attachmentGridFSId, 200);
-                   checkDELETE_GridFSDoc(attachmentGridFSId, 200);
-                   checkGET_GridFSDoc(attachmentGridFSId, 404);
+                   libtest.checkGET_GridFSDoc(attachmentGridFSId, 200);
+                   libtest.checkDELETE_GridFSDoc(attachmentGridFSId, 200);
+                   libtest.checkGET_GridFSDoc(attachmentGridFSId, 404);
                }
                jsonAttachments.length.should.equal(1);
                
@@ -135,70 +133,7 @@ describe(collectionName+' POST', function() {
 
 //------- Functions ------- 
 
-function checkGET_GridFSDoc(gridFSDocId, httpCode) {
-    describe('GET /ecrud/v1/core/fs/'+gridFSDocId, function(){
-      it('respond with json', function(done){
-        request
-          .get('/ecrud/v1/core/fs/'+gridFSDocId)
-          .expect(httpCode, done);
-      });
-    });
-}
 
-function checkGET_Collection(collectionName, collectionId, httpCode) {
-    describe('GET /ecrud/v1/core/'+collectionName+'/'+collectionId, function(){
-      it('respond with json', function(done){
-        request
-          .get('/ecrud/v1/core/'+collectionName+'/'+collectionId)
-//          .set('Accept', 'application/json')
-//          .expect('Content-Type', /json/)
-          .expect(httpCode, done);
-      });
-    });
-}
-
-function checkDELETE_GridFSDoc(gridFSDocId, httpCode) {
-    describe('DELETE /ecrud/v1/core/fs/'+gridFSDocId, function(){
-      it('respond with json', function(done){
-        request
-          .del('/ecrud/v1/core/fs/'+gridFSDocId)
-          .expect(httpCode, done);
-      });
-    });
-}
-
-function checkDELETE_Collection(collectionName, collectionId, httpCode) {
-    describe('DELETE /ecrud/v1/core/'+collectionName+'/'+collectionId, function(){
-      it('respond with json', function(done){
-        request
-          .del('/ecrud/v1/core/'+collectionName+'/'+collectionId)
-          .expect(httpCode, done);
-      });
-    });
-}
-
-function checkXmlDocIds(collectionName, collectionId, json) {
-    describe('GET /ecrud/v1/core/'+collectionName+'/'+collectionId, function(){
-        it('XML check ids', function(done){
-            request.get('/ecrud/v1/core/'+collectionName+'/'+collectionId)
-                    .set('Accept', 'application/xml')
-                    .end(function (err, res) 
-            {
-                var jsonFromXML = xotree.parseXML(res.text);
-                var attachmentsFromXML =  Jsonpath.eval(jsonFromXML, '$..nc:Attachment');
-                var attachments =  Jsonpath.eval(json, '$..nc:Attachment');
-                attachmentsFromXML[0]['nc:BinaryLocationURI'].should.equal(attachments[0]['nc:BinaryLocationURI']);
-                
-                var docFromXML =  Jsonpath.eval(jsonFromXML, '$..nc:Document');
-                var doc =  Jsonpath.eval(json, '$..nc:Document');
-                docFromXML[0]['nc:DocumentFileControlID'].should.equal(doc[0]['nc:DocumentFileControlID']);
-                    
-                collectionId.should.equal(jsonFromXML.document._id);
-                done();
-            });
-        });
-    });
-}
 
 
 //TODO: test with very large generated XML file

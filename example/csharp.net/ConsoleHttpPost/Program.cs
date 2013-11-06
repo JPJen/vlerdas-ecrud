@@ -5,16 +5,23 @@ using System.Text;
 using System.Net;
 using System.IO;
 using System.Globalization;
+using System.Security.Cryptography.X509Certificates;
 
 namespace ConsoleHttpPost {
     class Program {
             static void Main(string[] args) {
                 byte[] xmlData = System.Text.Encoding.UTF8.GetBytes(File.ReadAllText("E:\\VA\\VLERDoc-UTF8.xml", Encoding.UTF8));
-                string strURL = "http://das.dynalias.org:8080/ecrud/v1/core/electronicCaseFiles/transform";
+                //string strURL = "http://das.dynalias.org:8080/ecrud/v1/core/electronicCaseFiles/transform";
                 //string strURL = "http://localhost:3001/ecrud/v1/core/electronicCaseFiles/transform";
+                //for HTTPS
+                //string strURL = "https://das.dynalias.org/ecrud/v1/core/electronicCaseFiles/transform";
                 try {
 	                HttpWebRequest POSTRequest = (HttpWebRequest)WebRequest.Create(strURL);
-	                //Method type
+                    //For HTTPS two way cert, must be imported to "Trusted Root Certificate Authorities", Location: IE > Tools > Internet Options > Content > Certificates
+                    //X509Certificate Cert = new X509Certificate(@"f:\downloads\das.dynalias.org.p12", "test123");
+                    //X509Certificate Cert = new X509Certificate(@"F:\Downloads\ides-cftdeom.asmr.com.cer", "test123");
+                    //POSTRequest.ClientCertificates.Add(Cert);
+                    //End HTTPS
 	                POSTRequest.Method = "POST";
 	                POSTRequest.KeepAlive = false;
 	                POSTRequest.Timeout = 5000;
