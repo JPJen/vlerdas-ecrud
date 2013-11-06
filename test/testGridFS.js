@@ -11,6 +11,7 @@ var mountPoint = '/ecrud/v1/core';
 var collection = mountPoint + '/fs';
 
 var request = supertest(server);
+var libtest = require("./libtest.js")(request);
 var docId;
 var docUploadDate;
 
@@ -63,3 +64,16 @@ describe('Get from ' + collection, function() {
 			.expect(404, done);
 	});
 });
+
+//**Test POST to grid fs NOT from a file**
+
+var requestMod = require("request");
+var r = requestMod.post('http://'+server+collection, requestCallback)
+var form = r.form()
+form.append('file', "Some Text Data", { contentType: 'text/plain', filename: 'test.txt' } );
+
+function requestCallback(err, res, body) {
+    res.statusCode.should.equal(201);
+    var json = JSON.parse(body);
+    libtest.checkDELETE_GridFSDoc(json.file.id, 200);
+}
