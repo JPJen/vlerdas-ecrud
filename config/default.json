@@ -97,6 +97,10 @@
 							"base64": "nc:BinaryBase64Object"
 						}
 					}
+				},
+				"computableFields" : { 
+					"nc:DateTime" : "Date", 
+					"nc:Date" : "Date" 
 				}                
         },
 		"debug": true,
