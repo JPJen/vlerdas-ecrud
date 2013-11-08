@@ -4,9 +4,9 @@
  * Created by: Julian Jewel
  * 
  */
-var fs = require("fs"), sys = require("sys")
-var express = require('express')
-var config = require('config')
+var fs = require("fs"), sys = require("sys");
+var express = require('express');
+var config = require('config');
 // Export config, so that it can be used anywhere
 module.exports.config = config;
 var Log = require('vcommons').log;
@@ -178,15 +178,17 @@ function setupEventHandlers(router) {
 // Default exception handler
 process.on('uncaughtException', function(err) {
     logger.error('Caught exception: ' + err);
+    process.exit();
 });
 
 process.on('SIGINT', function() {
     logger.info("Shutting down from  SIGINT (Crtl-C)");
     process.exit();
-})
+});
+
 // Default exception handler
 process.on('exit', function(err) {
     // Clean up
     tmp.cleanup();
-    logger.info("Exit")
+    logger.info("Exit");
 });
