@@ -16,11 +16,11 @@
 		</nc:Attachment>
 		<nc:Attachment>
 			<nc:BinaryBase64Object>LXNtYWxsZG9jLS0/eG1sIHZlcnNpb249LTEuMC0/LUEgMUtCIHhtbCBkb2N1bWVudCAod2hlbiBiYXNlNjQgZW5jb2RlZCkgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tc21hbGxkb2Mt</nc:BinaryBase64Object>
-			<nc:BinaryDescriptionText>Moroni's 1K Test xml</nc:BinaryDescriptionText>
-			<nc:BinaryFormatStandardName>text/xml</nc:BinaryFormatStandardName>
-			<nc:BinaryLocationURI>Moroni_1K_Test.xml</nc:BinaryLocationURI>
+			<nc:BinaryDescriptionText>Moroni's 1K Test txt</nc:BinaryDescriptionText>
+			<nc:BinaryFormatStandardName>text/plain</nc:BinaryFormatStandardName>
+			<nc:BinaryLocationURI>Moroni_1K_Test.txt</nc:BinaryLocationURI>
 			<nc:BinarySizeValue>1024</nc:BinarySizeValue>
-			<nc:BinaryCategoryText>Moroni's 1K Test xml</nc:BinaryCategoryText>
+			<nc:BinaryCategoryText>Moroni's 1K Test txt</nc:BinaryCategoryText>
 		</nc:Attachment>
 	</case:Attachments>
 </case:ElectronicCaseFile>
