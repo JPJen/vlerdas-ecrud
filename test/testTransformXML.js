@@ -159,7 +159,7 @@ function checkAttachmentBase64Decoded(postFileName, attachFileName, desc) {
 				libtest.checkDELETE_GridFSDoc(orginalGridFSDocId, 200, desc);
 	
 				var jsonAttachments = Jsonpath.eval(json, '$..nc:Attachment')[0];
-				console.log(jsonAttachments);
+				//console.log(jsonAttachments);
 				var attachmentGridFSId = jsonAttachments['nc:BinaryLocationURI'];
 			
 				describe(desc + ' GET base64 decoded attachment', function() {
