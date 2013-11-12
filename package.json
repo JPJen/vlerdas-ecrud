@@ -1,6 +1,6 @@
 {
     "name": "ecrud",
-    "version": "0.1.6",
+    "version": "0.1.7",
     "description": "Enterprise RESTful CRUD Service for MongoDB",
     "keywords": ["mongo", "mongodb", "rest", "restful", "CRUD", "crud", "database"],
     "author": "Julian Jewel <julian@julianjewel.com>",
@@ -39,7 +39,7 @@
         "supertest": ">=0.8.0",
         "node-uuid": ">=1.4.1",
         "crypto-js": ">=3.1.2-1",
-        "vcommons": ">=0.1.9"
+        "vcommons": ">=0.1.10"
     },
     "devDependencies": {},
     "repository": {
