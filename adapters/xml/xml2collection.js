@@ -28,7 +28,9 @@ module.exports = exports = function() {
             // }
             readstream.on('open', function() {
 
-                var strict = true, saxStream = require("sax").createStream(strict);
+                var strict = true;
+                var saxStream = require("sax").createStream(strict);
+                //saxStream.MAX_BUFFER_LENGTH = 32 * 1024; //this has no effect
 
                 var xmlStr = '';
                 // '<?xml version="1.0" encoding="UTF-8"?>';
@@ -65,20 +67,29 @@ module.exports = exports = function() {
 
                 saxStream.on("text", ontext);
                 saxStream.on("doctype", ontext);
-                //var StringDecoder = require('string_decoder').StringDecoder;
-                //var decoder = new StringDecoder('utf8');
+                var txtBuf = "";
+                var txtRemain = "";
+                //Must decode text in "chunks" that are divisible by 4
+                var chunkSize = 16 * 1024;
+
                 function ontext(text) {
                     if (S(lastOpenTag.toLowerCase()).contains(attachmentTags.base64.toLowerCase())) {
                         //console.log("aI=" + attachmentI + " TL= " + text.length);
+                        do {
+                            txtRemain = txtRemain + text;
+                            if (txtRemain.length > chunkSize) {
+                                txtBuf = txtRemain.slice(0, chunkSize);
+                                txtRemain = txtRemain.slice(chunkSize, txtRemain.length);
+                            } else {
+                                txtBuf = txtRemain;
+                            }
+                            var buf = new Buffer(txtBuf, 'base64');
+                            buf = buf.toString('utf8');
+                            //if (attachmentI == 0) console.log(buf);
 
-                        /* *** an Attempt at bas64 decode without a temp file
-                         Worked on a ~1K file, but not a ~1MB
-                         TODO: Probably need to try and take text "chunks" that are divisible by 4
-                         text = new Buffer(text, 'base64');
-                         text = text.toString('utf8');
-                         if (attachmentI == 0) console.log(text);*/
-
-                        attachStreamsTemp[attachmentI].write(text);
+                            attachStreamsTemp[attachmentI].write(buf);
+                            text = '';
+                        } while (txtRemain.length > chunkSize);
                     } else {
                         xmlStr += text;
                     }
@@ -140,7 +151,7 @@ module.exports = exports = function() {
                          * WARNING: the order and method of ending the streams,
                          * calling in this function matters. Took over a full
                          * day to get the correct temp stream to write to the
-                         * correct permanant stream. And then delete the temp
+                         * correct permanent stream. And then delete the temp
                          * gridFS files correctly. So be ware if you change this
                          * up.
                          * TODO: mocha test that the temp files have been deleted
@@ -158,8 +169,8 @@ module.exports = exports = function() {
                                 if (attachStreamsTemp.length == streamWriteCount)
                                     writeToCollection(json);
                             });
-                            readStreamEncoded.pipe(base64.decode()).pipe(decodedWriteStream._store);
-                            //readStreamEncoded.pipe(decodedWriteStream._store);
+                            //readStreamEncoded.pipe(base64.decode()).pipe(decodedWriteStream._store);
+                            readStreamEncoded.pipe(decodedWriteStream._store);
                         });
                     }
 
@@ -167,8 +178,6 @@ module.exports = exports = function() {
 
                 saxStream.on("error", function(err) {
                     console.error("error!", err);
-                    // this._parser.error = null;
-                    // this._parser.resume();
                     res.send('{"Error": "400 - XML Parse error: ' + err + '"}', 400);
                 });
 
@@ -195,8 +204,9 @@ module.exports = exports = function() {
                     this.push(data);
                     done();
                 };
-
-                readstream.pipe(parserStripBOM).pipe(saxStream);
+                var BlockStream = require('block-stream');
+                var block = new BlockStream(4, { nopad: true });
+                readstream.pipe(parserStripBOM).pipe(block).pipe(saxStream);
             });
 
             // **** transform() Functions ****
