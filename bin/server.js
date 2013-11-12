@@ -112,12 +112,15 @@ function createApp(router) {
     app.del('/fs/:id', router.removeFile.bind(router), router.sendResponse.bind(router));
     // Delete a document
     app.del('/:collection/:id', router.deleteFromCollection.bind(router), router.sendResponse.bind(router));
+    // Delete document
+    app.del('/:collection', router.bulkDeleteFromCollection.bind(router), router.sendResponse.bind(router));
     // Update a document
     app.put('/:collection/:id', router.putToCollection.bind(router), router.sendCreatedResponse.bind(router));
     // Create a new document
     app.post('/:collection', router.postToCollection.bind(router), router.sendCreatedResponse.bind(router));
     // Get a document
     app.get('/:collection/:id?', router.getCollection.bind(router), router.sendResponse.bind(router));
+	
 
     setupEventHandlers(router);
 
