@@ -14,7 +14,7 @@ var base64 = require('base64-stream');
 
 module.exports = exports = function() {
 	return {
-		transform : function(req, res, next, db, mongo, config, event) {
+		transform: function(req, res, next, db, mongo, config, event) {
 			var gfs = Grid(db, mongo);
 
 			var xmlScheme = getXmlScheme();
@@ -35,8 +35,8 @@ module.exports = exports = function() {
 				var lastOpenTag = '';
 				var attachmentStarted = false;
 
-				var attachmentTags = config.transform.xmlTags[xmlScheme].attachment;
-				var docTags = config.transform.xmlTags[xmlScheme].doc;
+				var attachmentTags = config.transform['xmlTags'][xmlScheme].attachment;
+				var docTags = config.transform['xmlTags'][xmlScheme].doc;
 
 				var attachmentI = -1;
 				var attachStreamsTemp = [];
@@ -50,13 +50,14 @@ module.exports = exports = function() {
 						attachmentStarted = true;
 						attachmentI++;
 						attachStreamsTemp[attachmentI] = gfs.createWriteStream({
-							mode : 'w',
-							root : 'fs'
+							mode: 'w',
+							root: 'fs'
 						});
 					}
 					xmlStr += "<" + tag.name;
 					for (var i in tag.attributes) {
-						xmlStr += " " + i + "=\"" + tag.attributes[i] + "\"";
+						if (tag.attributes.hasOwnProperty(i))
+							xmlStr += " " + i + "=\"" + tag.attributes[i] + "\"";
 					}
 					xmlStr += ">";
 					// console.log(xmlStr);
@@ -70,12 +71,12 @@ module.exports = exports = function() {
 					if (S(lastOpenTag.toLowerCase()).contains(attachmentTags.base64.toLowerCase())) {
 						//console.log("aI=" + attachmentI + " TL= " + text.length);
 
-						/* *** an Attempt at bas64 decode without a temp file						  
-							Worked on a ~1K file, but not a ~1MB
-							TODO: Probably need to try and take text "chunks" that are divisble by 4
-						text = new Buffer(text, 'base64');
-						text = text.toString('utf8');
-						if (attachmentI == 0) console.log(text);*/
+						/* *** an Attempt at bas64 decode without a temp file
+						 Worked on a ~1K file, but not a ~1MB
+						 TODO: Probably need to try and take text "chunks" that are divisible by 4
+						 text = new Buffer(text, 'base64');
+						 text = text.toString('utf8');
+						 if (attachmentI == 0) console.log(text);*/
 
 						attachStreamsTemp[attachmentI].write(text);
 					} else {
@@ -100,11 +101,11 @@ module.exports = exports = function() {
 					xmlStr += "<!--" + comment + "-->";
 				});
 
-				saxStream.on("end", function(comment) {
-					json = xotree.parseXML(xmlStr);
+				saxStream.on("end", function() {
+					var json = xotree.parseXML(xmlStr);
 					var jsonDoc = Jsonpath.eval(json, '$..' + docTags.name);
-					jsonDoc[0][docTags.gridFSId] = req.files.file.id.toHexString();
-					jsonDoc[0][docTags.contentType] = req.files.file.type;
+					jsonDoc[0][docTags['gridFSId']] = req.files.file.id.toHexString();
+					jsonDoc[0][docTags['contentType']] = req.files.file.type;
 
 					// set attachment(s) properties, close/end each attachments
 					// write streams
@@ -118,23 +119,23 @@ module.exports = exports = function() {
 							var tempId = attachStreamsTemp[i].id;
 
 							var decodedWriteStream = gfs.createWriteStream({
-								mode : 'w',
-								root : 'fs'
+								mode: 'w',
+								root: 'fs'
 							});
 							var permId = decodedWriteStream.id;
 							decodedWriteStream._store.filename = jsonAttachments[i][attachmentTags.fileName];
 							decodedWriteStream.options.content_type = jsonAttachments[i][attachmentTags.contentType];
 
-							jsonAttachments[i][attachmentTags.gridFSId] = permId.toHexString();
+							jsonAttachments[i][attachmentTags['gridFSId']] = permId.toHexString();
 
-							decodeAttachment(tempId, permId, attachStreamsTemp[i], decodedWriteStream);
+							decodeAttachment(tempId, attachStreamsTemp[i], decodedWriteStream);
 							attachStreamsTemp[i].end();
 						}
 					} else {
 						writeToCollection(json);
 					}
-					
-					function decodeAttachment(tempId, permId, attachStream, decodedWriteStream) {
+
+					function decodeAttachment(tempId, attachStream, decodedWriteStream) {
 						/*
 						 * WARNING: the order and method of ending the streams,
 						 * calling in this function matters. Took over a full
@@ -144,10 +145,10 @@ module.exports = exports = function() {
 						 * up.
 						 * TODO: mocha test that the temp files have been deleted
 						 */
-						attachStream.on('close', function(file) {
+						attachStream.on('close', function() {
 							var readStreamEncoded = gfs.createReadStream({
-								_id : tempId,
-								root : 'fs'
+								_id: tempId,
+								root: 'fs'
 							});
 							readStreamEncoded.on('end', function() {
 								streamWriteCount++;
@@ -169,12 +170,11 @@ module.exports = exports = function() {
 					// this._parser.error = null;
 					// this._parser.resume();
 					res.send('{"Error": "400 - XML Parse error: ' + err + '"}', 400);
-					return;
 				});
 
-				// stream transform to strip out the BOM TODO: refactor to a
-				// class
-				var parserStripBOM = new require('stream').Transform();
+				// stream transform to strip out the BOM TODO: refactor to a class
+				var stream = require('stream');
+				var parserStripBOM = new stream.Transform();
 				var dataCounter = 0;
 				parserStripBOM._transform = function(data, encoding, done) {
 					//console.log('dataCounter: '+dataCounter);
@@ -203,12 +203,13 @@ module.exports = exports = function() {
 
 			function gfsRemove(fileId) {
 				gfs.remove({
-					_id : fileId,
-					root : 'fs'
+					_id: fileId,
+					root: 'fs'
 				}, function(err) {
 					if (err)
 						return handleError(err);
 					console.log('Deleted temp gridFS file: ' + fileId);
+					return null;
 				});
 			}
 
@@ -227,6 +228,7 @@ module.exports = exports = function() {
 							return next();
 						});
 					}
+					return null;
 				});
 			}
 
@@ -234,11 +236,11 @@ module.exports = exports = function() {
 				var xmlSchemeHeader = 'Content-Desc';
 				var xmlScheme = req.header(xmlSchemeHeader);
 				if (!xmlScheme)
-					xmlScheme = config.transform.xmlTags.defaultScheme;
-				if (!config.transform.xmlTags[xmlScheme]) {
+					xmlScheme = config.transform['xmlTags']['defaultScheme'];
+				if (!config.transform['xmlTags'][xmlScheme]) {
 					// gfsRemove(req.files.file.id);
 					res.send('{"Error": "415 - ' + xmlSchemeHeader + ': ' + xmlScheme + ' is not supported"}', 415);
-					return;
+					return null;
 				}
 				return xmlScheme;
 			}
