@@ -57,9 +57,9 @@ module.exports = exports = function() {
                         });
                     }
                     xmlStr += "<" + tag.name;
-                    for (var i in tag.attributes) {
-                        if (tag.attributes.hasOwnProperty(i))
-                            xmlStr += " " + i + "=\"" + tag.attributes[i] + "\"";
+                    for (var attribName in tag.attributes) {
+                        if (tag.attributes.hasOwnProperty(attribName))
+                            xmlStr += " " + attribName + "=\"" + tag.attributes[attribName] + "\"";
                     }
                     xmlStr += ">";
                     // console.log(xmlStr);
@@ -204,18 +204,17 @@ module.exports = exports = function() {
                     this.push(data);
                     done();
                 };
-                var BlockStream = require('block-stream');
-                var block = new BlockStream(4, { nopad: true });
-                readstream.pipe(parserStripBOM).pipe(block).pipe(saxStream);
+                //Tried block-stream instead of custom buffering 4 byte divisors, but saxStream uses its own buffer
+                //var BlockStream = require('block-stream');
+                //var block = new BlockStream(4, { nopad: true });
+                //readstream.pipe(parserStripBOM).pipe(block).pipe(saxStream);
+                readstream.pipe(parserStripBOM).pipe(saxStream);
             });
 
             // **** transform() Functions ****
 
             function gfsRemove(fileId) {
-                gfs.remove({
-                    _id: fileId,
-                    root: 'fs'
-                }, function(err) {
+                gfs.remove({ _id: fileId, root: 'fs'}, function(err) {
                     if (err)
                         return handleError(err);
                     console.log('Deleted temp gridFS file: ' + fileId);
