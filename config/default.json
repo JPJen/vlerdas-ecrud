@@ -36,10 +36,12 @@
                 {
                     "event": "i",
                     "method": "onInsert"
-                }, {
+                },
+                {
                     "event": "u",
                     "method": "onUpdate"
-                }, {
+                },
+                {
                     "event": "d",
                     "method": "onDelete"
                 }
@@ -48,7 +50,8 @@
                 "operation": ["i", "u", "d"],
                 "include": ["serviceTreatmentRecords", "disabilityBenefitsQuestionnaires"]
             }
-        }, {
+        },
+        {
             "name": "Async",
             "module": "../lib/consoleAsyncHandler",
             "events": [
@@ -58,23 +61,28 @@
                 }
             ],
             "options": {}
-        }, {
+        },
+        {
             "name": "Audit",
             "module": "../lib/consoleAuditHandler",
             "events": [
                 {
                     "event": "i",
                     "method": "onInsert"
-                }, {
+                },
+                {
                     "event": "u",
                     "method": "onUpdate"
-                }, {
+                },
+                {
                     "event": "d",
                     "method": "onDelete"
-                }, {
+                },
+                {
                     "event": "r",
                     "method": "onRead"
-                }, {
+                },
+                {
                     "event": "g",
                     "method": "onGet"
                 }

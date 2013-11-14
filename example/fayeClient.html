@@ -1,23 +1,23 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html>
-  <head>
+<head>
     <script type="text/javascript" src="http://localhost:8000/faye/faye.js"></script>
-	<script type="text/javascript">
-	function insertText(val,e){
-		document.getElementById(e).innerHTML+= '\n' + val;
-	}
-	</script>
+    <script type="text/javascript">
+        function insertText(val, e) {
+            document.getElementById(e).innerHTML += '\n' + val;
+        }
+    </script>
 
     <title></title>
-  </head>
-  <body>
-    <script type="text/javascript">
-        var client = new Faye.Client('http://localhost:8000/faye');
-        client.subscribe('/core', function(message) {
-          insertText(message,'textIns');
-        });
-    </script>
-	<textarea id="textIns" style="width:100%;height:1000px;overflow:scroll;"></textarea><br />
-  </body>
+</head>
+<body>
+<script type="text/javascript">
+    var client = new Faye.Client('http://localhost:8000/faye');
+    client.subscribe('/core', function(message) {
+        insertText(message, 'textIns');
+    });
+</script>
+<textarea id="textIns" style="width:100%;height:1000px;overflow:scroll;"></textarea><br/>
+</body>
 </html>
 

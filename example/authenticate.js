@@ -2,23 +2,23 @@ var http = require('http');
 var Ofuda = require('ofuda');
 
 var ofuda = new Ofuda({
-    headerPrefix : 'Amz',
-    hash : 'sha1',
-    serviceLabel : 'AWS',
-    debug : true
+    headerPrefix: 'Amz',
+    hash: 'sha1',
+    serviceLabel: 'AWS',
+    debug: true
 });
 
 var credentials = {
-    accessKeyId : 'testuser2',
-    accessKeySecret : 'pa$$w0rd2'
+    accessKeyId: 'testuser2',
+    accessKeySecret: 'pa$$w0rd2'
 };
 
 http_options = {
-    host : 'localhost',
-    port : 3001,
-    path : '/core/test',
-    method : 'GET',
-    headers : {}
+    host: 'localhost',
+    port: 3001,
+    path: '/core/test',
+    method: 'GET',
+    headers: {}
 };
 
 signedOptions = ofuda.signHttpRequest(credentials, http_options);

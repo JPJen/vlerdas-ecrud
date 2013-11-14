@@ -13,8 +13,8 @@ sub.subscribe("core.6379");
 
 function callback(err, evt) {
     if (evt) {
-	console.log("Evicted from Queue:" + evt);
-	client.blpop("core.6379", '0', callback);
+        console.log("Evicted from Queue:" + evt);
+        client.blpop("core.6379", '0', callback);
     }
 }
 

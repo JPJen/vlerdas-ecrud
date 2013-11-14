@@ -173,13 +173,13 @@ module.exports = exports = function() {
             // **** transform() Functions ****
 
             /*function gfsRemove(fileId) {
-                gfs.remove({ _id: fileId, root: 'fs'}, function(err) {
-                    if (err)
-                        return handleError(err);
-                    console.log('Deleted temp gridFS file: ' + fileId);
-                    return null;
-                });
-            }*/
+             gfs.remove({ _id: fileId, root: 'fs'}, function(err) {
+             if (err)
+             return handleError(err);
+             console.log('Deleted temp gridFS file: ' + fileId);
+             return null;
+             });
+             }*/
 
             function writeToCollection(json) {
                 db.collection(req.params.collection, function(err, collection) {
