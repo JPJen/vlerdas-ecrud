@@ -125,55 +125,14 @@ module.exports = exports = function() {
                         jsonAttachments = jsonAttachments[0];
                     // console.log(jsonAttachments);
                     if (attachStreamsTemp.length > 0) {
-                        var streamWriteCount = 0;
                         for (var i = 0; i < attachStreamsTemp.length; i++) {
-                            var tempId = attachStreamsTemp[i].id;
-
-                            var decodedWriteStream = gfs.createWriteStream({
-                                mode: 'w',
-                                root: 'fs'
-                            });
-                            var permId = decodedWriteStream.id;
-                            decodedWriteStream._store.filename = jsonAttachments[i][attachmentTags.fileName];
-                            decodedWriteStream.options.content_type = jsonAttachments[i][attachmentTags.contentType];
-
-                            jsonAttachments[i][attachmentTags['gridFSId']] = permId.toHexString();
-
-                            decodeAttachment(tempId, attachStreamsTemp[i], decodedWriteStream);
+                            attachStreamsTemp[i]._store.filename = jsonAttachments[i][attachmentTags.fileName];
+                            attachStreamsTemp[i].options.content_type = jsonAttachments[i][attachmentTags.contentType];
+                            jsonAttachments[i][attachmentTags['gridFSId']] = attachStreamsTemp[i].id.toHexString();
                             attachStreamsTemp[i].end();
                         }
-                    } else {
-                        writeToCollection(json);
                     }
-
-                    function decodeAttachment(tempId, attachStream, decodedWriteStream) {
-                        /*
-                         * WARNING: the order and method of ending the streams,
-                         * calling in this function matters. Took over a full
-                         * day to get the correct temp stream to write to the
-                         * correct permanent stream. And then delete the temp
-                         * gridFS files correctly. So be ware if you change this
-                         * up.
-                         * TODO: mocha test that the temp files have been deleted
-                         */
-                        attachStream.on('close', function() {
-                            var readStreamEncoded = gfs.createReadStream({
-                                _id: tempId,
-                                root: 'fs'
-                            });
-                            readStreamEncoded.on('end', function() {
-                                streamWriteCount++;
-                                decodedWriteStream.end();
-                                gfsRemove(tempId);
-                                //console.log('readStreamEncoded \'end\'.');
-                                if (attachStreamsTemp.length == streamWriteCount)
-                                    writeToCollection(json);
-                            });
-                            //readStreamEncoded.pipe(base64.decode()).pipe(decodedWriteStream._store);
-                            readStreamEncoded.pipe(decodedWriteStream._store);
-                        });
-                    }
-
+                    writeToCollection(json);
                 });
 
                 saxStream.on("error", function(err) {
@@ -213,14 +172,14 @@ module.exports = exports = function() {
 
             // **** transform() Functions ****
 
-            function gfsRemove(fileId) {
+            /*function gfsRemove(fileId) {
                 gfs.remove({ _id: fileId, root: 'fs'}, function(err) {
                     if (err)
                         return handleError(err);
                     console.log('Deleted temp gridFS file: ' + fileId);
                     return null;
                 });
-            }
+            }*/
 
             function writeToCollection(json) {
                 db.collection(req.params.collection, function(err, collection) {
