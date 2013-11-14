@@ -1,154 +1,178 @@
 {
-		"context": "/ecrud/v1",
-        "db": {
-                "name": "core",
-                "url":"mongodb://localhost:27017/core?connectTimeoutMS=300000"
+    "context": "/ecrud/v1",
+    "db": {
+        "name": "core",
+        "url": "mongodb://localhost:27017/core?connectTimeoutMS=300000"
+    },
+    "server": {
+        "port": 3001,
+        "host": "127.0.0.1"
+    },
+    "secureServer": {
+        "port": 3002,
+        "host": "localhost",
+        "options": {
+            "key": "config/server.key",
+            "cert": "config/server.crt"
+        }
+    },
+    "accessControl.DISABLED": {
+        "testuser1": {
+            "accessKeyId": "testuser1",
+            "accessKeySecret": "pa$$w0rd1",
+            "allowMethods": "*"
         },
-        "server": {
-                "port": 3001,
-                "host": "127.0.0.1"
-        },
-        "secureServer": {
-                "port": 3002,
-                "host": "localhost",
-                "options" : {
-                        "key": "config/server.key",
-                        "cert": "config/server.crt"
-                }        
-        },
-        "accessControl.DISABLED": {
-                "testuser1": {
-                        "accessKeyId": "testuser1",
-                        "accessKeySecret": "pa$$w0rd1",
-                        "allowMethods": "*"
+        "testuser2": {
+            "accessKeyId": "testuser2",
+            "accessKeySecret": "pa$$w0rd2",
+            "allowMethods": "POST"
+        }
+    },
+    "eventHandlers": [
+        {
+            "name": "Console",
+            "module": "../lib/consoleEventHandler",
+            "events": [
+                {
+                    "event": "i",
+                    "method": "onInsert"
                 },
-                "testuser2": {
-                        "accessKeyId": "testuser2",
-                        "accessKeySecret": "pa$$w0rd2",
-                        "allowMethods": "POST"
+                {
+                    "event": "u",
+                    "method": "onUpdate"
+                },
+                {
+                    "event": "d",
+                    "method": "onDelete"
                 }
+            ],
+            "options": {
+                "operation": ["i", "u", "d"],
+                "include": ["serviceTreatmentRecords", "disabilityBenefitsQuestionnaires"]
+            }
         },
-        "eventHandlers": [
+        {
+            "name": "RedisSTREvent",
+            "module": "../lib/redisEventHandler",
+            "events": [
                 {
-                        "name": "Console",
-                        "module": "../lib/consoleEventHandler",
-                        "events": [
-                                {"event": "i", "method": "onInsert"},
-                                {"event": "u", "method": "onUpdate"},
-                                {"event": "d", "method": "onDelete"}
-                        ],
-                        "options": {
-							"operation":["i", "u", "d"],
-							"include":["serviceTreatmentRecords", "disabilityBenefitsQuestionnaires"]
-                        }
+                    "event": "i",
+                    "method": "onInsert"
                 },
                 {
-                        "name": "RedisSTREvent",
-                        "module": "../lib/redisEventHandler",
-                        "events": [
-                                {"event": "i", "method": "onInsert"},
-                                {"event": "u", "method": "onUpdate"}
-                        ],
-                        "options": {
-							"redis": {
-								"host" : "127.0.0.1",
-								"port" : "6379",
-								"auth" : "pass1",
-	                            "channel":"core.lens.str",
-								"encryption": {
-									"enabled":true,
-									"passPhrase": "v4aV%ca36lil14P9DO1eZke3odyzOSQEy?cv?d.ur#s*z6K*r4eo2rmUZu4m0yph"
-								}
-							},
-							"operation":["i", "u", "d"],
-							"include":["serviceTreatmentRecords"]
-                        }
-                },
-                {
-                        "name": "RedisDBQEvent",
-                        "module": "../lib/redisEventHandler",
-                        "events": [
-                                {"event": "i", "method": "onInsert"},
-                                {"event": "u", "method": "onUpdate"}
-                        ],
-                        "options": {
-							"redis": {
-								"host" : "127.0.0.1",
-								"port" : "6379",
-								"auth" : "pass1",
-	                            "channel":"core.lens.dbq",
-								"encryption": {
-									"enabled":true,
-									"passPhrase": "v4aV%ca36lil14P9DO1eZke3odyzOSQEy?cv?d.ur#s*z6K*r4eo2rmUZu4m0yph"
-								}
-							},
-							"operation":["i", "u", "d"],
-							"include":["disabilityBenefitsQuestionnaires"]
-                        }
-                },
-                {
-                        "name": "Async",
-                        "module": "../lib/redisAsyncHandler",
-                        "events": [
-                                {"event": "g", "method": "onGet"}
-                        ],
-                        "options": {
-							"redis": {
-								"host" : "127.0.0.1",
-								"port" : "6379",
-								"auth" : "pass1",
-								"encryption": {
-									"enabled":true,
-									"passPhrase": "v4aV%ca36lil14P9DO1eZke3odyzOSQEy?cv?d.ur#s*z6K*r4eo2rmUZu4m0yph"
-								}
-							}
-						}                        
+                    "event": "u",
+                    "method": "onUpdate"
                 }
+            ],
+            "options": {
+                "redis": {
+                    "host": "127.0.0.1",
+                    "port": "6379",
+                    "auth": "pass1",
+                    "channel": "core.lens.str",
+                    "encryption": {
+                        "enabled": true,
+                        "passPhrase": "v4aV%ca36lil14P9DO1eZke3odyzOSQEy?cv?d.ur#s*z6K*r4eo2rmUZu4m0yph"
+                    }
+                },
+                "operation": ["i", "u", "d"],
+                "include": ["serviceTreatmentRecords"]
+            }
+        },
+        {
+            "name": "RedisDBQEvent",
+            "module": "../lib/redisEventHandler",
+            "events": [
+                {
+                    "event": "i",
+                    "method": "onInsert"
+                },
+                {
+                    "event": "u",
+                    "method": "onUpdate"
+                }
+            ],
+            "options": {
+                "redis": {
+                    "host": "127.0.0.1",
+                    "port": "6379",
+                    "auth": "pass1",
+                    "channel": "core.lens.dbq",
+                    "encryption": {
+                        "enabled": true,
+                        "passPhrase": "v4aV%ca36lil14P9DO1eZke3odyzOSQEy?cv?d.ur#s*z6K*r4eo2rmUZu4m0yph"
+                    }
+                },
+                "operation": ["i", "u", "d"],
+                "include": ["disabilityBenefitsQuestionnaires"]
+            }
+        },
+        {
+            "name": "Async",
+            "module": "../lib/redisAsyncHandler",
+            "events": [
+                {
+                    "event": "g",
+                    "method": "onGet"
+                }
+            ],
+            "options": {
+                "redis": {
+                    "host": "127.0.0.1",
+                    "port": "6379",
+                    "auth": "pass1",
+                    "encryption": {
+                        "enabled": true,
+                        "passPhrase": "v4aV%ca36lil14P9DO1eZke3odyzOSQEy?cv?d.ur#s*z6K*r4eo2rmUZu4m0yph"
+                    }
+                }
+            }
+        }
 
-        ],
-        "transform": {
-                "adapters": {
-                        "application/xml":"../adapters/xml/xml2collection.js",
-                        "text/xml":"../adapters/xml/xml2collection.js",
-                        "application/pdf":"../adapters/pdf/pdf2collection.js",
-                        "application/x-msdownload":"../adapters/pdf/pdf2collection.js",
-                        "image/gif":"../adapters/image/img2collection.js",
-                        "image/jpeg":"../adapters/image/img2collection.js",
-                        "image/pjpeg":"../adapters/image/img2collection.js",
-                        "image/png":"../adapters/image/img2collection.js",
-                        "image/svg+xml":"../adapters/image/img2collection.js",
-                        "image/tiff":"../adapters/image/img2collection.js",
-                        "application/vnd.ms-excel":"../adapters/csv/csv2collection.js",
-                        "application/json":"../adapters/jsonfile/json2collection.js"
-                },
-				"xmlTags": {
-					"defaultScheme": "niem/xml",
-					"niem/xml": {
-						"doc": {
-							"name": "nc:Document",
-							"gridFSId": "nc:DocumentFileControlID",
-							"contentType": "nc:DocumentFormatText"
-						},
-						"attachment": {
-							"name": "nc:Attachment",
-							"fileName": "nc:BinaryLocationURI",
-							"gridFSId": "nc:BinaryLocationURI",
-							"contentType": "nc:BinaryFormatStandardName",
-							"base64": "nc:BinaryBase64Object"
-						}
-					}
-				}                
+    ],
+    "transform": {
+        "adapters": {
+            "application/xml": "../adapters/xml/xml2collection.js",
+            "text/xml": "../adapters/xml/xml2collection.js",
+            "application/pdf": "../adapters/pdf/pdf2collection.js",
+            "application/x-msdownload": "../adapters/pdf/pdf2collection.js",
+            "image/gif": "../adapters/image/img2collection.js",
+            "image/jpeg": "../adapters/image/img2collection.js",
+            "image/pjpeg": "../adapters/image/img2collection.js",
+            "image/png": "../adapters/image/img2collection.js",
+            "image/svg+xml": "../adapters/image/img2collection.js",
+            "image/tiff": "../adapters/image/img2collection.js",
+            "application/vnd.ms-excel": "../adapters/csv/csv2collection.js",
+            "application/json": "../adapters/jsonfile/json2collection.js"
         },
-		"debug": true,
-		"log" : {
-			"console" : {
-				"level" : "trace",
-				"colorize" : true,
-				"label": "eCrud", 
-				"timestamp": true
-			},
-			"file" : {
-				"filename" : "eCrud.log"
-			}
-		}
+        "xmlTags": {
+            "defaultScheme": "niem/xml",
+            "niem/xml": {
+                "doc": {
+                    "name": "nc:Document",
+                    "gridFSId": "nc:DocumentFileControlID",
+                    "contentType": "nc:DocumentFormatText"
+                },
+                "attachment": {
+                    "name": "nc:Attachment",
+                    "fileName": "nc:BinaryLocationURI",
+                    "gridFSId": "nc:BinaryLocationURI",
+                    "contentType": "nc:BinaryFormatStandardName",
+                    "base64": "nc:BinaryBase64Object"
+                }
+            }
+        }
+    },
+    "debug": true,
+    "log": {
+        "console": {
+            "level": "trace",
+            "colorize": true,
+            "label": "eCrud",
+            "timestamp": true
+        },
+        "file": {
+            "filename": "eCrud.log"
+        }
+    }
 }

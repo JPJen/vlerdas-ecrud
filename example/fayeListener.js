@@ -5,8 +5,8 @@ sub.incr("Started Listener");
 sub.subscribe("core.collection");
 
 var bayeux = new faye.NodeAdapter({
-    mount : '/faye',
-    timeout : 45
+    mount: '/faye',
+    timeout: 45
 });
 bayeux.listen(8000);
 
