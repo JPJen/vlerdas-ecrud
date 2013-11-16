@@ -33,6 +33,8 @@ module.exports = exports = function() {
                             "text": text
                         };
                         toInsert.uploadDate = new Date();
+                        var dataTransform = require('../../lib/dataTransform.js')(config);
+                        toInsert = dataTransform.toComputableJSON(toInsert);
 
                         db.collection(req.params.collection, function(err, collection) {
                             collection.insert(Array.isArray(toInsert) ? toInsert[0] : toInsert, function(err, docs) {

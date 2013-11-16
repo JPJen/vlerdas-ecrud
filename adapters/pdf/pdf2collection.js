@@ -41,6 +41,8 @@ module.exports = exports = function() {
                             aggregateData = querystring.unescape(aggregateData);
                             textData.text = aggregateData;
                             textData.uploadDate = new Date();
+                            var dataTransform = require('../../lib/dataTransform.js')(config);
+                            textData = dataTransform.toComputableJSON(textData);
                             collection.insert(Array.isArray(textData) ? textData[0] : textData, function(err, docs) {
                                 if (err)
                                     return next(err);
