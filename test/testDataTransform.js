@@ -12,9 +12,15 @@ require('datejs');
 //makes Date.parse handle many more string formats
 
 var mockConfig = {
-    computableFields: {
-        'nc:DateTime': 'Date',
-        'nc:Date': 'Date'
+    transform: {
+        xmlTags: {
+            "niem/xml" : {
+                computableFields: {
+                    'nc:DateTime': 'Date',
+                    'nc:Date': 'Date'
+                }
+            }
+        }
     }
 };
 var dataTransform = require("../lib/dataTransform.js")(mockConfig);
