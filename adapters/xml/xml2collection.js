@@ -131,8 +131,8 @@ module.exports = exports = function() {
                             attachStreamsTemp[i].end();
                         }
                     }
-                    var dataTransform = require('../../lib/dataTransform.js')(config);
-                    json = dataTransform.toComputableJSON(json);
+                    //var dataTransform = require('../../lib/dataTransform.js')(config);
+                    //json = dataTransform.toComputableJSON(json);
                     writeToCollection(json);
                 });
 
