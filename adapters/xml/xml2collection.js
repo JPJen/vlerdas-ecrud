@@ -84,7 +84,6 @@ module.exports = exports = function() {
                                 txtBuf = txtRemain;
                             }
                             var buf = new Buffer(txtBuf, 'base64');
-                            buf = buf.toString('utf8');
                             //if (attachmentI == 0) console.log(buf);
 
                             attachStreamsTemp[attachmentI].write(buf);
@@ -132,6 +131,8 @@ module.exports = exports = function() {
                             attachStreamsTemp[i].end();
                         }
                     }
+                    //var dataTransform = require('../../lib/dataTransform.js')(config);
+                    //json = dataTransform.toComputableJSON(json);
                     writeToCollection(json);
                 });
 

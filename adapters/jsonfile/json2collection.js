@@ -33,6 +33,8 @@ module.exports = exports = function() {
                         if (err)
                             return next(err);
                         if (!_.isUndefined(json)) {
+                            //var dataTransform = require('../../lib/dataTransform.js')(config);
+                            //json = dataTransform.toComputableJSON(json);
                             json.uploadDate = new Date();
                             collection.insert(json, function(err, docs) {
                                 if (err)

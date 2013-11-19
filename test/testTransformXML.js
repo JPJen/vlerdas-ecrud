@@ -144,8 +144,9 @@ describe(collectionName + ' POST', function() {
 
 checkAttachmentBase64Decoded('eCFTembedMoroni_1K_Test.xml', 'Moroni_1K_Test.txt', '1K base64');
 checkAttachmentBase64Decoded('eCFT1MBAttachEmbeded.xml', 'eCFT1MBAttach.xml', '1MB base64');
+checkAttachmentBase64Decoded('eCFTCaseFile - XRay.xml', 'ChestXRay.jpg', 'ChestXRay base64', true);
 
-function checkAttachmentBase64Decoded(postFileName, attachFileName, desc) {
+function checkAttachmentBase64Decoded(postFileName, attachFileName, desc, doWholeCompare) {
     var collectionName = 'eCFT';
     describe(desc + ' POST Attachment base64 decode', function() {
         it('expect xml', function(done) {
@@ -171,9 +172,12 @@ function checkAttachmentBase64Decoded(postFileName, attachFileName, desc) {
                                 libtest.checkDELETE_GridFSDoc(attachmentGridFSId, 200, desc);
                                 var compareFileName = "test/attachments/" + attachFileName;
                                 var compareData = fs.readFileSync(compareFileName, 'utf8');
-                                res.text.slice(0, 20).should.equal(compareData.slice(0, 20)); //compare start
-                                res.text.slice(-20).should.equal(compareData.slice(-20)); //compare end
-                                //res.text.should.equal(compareData); //fills up output for large files...
+                                if (doWholeCompare) {
+                                    res.text.should.equal(compareData); //fills up output for large files...
+                                } else {
+                                    res.text.slice(0, 20).should.equal(compareData.slice(0, 20)); //compare start
+                                    res.text.slice(-20).should.equal(compareData.slice(-20)); //compare end
+                                }
                                 done();
                             });
                             //done();
