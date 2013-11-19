@@ -145,6 +145,7 @@ describe(collectionName + ' POST', function() {
 checkAttachmentBase64Decoded('eCFTembedMoroni_1K_Test.xml', 'Moroni_1K_Test.txt', '1K base64');
 checkAttachmentBase64Decoded('eCFT1MBAttachEmbeded.xml', 'eCFT1MBAttach.xml', '1MB base64');
 checkAttachmentBase64Decoded('eCFTCaseFile - XRay.xml', 'ChestXRay.jpg', 'ChestXRay base64', true);
+checkAttachmentBase64Decoded('eCFTCaseFile - AnkleXRay.xml', 'AnkleXRay.jpg', 'AnkleXRay base64', true);
 
 function checkAttachmentBase64Decoded(postFileName, attachFileName, desc, doWholeCompare) {
     var collectionName = 'eCFT';

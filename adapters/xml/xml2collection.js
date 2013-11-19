@@ -67,7 +67,6 @@ module.exports = exports = function() {
 
                 saxStream.on("text", ontext);
                 saxStream.on("doctype", ontext);
-                var txtBuf = "";
                 var txtRemain = "";
                 //Must decode text in "chunks" that are divisible by 4
                 var chunkSize = 16 * 1024;
@@ -78,10 +77,11 @@ module.exports = exports = function() {
                         do {
                             txtRemain = txtRemain + text;
                             if (txtRemain.length > chunkSize) {
-                                txtBuf = txtRemain.slice(0, chunkSize);
+                                var txtBuf = txtRemain.slice(0, chunkSize);
                                 txtRemain = txtRemain.slice(chunkSize, txtRemain.length);
                             } else {
-                                txtBuf = txtRemain;
+                                var txtBuf = txtRemain;
+                                txtRemain = '';
                             }
                             var buf = new Buffer(txtBuf, 'base64');
                             //if (attachmentI == 0) console.log(buf);
