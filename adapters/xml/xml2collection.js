@@ -84,7 +84,6 @@ module.exports = exports = function() {
                                 txtBuf = txtRemain;
                             }
                             var buf = new Buffer(txtBuf, 'base64');
-                            buf = buf.toString('utf8');
                             //if (attachmentI == 0) console.log(buf);
 
                             attachStreamsTemp[attachmentI].write(buf);
