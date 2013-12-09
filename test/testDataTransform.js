@@ -31,13 +31,15 @@ describe('test dataTransform.toComputableJSON', function() {
             var jsonFromXML = xotree.parseXML(data);
             var jsonTransformed = dataTransform.toComputableJSON(jsonFromXML);
 
-            var jsonDateTime = Jsonpath.eval(jsonTransformed, '$..nc:DateTime');
+            var jsonDateTime = Jsonpath.eval(jsonTransformed, '$..DateTime');
             jsonDateTime[0].should.not.equal('2013-10-13T19:05:52-04:00');
             jsonDateTime[0].toISOString().should.equal('2013-10-13T23:05:52.000Z');
+            jsonDateTime[0]['_namespace'].should.equal('nc');
 
-            var jsonDateTime = Jsonpath.eval(jsonTransformed, '$..nc:Date');
+            var jsonDateTime = Jsonpath.eval(jsonTransformed, '$..Date');
             jsonDateTime[0].should.not.equal('1978-07-05');
             jsonDateTime[0].toISOString().should.equal('1978-07-05T06:00:00.000Z');
+            jsonDateTime[0]['_namespace'].should.equal('nc');
             done();
         });
     });
