@@ -14,17 +14,25 @@ namespace ConsoleHttpPost {
                 //string strURL = "http://das.dynalias.org:8080/ecrud/v1/core/electronicCaseFiles/transform";
                 //string strURL = "http://localhost:3001/ecrud/v1/core/electronicCaseFiles/transform";
                 //for HTTPS
-                //string strURL = "https://das.dynalias.org/ecrud/v1/core/electronicCaseFiles/transform";
+                //string strURL = "https://goldvler.va.gov/ecrud/v1/core/electronicCaseFiles/transform";
+                //string strURL = "https://silvervler.va.gov/ecrud/v1/core/electronicCaseFiles/transform";
+                //strURL += "?batchComplete=true";
+                string strURL = "https://silvervler.va.gov/ecrud/v1/core/electronicCaseFiles/transform?batchComplete=true&moroni=true";
+                //string strURL = "https://goldvler.va.gov/ecrud/v1/core/electronicCaseFiles/transform?batchComplete=true&moroni=true";
                 try {
 	                HttpWebRequest POSTRequest = (HttpWebRequest)WebRequest.Create(strURL);
                     //For HTTPS two way cert, must be imported to "Trusted Root Certificate Authorities", Location: IE > Tools > Internet Options > Content > Certificates
-                    //X509Certificate Cert = new X509Certificate(@"f:\downloads\das.dynalias.org.p12", "test123");
-                    //X509Certificate Cert = new X509Certificate(@"F:\Downloads\ides-cftdeom.asmr.com.cer", "test123");
-                    //POSTRequest.ClientCertificates.Add(Cert);
+                    //POSTRequest.ClientCertificates.Add(new X509Certificate(@"E:\VA\2waySSL\clientcert.pkcs12", "keypass")); // ours/CACI
+
+                    
+                    //POSTRequest.ClientCertificates.Add(new X509Certificate(@"F:\Downloads\ides-cftdeom.asmr.com.cer", "test123"));
+                    //POSTRequest.ClientCertificates.Add(new X509Certificate(@"E:\VA\DoDCerts\dodRootCA2.cer"));
+                    //POSTRequest.ClientCertificates.Add(new X509Certificate(@"E:\VA\DoDCerts\DODJITCCA-27.crt"));
+                    //POSTRequest.ClientCertificates.Add(new X509Certificate(@"E:\VA\DoDCerts\ides-cftdemo.asmr.com.crt"));
                     //End HTTPS
 	                POSTRequest.Method = "POST";
 	                POSTRequest.KeepAlive = false;
-	                POSTRequest.Timeout = 5000;
+	                POSTRequest.Timeout = 30000;
 	                //Content length of message body
 	                POSTRequest.Accept = "application/xml";
 
@@ -38,7 +46,7 @@ namespace ConsoleHttpPost {
                         string fileName = "some_fileName.xml";
                         buffer = Encoding.UTF8.GetBytes(string.Format("Content-Disposition: form-data; name=\"{0}\"; filename=\"{1}\"{2}", "file", fileName, Environment.NewLine));
                         requestStream.Write(buffer, 0, buffer.Length);
-                        buffer = Encoding.ASCII.GetBytes(string.Format("Content-Type: {0}{1}{1}", "application/xml", Environment.NewLine));
+                        buffer = Encoding.ASCII.GetBytes(string.Format("Content-Type: {0}{1}{1}", "text/xml", Environment.NewLine));
                         requestStream.Write(buffer, 0, buffer.Length);
 
                         requestStream.Write(xmlData, 0, xmlData.Length);
@@ -51,8 +59,7 @@ namespace ConsoleHttpPost {
                     }
 
                     HttpWebResponse POSTResponse = (HttpWebResponse)POSTRequest.GetResponse();
-                    StreamReader reader =
-                    new StreamReader(POSTResponse.GetResponseStream(), Encoding.UTF8);
+                    StreamReader reader = new StreamReader(POSTResponse.GetResponseStream(), Encoding.UTF8);
                     string daLocation = POSTResponse.GetResponseHeader("Location");
                     HttpStatusCode daStatusCode = POSTResponse.StatusCode;
 
