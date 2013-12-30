@@ -10,15 +10,16 @@ using System.Security.Cryptography.X509Certificates;
 namespace ConsoleHttpPost {
     class Program {
             static void Main(string[] args) {
-                byte[] xmlData = System.Text.Encoding.UTF8.GetBytes(File.ReadAllText("E:\\VA\\VLERDoc-UTF8.xml", Encoding.UTF8));
+                byte[] xmlData = System.Text.Encoding.UTF8.GetBytes(
+                                            File.ReadAllText(@"C:\vler-proto-out\generated_out\xmlWithEmbeddedB64_2MB.xml", Encoding.UTF8));
                 //string strURL = "http://das.dynalias.org:8080/ecrud/v1/core/electronicCaseFiles/transform";
                 //string strURL = "http://localhost:3001/ecrud/v1/core/electronicCaseFiles/transform";
                 //for HTTPS
                 //string strURL = "https://goldvler.va.gov/ecrud/v1/core/electronicCaseFiles/transform";
                 //string strURL = "https://silvervler.va.gov/ecrud/v1/core/electronicCaseFiles/transform";
                 //strURL += "?batchComplete=true";
-                string strURL = "https://silvervler.va.gov/ecrud/v1/core/electronicCaseFiles/transform?batchComplete=true&moroni=true";
-                //string strURL = "https://goldvler.va.gov/ecrud/v1/core/electronicCaseFiles/transform?batchComplete=true&moroni=true";
+                //string strURL = "https://silvervler.va.gov/ecrud/v1/core/electronicCaseFiles/transform?batchComplete=true&moroni=true";
+                string strURL = "https://goldvler.va.gov/ecrud/v1/core/electronicCaseFiles/transform?batchComplete=true&moroni=true";
                 try {
 	                HttpWebRequest POSTRequest = (HttpWebRequest)WebRequest.Create(strURL);
                     //For HTTPS two way cert, must be imported to "Trusted Root Certificate Authorities", Location: IE > Tools > Internet Options > Content > Certificates
@@ -32,7 +33,7 @@ namespace ConsoleHttpPost {
                     //End HTTPS
 	                POSTRequest.Method = "POST";
 	                POSTRequest.KeepAlive = false;
-	                POSTRequest.Timeout = 30000;
+	                POSTRequest.Timeout = 120000;
 	                //Content length of message body
 	                POSTRequest.Accept = "application/xml";
 
