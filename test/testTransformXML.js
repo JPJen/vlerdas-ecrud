@@ -2,7 +2,6 @@
  * @author Moroni Pickering
  */
 
-var should = require('should');
 var supertest = require('supertest');
 var request = supertest('localhost:3001');
 var libtest = require("./libtest.js")(request);

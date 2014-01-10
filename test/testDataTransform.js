@@ -49,9 +49,12 @@ describe('test dataTransform.jsonToXML', function() {
     it('input json, respond with xml', function(done) {
         fs.readFile("test/attachments/DBQ_AnkleCondition.xml", 'utf8', function(err, data) {
             var jsonFromXML = xotree.parseXML(data);
+            //var backToXML = xotree.writeXML(jsonFromXML);
+            //backToXML.should.equal(data);
             var jsonTransformed = dataTransform.toComputableJSON(jsonFromXML);
             var xmlFromJson = dataTransform.jsonToXML(jsonTransformed);
             //TODO: assert things...
+            //xmlFromJson.should.equal(data);
             done();
         });
     });
