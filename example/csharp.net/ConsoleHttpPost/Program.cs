@@ -10,13 +10,13 @@ using System.Security.Cryptography.X509Certificates;
 namespace ConsoleHttpPost {
     class Program {
         static void Main(string[] args) {
-            //string loadFileName = @"C:\vler-proto-out\generated_out\xmlWithEmbeddedB64_14MB_a.xml";
-            //string loadFileName = @"C:\vler-proto-out\generated_out\xmlWithEmbeddedB64_17MB_a.xml";
-            //string loadFileName = @"C:\vler-proto-out\generated_out\xmlWithEmbeddedB64_21MB_a.xml";
-            string loadFileName = @"C:\vler-proto-out\generated_out\xmlWithEmbeddedB64_25MB_a.xml";
-            //string loadFileName = @"C:\vler-proto-out\generated_out\xmlWithEmbeddedB64_5MB_a.xml";
-            //string loadFileName = @"E:\Code\GitHub\vlerdas-ecrud\test\attachments\eCFT1MBAttachEmbeded.xml";
             //string loadFileName = @"E:\VA\VLERDoc.xml";
+            //string loadFileName = @"E:\Code\GitHub\vlerdas-ecrud\test\attachments\eCFT1MBAttachEmbeded.xml";
+            //string loadFileName = @"C:\vler-proto-out\generated_out\xmlWithEmbeddedB64_5MB_a.xml"; //6.8 MB
+            //string loadFileName = @"C:\vler-proto-out\generated_out\xmlWithEmbeddedB64_14MB_a.xml"; //19.1 MB
+            //string loadFileName = @"C:\vler-proto-out\generated_out\xmlWithEmbeddedB64_17MB_a.xml"; //23.2 MB
+            string loadFileName = @"C:\vler-proto-out\generated_out\xmlWithEmbeddedB64_21MB_a.xml"; //28.7 MB
+            //string loadFileName = @"C:\vler-proto-out\generated_out\xmlWithEmbeddedB64_25MB_a.xml"; //34.2 MB
             byte[] xmlData = System.Text.Encoding.UTF8.GetBytes(File.ReadAllText(loadFileName, Encoding.UTF8));
             //string strURL = "http://das.dynalias.org:8080/ecrud/v1/core/electronicCaseFiles/transform";
             //string strURL = "http://localhost:3001/ecrud/v1/core/electronicCaseFiles/transform";
@@ -29,7 +29,7 @@ namespace ConsoleHttpPost {
             try {
                 HttpWebRequest POSTRequest = (HttpWebRequest)WebRequest.Create(strURL);
                 //For HTTPS two way cert, must be imported to "Trusted Root Certificate Authorities", Location: IE > Tools > Internet Options > Content > Certificates
-                //POSTRequest.ClientCertificates.Add(new X509Certificate(@"E:\VA\2waySSL\clientcert.pkcs12", "keypass")); // ours/CACI
+                POSTRequest.ClientCertificates.Add(new X509Certificate(@"E:\VA\2waySSL\clientcert.pkcs12", "keypass")); // ours/CACI
 
 
                 //POSTRequest.ClientCertificates.Add(new X509Certificate(@"F:\Downloads\ides-cftdeom.asmr.com.cer", "test123"));
@@ -81,7 +81,11 @@ namespace ConsoleHttpPost {
                     System.Diagnostics.Debug.WriteLine(ResponseFromPost);
                 }
             } catch (WebException we) {
-                System.Diagnostics.Debug.WriteLine(new StreamReader(we.Response.GetResponseStream(), Encoding.UTF8).ReadToEnd().ToString());
+                String errMsg = we.Message;
+                if (we.Response != null)
+                    errMsg += "; " + new StreamReader(we.Response.GetResponseStream(), Encoding.UTF8).ReadToEnd().ToString();
+                System.Diagnostics.Debug.WriteLine(errMsg);
+                Console.Write(errMsg);
             }
             Console.In.Read();
         }
