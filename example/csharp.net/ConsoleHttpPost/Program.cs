@@ -23,7 +23,7 @@ namespace ConsoleHttpPost {
                 try {
 	                HttpWebRequest POSTRequest = (HttpWebRequest)WebRequest.Create(strURL);
                     //For HTTPS two way cert, must be imported to "Trusted Root Certificate Authorities", Location: IE > Tools > Internet Options > Content > Certificates
-                    //POSTRequest.ClientCertificates.Add(new X509Certificate(@"E:\VA\2waySSL\clientcert.pkcs12", "keypass")); // ours/CACI
+                    POSTRequest.ClientCertificates.Add(new X509Certificate(@"E:\VA\2waySSL\clientcert.pkcs12", "keypass")); // ours/CACI
 
                     
                     //POSTRequest.ClientCertificates.Add(new X509Certificate(@"F:\Downloads\ides-cftdeom.asmr.com.cer", "test123"));
@@ -75,7 +75,9 @@ namespace ConsoleHttpPost {
                         System.Diagnostics.Debug.WriteLine(ResponseFromPost);
                     }
                 } catch (WebException we) {
-                    System.Diagnostics.Debug.WriteLine(new StreamReader(we.Response.GetResponseStream(), Encoding.UTF8).ReadToEnd().ToString());
+                    String errMsg = new StreamReader(we.Response.GetResponseStream(), Encoding.UTF8).ReadToEnd().ToString();
+                    System.Diagnostics.Debug.WriteLine(errMsg);
+                    Console.Write(errMsg);
                 }
                 Console.In.Read();
         }
