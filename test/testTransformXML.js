@@ -2,7 +2,6 @@
  * @author Moroni Pickering
  */
 
-var should = require('should');
 var supertest = require('supertest');
 var request = supertest('localhost:3001');
 var libtest = require("./libtest.js")(request);
@@ -149,11 +148,13 @@ checkAttachmentBase64Decoded('eCFTCaseFile - AnkleXRay.xml', 'AnkleXRay.jpg', 'A
 
 function checkAttachmentBase64Decoded(postFileName, attachFileName, desc, doWholeCompare) {
     var collectionName = 'eCFT';
-    describe(desc + ' POST Attachment base64 decode', function() {
+    describe(desc + ' POST "'+postFileName+'" base64 decode', function() {
         it('expect xml', function(done) {
             request.post('/ecrud/v1/core/' + collectionName + '/transform')
                 .attach('file', 'test/attachments/' + postFileName)
                 .end(function(err, res) {
+                    if (res == undefined)
+                        console.log(err);
                     res.should.have.status(201);
 
                     var json = JSON.parse(res.text);
