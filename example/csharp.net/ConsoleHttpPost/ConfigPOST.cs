@@ -13,7 +13,8 @@ namespace ConsoleHttpPost {
             var config = new ConfigPOST();
             //check for config file, load if exsists, 
             //if not load defaults
-            
+
+            config.PostTimes = 1;
             //string loadFileName = @"E:\VA\VLERDoc.xml";
             //string loadFileName = @"E:\Code\GitHub\vlerdas-ecrud\test\attachments\eCFT1MBAttachEmbeded.xml";
             //string loadFileName = @"C:\vler-proto-out\generated_out\xmlWithEmbeddedB64_5MB_a.xml"; //6.8 MB
@@ -21,8 +22,9 @@ namespace ConsoleHttpPost {
             //string loadFileName = @"C:\vler-proto-out\generated_out\xmlWithEmbeddedB64_17MB_a.xml"; //23.2 MB
             //string loadFileName = @"C:\vler-proto-out\generated_out\xmlWithEmbeddedB64_21MB_a.xml"; //28.7 MB
             //string loadFileName = @"C:\vler-proto-out\generated_out\xmlWithEmbeddedB64_25MB_a.xml"; //34.2 MB
-            //string loadFileName = @"C:\vler-proto-out\generated_out\xmlAttachment-Over1MB.xml.b64"; //1.33 MB
-            config.Base64FileName = @"F:\Dev Tools\mongodbWin32_64.zip.b64.txt"; //138 MB
+            //config.Base64FileName = @"F:\Dev Tools\mongodbWin32_64.zip.b64.txt"; //138 MB
+            config.Base64FileName = @"F:\Dev Tools\SnippetManager.b64.txt"; //zip file 507 KB
+            //config.Base64FileName = @"C:\vler-proto-out\generated_out\xmlAttachment-Over1MB.xml.b64"; //1.33 MB
 
             config.StringURL = "http://localhost:3001/ecrud/v1/core/electronicCaseFiles/transform";
             //config.StringURL = "http://das.dynalias.org:8080/ecrud/v1/core/electronicCaseFiles/transform";

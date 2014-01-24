@@ -22,9 +22,9 @@ namespace ConsoleHttpPost {
                                                 config.AttachmentFormatName, config.getAttachmentFileName()));
             attachmentStr = null;
             byte[] xmlData = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
+            File.AppendAllText(config.getAttachmentFileName() + "(whole).xml", sb.ToString());
             if (args.Length > 0)
                 config.StringURL = args[0];
-            config.PostTimes = 50;
             logFileName = "ConsolePOST_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".log";
             double byteLen = xmlData.Length;
             printLine("POSTing " + Math.Round(byteLen / 1024 / 1024, 2) + " MB (total) to:");
