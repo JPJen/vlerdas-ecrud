@@ -127,19 +127,37 @@ function createApp(router) {
     // Listen
     if (!_.isUndefined(config.server) || !_.isUndefined(config.secureServer)) {
         if (!_.isUndefined(config.server)) {
-            http.createServer(app).listen(config.server.port, config.server.host, function() {
+            var server = http.createServer(app);
+            if (!_.isUndefined(config.server.timeout)) {
+                server.on('connection', function (socket) {
+                    logger.debug('Connection made to server.');
+                });
+                server.setTimeout(config.server.timeout, function (socket) {
+                    logger.debug('A timeout occurred on a socket connected on http://' + config.server.host + ':' + config.server.port);
+                    socket.destroy();
+                });
+            }
+            server.listen(config.server.port, config.server.host, function() {
                 logger.info("eCRUD server listening at http://" + config.server.host + ":" + config.server.port);
             });
         }
 
         if (!_.isUndefined(config.secureServer)) {
-            https.createServer(fixOptions(config.secureServer.options), app).listen(
-                config.secureServer.port,
-                config.secureServer.host,
-                function() {
-                    logger.info("eCRUD server listening at https://" + config.secureServer.host + ":"
-                        + config.secureServer.port);
+            var secureServer = https.createServer(fixOptions(config.secureServer.options), app);
+            if (!_.isUndefined(config.secureServer.timeout)) {
+                secureServer.on('connection', function (socket) {
+                    logger.debug('Connection made to secureServer.');
+                    socket.setTimeout(config.secureServer.timeout);
+                    socket.on('timeout', function () {
+                        logger.debug('A timeout occurred on a socket connected on http://' + config.secureServer.host + ':' + config.secureServer.port);
+                        socket.destroy();
+                    });
                 });
+            }
+            secureServer.listen(config.secureServer.port, config.secureServer.host, function() {
+                logger.info("eCRUD server listening at https://" + config.secureServer.host + ":"
+                        + config.secureServer.port);
+            });
         }
     } else {
         logger.error("Configuration must contain a server or secureServer.");
