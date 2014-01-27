@@ -29,8 +29,6 @@ namespace ConsoleHttpPost {
             config.StringURL = "http://localhost:3001/ecrud/v1/core/electronicCaseFiles/transform";
             //config.StringURL = "http://das.dynalias.org:8080/ecrud/v1/core/electronicCaseFiles/transform";
             //for HTTPS
-            //config.StringURL = "https://goldvler.va.gov/ecrud/v1/core/electronicCaseFiles/transform";
-            //config.StringURL = "https://silvervler.va.gov/ecrud/v1/core/electronicCaseFiles/transform";
             //config.StringURL = "https://silvervler.va.gov/ecrud/v1/core/electronicCaseFiles/transform?batchComplete=true&moroni=true";
             //config.StringURL = "https://goldvler.va.gov/ecrud/v1/core/electronicCaseFiles/transform?batchComplete=true&moroni=true";
             
