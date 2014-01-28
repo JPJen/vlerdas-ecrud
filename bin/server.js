@@ -128,14 +128,15 @@ function createApp(router) {
     if (!_.isUndefined(config.server) || !_.isUndefined(config.secureServer)) {
         if (!_.isUndefined(config.server)) {
             var server = http.createServer(app);
+            server.on('connection', function(socket) {
+                logger.debug('Connection made to server.');
+            });
+            server.on('timeout', function(socket) {
+                logger.debug('A timeout occurred on a socket connected on http://' + config.server.host + ':' + config.server.port);
+                socket.destroy();
+            });
             if (!_.isUndefined(config.server.timeout)) {
-                server.on('connection', function (socket) {
-                    logger.debug('Connection made to server.');
-                });
-                server.setTimeout(config.server.timeout, function (socket) {
-                    logger.debug('A timeout occurred on a socket connected on http://' + config.server.host + ':' + config.server.port);
-                    socket.destroy();
-                });
+                server.setTimeout(config.server.timeout);
             }
             server.listen(config.server.port, config.server.host, function() {
                 logger.info("eCRUD server listening at http://" + config.server.host + ":" + config.server.port);
@@ -144,16 +145,16 @@ function createApp(router) {
 
         if (!_.isUndefined(config.secureServer)) {
             var secureServer = https.createServer(fixOptions(config.secureServer.options), app);
-            if (!_.isUndefined(config.secureServer.timeout)) {
-                secureServer.on('connection', function (socket) {
-                    logger.debug('Connection made to secureServer.');
+            secureServer.on('connection', function(socket) {
+                logger.debug('Connection made to secureServer.');
+                if (!_.isUndefined(config.secureServer.timeout)) {
                     socket.setTimeout(config.secureServer.timeout);
-                    socket.on('timeout', function () {
-                        logger.debug('A timeout occurred on a socket connected on http://' + config.secureServer.host + ':' + config.secureServer.port);
-                        socket.destroy();
-                    });
+                }
+                socket.on('timeout', function() {
+                    logger.debug('A timeout occurred on a socket connected on https://' + config.secureServer.host + ':' + config.secureServer.port);
+                    socket.destroy();
                 });
-            }
+            });
             secureServer.listen(config.secureServer.port, config.secureServer.host, function() {
                 logger.info("eCRUD server listening at https://" + config.secureServer.host + ":"
                         + config.secureServer.port);
@@ -198,7 +199,7 @@ function setupEventHandlers(router) {
 
 // Default exception handler
 process.on('uncaughtException', function(err) {
-    logger.error('Caught exception: ' + err);
+    logger.error('Caught exception: ' + err.stack);
     process.exit();
 });
 
