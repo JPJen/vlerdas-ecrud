@@ -155,11 +155,11 @@ function createApp(router) {
                     socket.destroy();
                 });
             });
+            secureServer.listen(config.secureServer.port, config.secureServer.host, function() {
+                logger.info("eCRUD server listening at https://" + config.secureServer.host + ":"
+                        + config.secureServer.port);
+            });
         }
-        secureServer.listen(config.secureServer.port, config.secureServer.host, function() {
-            logger.info("eCRUD server listening at https://" + config.secureServer.host + ":"
-                    + config.secureServer.port);
-        });
     } else {
         logger.error("Configuration must contain a server or secureServer.");
         process.exit();
@@ -199,7 +199,7 @@ function setupEventHandlers(router) {
 
 // Default exception handler
 process.on('uncaughtException', function(err) {
-    logger.error('Caught exception: ' + err);
+    logger.error('Caught exception: ' + err.stack);
     process.exit();
 });
 
