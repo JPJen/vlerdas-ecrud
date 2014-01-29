@@ -101,7 +101,7 @@ function createApp(router) {
     app.get('/:collection/search', router.searchText.bind(router), router.sendResponse.bind(router));
     // Transform a new document
     app.post('/:collection/transform', router.transformToCollection.bind(router), router.sendCreatedResponse
-        .bind(router));
+            .bind(router));
     // GridFS Read Files
     app.get('/fs', router.getFiles.bind(router), router.sendResponse.bind(router));
     // GridFS Create Files
@@ -127,19 +127,38 @@ function createApp(router) {
     // Listen
     if (!_.isUndefined(config.server) || !_.isUndefined(config.secureServer)) {
         if (!_.isUndefined(config.server)) {
-            http.createServer(app).listen(config.server.port, config.server.host, function() {
+            var server = http.createServer(app);
+            server.on('connection', function(socket) {
+                logger.debug('Connection made to server.');
+            });
+            server.on('timeout', function(socket) {
+                logger.debug('A timeout occurred on a socket connected on http://' + config.server.host + ':' + config.server.port);
+                socket.destroy();
+            });
+            if (!_.isUndefined(config.server.timeout)) {
+                server.setTimeout(config.server.timeout);
+            }
+            server.listen(config.server.port, config.server.host, function() {
                 logger.info("eCRUD server listening at http://" + config.server.host + ":" + config.server.port);
             });
         }
 
         if (!_.isUndefined(config.secureServer)) {
-            https.createServer(fixOptions(config.secureServer.options), app).listen(
-                config.secureServer.port,
-                config.secureServer.host,
-                function() {
-                    logger.info("eCRUD server listening at https://" + config.secureServer.host + ":"
-                        + config.secureServer.port);
+            var secureServer = https.createServer(fixOptions(config.secureServer.options), app);
+            secureServer.on('connection', function(socket) {
+                logger.debug('Connection made to secureServer.');
+                if (!_.isUndefined(config.secureServer.timeout)) {
+                    socket.setTimeout(config.secureServer.timeout);
+                }
+                socket.on('timeout', function() {
+                    logger.debug('A timeout occurred on a socket connected on https://' + config.secureServer.host + ':' + config.secureServer.port);
+                    socket.destroy();
                 });
+            });
+            secureServer.listen(config.secureServer.port, config.secureServer.host, function() {
+                logger.info("eCRUD server listening at https://" + config.secureServer.host + ":"
+                        + config.secureServer.port);
+            });
         }
     } else {
         logger.error("Configuration must contain a server or secureServer.");
@@ -180,7 +199,7 @@ function setupEventHandlers(router) {
 
 // Default exception handler
 process.on('uncaughtException', function(err) {
-    logger.error('Caught exception: ' + err);
+    logger.error('Caught exception: ' + err.stack);
     process.exit();
 });
 
