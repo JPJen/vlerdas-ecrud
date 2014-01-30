@@ -13,16 +13,7 @@ namespace ConsoleHttpPost {
         static void Main(string[] args) {
 
             ConfigPOST config = ConfigPOST.getConfigPOST();
-            NiemXML niemXML = new NiemXML();
-            StringBuilder sb = new StringBuilder();
-            sb.Append(niemXML.getBeforeBase64(config.DocTitle));
-            string attachmentStr = File.ReadAllText(config.Base64FileName, Encoding.UTF8);
-            sb.Append(attachmentStr);
-            sb.Append(niemXML.getAfterBase64(attachmentStr.Length, config.AttachmentDescription, 
-                                                config.AttachmentFormatName, config.getAttachmentFileName()));
-            attachmentStr = null;
-            byte[] xmlData = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
-            File.AppendAllText(config.getAttachmentFileName() + "(whole).xml", sb.ToString());
+            byte[] xmlData = getBytesForPOST(config);
             if (args.Length > 0)
                 config.StringURL = args[0];
             logFileName = "ConsolePOST_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".log";
@@ -31,6 +22,31 @@ namespace ConsoleHttpPost {
             printLine(config.StringURL + Environment.NewLine);
             doMultiPartPOSTs(xmlData, config);
             Console.In.Read();
+        }
+
+        private static byte[] getBytesForPOST(ConfigPOST config) {
+            NiemXML niemXML = new NiemXML();
+            StringBuilder sb = new StringBuilder();
+            if (config.Base64FileName != null) {
+                sb.Append(niemXML.getBeforeBase64(config.DocTitle));
+                string attachmentStr = File.ReadAllText(config.Base64FileName, Encoding.UTF8);
+
+                //attachmentStr = Convert.ToBase64String(Encoding.UTF8.GetBytes(attachmentStr)); //String to Base64
+                //or strip newlines?
+                attachmentStr = attachmentStr.Replace(System.Environment.NewLine, "");
+
+                sb.Append(attachmentStr);
+                sb.Append(niemXML.getAfterBase64(attachmentStr.Length, config.AttachmentDescription,
+                                                    config.AttachmentFormatName, config.getAttachmentFileName()));
+                attachmentStr = null;
+                File.AppendAllText(config.getAttachmentFileName() + "(whole).xml", sb.ToString());
+            } else if (config.CompleteDocFileName != null) {
+                sb.Append(File.ReadAllText(config.CompleteDocFileName, Encoding.UTF8));
+            } else {
+                throw new Exception("config.Base64FileName or config.CompleteDocFileName must be set!");
+            }
+            byte[] xmlData = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
+            return xmlData;
         }
 
         private static void doMultiPartPOSTs(byte[] xmlData, ConfigPOST config) {

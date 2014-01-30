@@ -14,7 +14,7 @@ namespace ConsoleHttpPost {
             //check for config file, load if exsists, 
             //if not load defaults
 
-            config.PostTimes = 1;
+            config.PostTimes = 10;
             //string loadFileName = @"E:\VA\VLERDoc.xml";
             //string loadFileName = @"E:\Code\GitHub\vlerdas-ecrud\test\attachments\eCFT1MBAttachEmbeded.xml";
             //string loadFileName = @"C:\vler-proto-out\generated_out\xmlWithEmbeddedB64_5MB_a.xml"; //6.8 MB
@@ -23,14 +23,17 @@ namespace ConsoleHttpPost {
             //string loadFileName = @"C:\vler-proto-out\generated_out\xmlWithEmbeddedB64_21MB_a.xml"; //28.7 MB
             //string loadFileName = @"C:\vler-proto-out\generated_out\xmlWithEmbeddedB64_25MB_a.xml"; //34.2 MB
             //config.Base64FileName = @"F:\Dev Tools\mongodbWin32_64.zip.b64.txt"; //138 MB
-            config.Base64FileName = @"F:\Dev Tools\SnippetManager.b64.txt"; //zip file 507 KB
+            //config.Base64FileName = @"F:\Dev Tools\SnippetManager.b64.txt"; //zip file 507 KB
+            //config.Base64FileName = @"F:\Dev Tools\dental-xray.jpg.txt"; //13.7 KB
             //config.Base64FileName = @"C:\vler-proto-out\generated_out\xmlAttachment-Over1MB.xml.b64"; //1.33 MB
 
-            config.StringURL = "http://localhost:3001/ecrud/v1/core/electronicCaseFiles/transform";
+            config.CompleteDocFileName = @"mongodbWin32_64.zip.b64.txt(whole).xml"; //138 MB
+
+            //config.StringURL = "http://localhost:3001/ecrud/v1/core/electronicCaseFiles/transform";
             //config.StringURL = "http://das.dynalias.org:8080/ecrud/v1/core/electronicCaseFiles/transform";
             //for HTTPS
             //config.StringURL = "https://silvervler.va.gov/ecrud/v1/core/electronicCaseFiles/transform?batchComplete=true&moroni=true";
-            //config.StringURL = "https://goldvler.va.gov/ecrud/v1/core/electronicCaseFiles/transform?batchComplete=true&moroni=true";
+            config.StringURL = "https://goldvler.va.gov/ecrud/v1/core/electronicCaseFiles/transform?batchComplete=true&moroni=true";
             
             config.DocTitle = "LargeAttachmentTitle-MoroniApp";
             config.AttachmentDescription = "Mongodb zip file";
@@ -43,7 +46,7 @@ namespace ConsoleHttpPost {
             //POSTRequest.ClientCertificates.Add(new X509Certificate(@"E:\VA\DoDCerts\DODJITCCA-27.crt"));
             //POSTRequest.ClientCertificates.Add(new X509Certificate(@"E:\VA\DoDCerts\ides-cftdemo.asmr.com.crt"));
 
-            config.ClientTimeout = 600000; //10 Min
+            config.ClientTimeout = 600000 * 2; //10 Min
 
             //save config to file
             return config;
@@ -68,5 +71,7 @@ namespace ConsoleHttpPost {
         internal string getAttachmentFileName() {
             return Path.GetFileName(this.Base64FileName);
         }
+
+        public string CompleteDocFileName { get; set; }
     }
 }
