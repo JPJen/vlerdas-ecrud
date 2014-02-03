@@ -26,7 +26,7 @@ var clusterSize = !_.isUndefined(config.clusterSize) && _.isNumber(config.cluste
 
 if (clusterSize > 1 && cluster.isMaster) {    
     // Fork workers.
-    for (var i = 0; i < numCPUs; i++) {
+    for (var i = 0; i < clusterSize; i++) {
         cluster.fork();
     }
 
