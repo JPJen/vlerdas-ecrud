@@ -20,8 +20,11 @@ var https = require('https');
 var Router = require('../lib/router');
 var cluster = require('cluster');
 var numCPUs = require('os').cpus().length;
+var _ = require('underscore');
 
-if (cluster.isMaster) {
+var clusterSize = !_.isUndefined(config.clusterSize) && _.isNumber(config.clusterSize) ? config.clusterSize : numCPUs;
+
+if (clusterSize > 1 && cluster.isMaster) {    
     // Fork workers.
     for (var i = 0; i < numCPUs; i++) {
         cluster.fork();
