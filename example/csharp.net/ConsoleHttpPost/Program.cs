@@ -39,7 +39,7 @@ namespace ConsoleHttpPost {
                 sb.Append(niemXML.getAfterBase64(attachmentStr.Length, config.AttachmentDescription,
                                                     config.AttachmentFormatName, config.getAttachmentFileName()));
                 attachmentStr = null;
-                File.AppendAllText(config.getAttachmentFileName() + "(whole).xml", sb.ToString());
+                File.WriteAllText(config.getAttachmentFileName() + "(whole).xml", sb.ToString());
             } else if (config.CompleteDocFileName != null) {
                 sb.Append(File.ReadAllText(config.CompleteDocFileName, Encoding.UTF8));
             } else {
@@ -95,6 +95,7 @@ namespace ConsoleHttpPost {
                     HttpStatusCode daStatusCode = POSTResponse.StatusCode;
 
                     string ResponseFromPost = reader.ReadToEnd().ToString();
+                    POSTResponse.Close();
                     printLine("StatusCode: " + daStatusCode);
 
                     if (daStatusCode == HttpStatusCode.Accepted ||

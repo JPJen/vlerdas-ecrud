@@ -60,7 +60,7 @@ namespace ConsoleHttpGet {
                     StreamReader reader = new StreamReader(GETResponse.GetResponseStream(), Encoding.UTF8);
                     string daLocation = GETResponse.GetResponseHeader("Location");
                     HttpStatusCode daStatusCode = GETResponse.StatusCode;
-
+                    GETResponse.Close();
                     printLine("StatusCode: " + daStatusCode);
 
                     if (daStatusCode == HttpStatusCode.Accepted ||
