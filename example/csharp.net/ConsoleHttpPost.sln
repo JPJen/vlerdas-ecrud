@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleHttpPost", "ConsoleHttpPost\ConsoleHttpPost.csproj", "{34E1982F-6906-4571-A184-20CF70878F15}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleHttpGet", "ConsoleHttpGet\ConsoleHttpGet.csproj", "{3739B638-74E0-4A6F-AF63-589273D6C68A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -13,6 +15,10 @@ Global
 		{34E1982F-6906-4571-A184-20CF70878F15}.Debug|x86.Build.0 = Debug|x86
 		{34E1982F-6906-4571-A184-20CF70878F15}.Release|x86.ActiveCfg = Release|x86
 		{34E1982F-6906-4571-A184-20CF70878F15}.Release|x86.Build.0 = Release|x86
+		{3739B638-74E0-4A6F-AF63-589273D6C68A}.Debug|x86.ActiveCfg = Debug|x86
+		{3739B638-74E0-4A6F-AF63-589273D6C68A}.Debug|x86.Build.0 = Debug|x86
+		{3739B638-74E0-4A6F-AF63-589273D6C68A}.Release|x86.ActiveCfg = Release|x86
+		{3739B638-74E0-4A6F-AF63-589273D6C68A}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
