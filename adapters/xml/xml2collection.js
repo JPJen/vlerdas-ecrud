@@ -11,22 +11,27 @@ var multipart = require('connect-multipart-gridform');
 var Grid = require('gridfs-stream');
 var Jsonpath = require('JSONPath');
 var base64 = require('base64-stream');
+var config = require('config');
+var logger = require('vcommons').log.getLogger('eCrud', config.log);
 
 module.exports = exports = function() {
     return {
         transform: function(req, res, next, db, mongo, config, event) {
+            logger.trace('xml2collection.transform - start');
             var gfs = Grid(db, mongo);
 
             var xmlScheme = getXmlScheme();
             if (!xmlScheme)
                 return;
 
-            var readstream = multipart.gridform.gridfsStream(db, mongo).createReadStream(req.files.file.id);
+            var store = new mongo.GridStore(db, req.files.file.id, '', 'r');
+            store.open(function(err, gs) {
+                readstream = gs.stream();
+
             // , {
             // encoding:
             // 'utf8'
             // }
-            readstream.on('open', function() {
 
                 var strict = true;
                 var saxStream = require("sax").createStream(strict);
@@ -170,7 +175,6 @@ module.exports = exports = function() {
                 //readstream.pipe(parserStripBOM).pipe(block).pipe(saxStream);
                 readstream.pipe(parserStripBOM).pipe(saxStream);
             });
-
             // **** transform() Functions ****
 
             /*function gfsRemove(fileId) {
@@ -194,6 +198,7 @@ module.exports = exports = function() {
                             res.locals.items = docs;
                             res.locals.docs = docs;
                             event.emit("i", req, res);
+                            logger.trace('xml2collection.transform - end');
                             return next();
                         });
                     }
