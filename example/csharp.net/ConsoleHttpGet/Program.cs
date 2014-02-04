@@ -22,15 +22,20 @@ namespace ConsoleHttpGet {
     }
 
     class Program {
-        static void Main(string[] args) {
+        
+        static string configFileName = "ConfigGET.xml";
 
-            ConfigGET config = ConfigGET.getConfigGET();
+        static void Main(string[] args) {
             if (args.Length > 0)
-                config.StringURL = args[0];
-            logFileName = "ConsoleGET_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".log";
+                configFileName = args[0];
+
+            ConfigGET config = ConfigGET.getConfigGET(configFileName);
+
+            logFileName = ConfigGET.OUT_DIR + "ConsoleGET_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".log";
             printLine("GETing: ");
             printLine(config.StringURL + Environment.NewLine);
             doGETs(config);
+            Console.Out.WriteLine("\n Press enter to exit.");
             Console.In.Read();
         }
 
@@ -41,7 +46,7 @@ namespace ConsoleHttpGet {
                 Stopwatch stopWatch = new Stopwatch();
                 countGET++;
                 try {
-                    string fileName = config.OutputFileName + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + "." + config.OutputFileExt;
+                    string fileName = ConfigGET.OUT_DIR + config.OutputFileNamePrefix + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + "." + config.OutputFileExt;
                     /*using (var wc = new System.Net.WebClient()) {
                         
                         wc.DownloadFile(config.StringURL, fileName);
@@ -60,7 +65,7 @@ namespace ConsoleHttpGet {
                     StreamReader reader = new StreamReader(GETResponse.GetResponseStream(), Encoding.UTF8);
                     string daLocation = GETResponse.GetResponseHeader("Location");
                     HttpStatusCode daStatusCode = GETResponse.StatusCode;
-                    GETResponse.Close();
+                    
                     printLine("StatusCode: " + daStatusCode);
 
                     if (daStatusCode == HttpStatusCode.Accepted ||
@@ -72,6 +77,7 @@ namespace ConsoleHttpGet {
                             }                            
                             //File.Write(fileName, POSTResponse.GetResponseStream().ReadByte
                             //File.AppendAllText(fileName, reader.ReadToEnd());
+                            GETResponse.Close();
                             System.Threading.Thread.Sleep(1000);
                     }
                 } catch (WebException we) {

@@ -7,20 +7,27 @@ using System.IO;
 using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
 using System.Diagnostics;
+using System.Xml.Serialization;
 
 namespace ConsoleHttpPost {
     class Program {
-        static void Main(string[] args) {
 
-            ConfigPOST config = ConfigPOST.getConfigPOST();
-            byte[] xmlData = getBytesForPOST(config);
+        static string configFileName = "ConfigPOST.xml";
+
+        static void Main(string[] args) {
             if (args.Length > 0)
-                config.StringURL = args[0];
-            logFileName = "ConsolePOST_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".log";
+                configFileName = args[0];
+
+            ConfigPOST config = ConfigPOST.getConfigPOST(configFileName);
+            byte[] xmlData = getBytesForPOST(config);
+            logFileName = ConfigPOST.OUT_DIR + "ConsolePOST_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".log";
+            
             double byteLen = xmlData.Length;
             printLine("POSTing " + Math.Round(byteLen / 1024 / 1024, 2) + " MB (total) to:");
             printLine(config.StringURL + Environment.NewLine);
+
             doMultiPartPOSTs(xmlData, config);
+            Console.Out.WriteLine("\n Press enter to exit.");
             Console.In.Read();
         }
 
@@ -39,7 +46,7 @@ namespace ConsoleHttpPost {
                 sb.Append(niemXML.getAfterBase64(attachmentStr.Length, config.AttachmentDescription,
                                                     config.AttachmentFormatName, config.getAttachmentFileName()));
                 attachmentStr = null;
-                File.WriteAllText(config.getAttachmentFileName() + "(whole).xml", sb.ToString());
+                File.WriteAllText(ConfigPOST.OUT_DIR + config.getAttachmentFileName() + "(whole).xml", sb.ToString());
             } else if (config.CompleteDocFileName != null) {
                 sb.Append(File.ReadAllText(config.CompleteDocFileName, Encoding.UTF8));
             } else {
