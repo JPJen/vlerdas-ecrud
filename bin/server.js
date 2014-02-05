@@ -21,6 +21,7 @@ var Router = require('../lib/router');
 var cluster = require('cluster');
 var numCPUs = require('os').cpus().length;
 var _ = require('underscore');
+var util = require('util');
 
 var clusterSize = !_.isUndefined(config.clusterSize) && _.isNumber(config.clusterSize) ? config.clusterSize : numCPUs;
 
@@ -130,7 +131,12 @@ function createApp(router) {
     // Listen
     if (!_.isUndefined(config.server) || !_.isUndefined(config.secureServer)) {
         if (!_.isUndefined(config.server)) {
-            var server = http.createServer(app);
+            var server = http.createServer(function (req, res) {
+                if (cluster.worker) {
+                    logger.debug('Request assigned to worker #' + cluster.worker.id);
+                }
+                app(req, res);
+            });
             server.on('connection', function(socket) {
                 logger.debug('Connection made to server.');
             });
