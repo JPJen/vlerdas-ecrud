@@ -13,11 +13,12 @@ var Jsonpath = require('JSONPath');
 var base64 = require('base64-stream');
 var config = require('config');
 var logger = require('vcommons').log.getLogger('eCrud', config.log);
+var cluster = require('cluster');
 
 module.exports = exports = function() {
     return {
         transform: function(req, res, next, db, mongo, config, event) {
-            logger.trace('xml2collection.transform - start');
+            logger.trace('xml2collection.transform - start' + (cluster.worker ? ' - worker #' + cluster.worker.id : ''));
             var gfs = Grid(db, mongo);
 
             var xmlScheme = getXmlScheme();
@@ -198,7 +199,7 @@ module.exports = exports = function() {
                             res.locals.items = docs;
                             res.locals.docs = docs;
                             event.emit("i", req, res);
-                            logger.trace('xml2collection.transform - end');
+                            logger.trace('xml2collection.transform - end' + (cluster.worker ? ' - worker #' + cluster.worker.id : ''));
                             return next();
                         });
                     }
