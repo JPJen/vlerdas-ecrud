@@ -28,6 +28,7 @@ namespace ConsoleHttpPost {
                 //if not load defaults
 
                 config.PostTimes = 1;
+                config.CompleteDocFileName = "../../samplesForTransform/dental-xray.jpg.txt(whole).xml";
                 //string loadFileName = @"E:\VA\VLERDoc.xml";
                 //config.CompleteDocFileName = @"E:\Code\GitHub\vlerdas-ecrud\test\attachments\eCFT1MBAttachEmbeded.xml";
                 //config.CompleteDocFileName = @"C:\vler-proto-out\generated_out\xmlWithEmbeddedB64_5MB_a.xml"; //6.8 MB
@@ -37,17 +38,17 @@ namespace ConsoleHttpPost {
                 //config.CompleteDocFileName = @"C:\vler-proto-out\generated_out\xmlWithEmbeddedB64_25MB_a.xml"; //34.2 MB
                 //config.Base64FileName = @"F:\Dev Tools\mongodbWin32_64.zip.b64.txt"; //138 MB
                 //config.Base64FileName = @"F:\Dev Tools\SnippetManager.b64.txt"; //zip file 507 KB
-                config.Base64FileName = @"F:\Dev Tools\dental-xray.jpg.txt"; //13.7 KB
+                //config.Base64FileName = @"F:\Dev Tools\dental-xray.jpg.txt"; //13.7 KB
                 //config.Base64FileName = @"F:\Dev Tools\snake-river4.pdf.txt"; //32.1.7 KB
                 //config.Base64FileName = @"C:\vler-proto-out\generated_out\xmlAttachment-Over1MB.xml.b64"; //1.33 MB
 
                 //config.CompleteDocFileName = @"mongodbWin32_64.zip.b64.txt(whole).xml"; //138 MB
 
-                //config.StringURL = "http://localhost:3001/ecrud/v1/core/electronicCaseFiles/transform";
+                config.StringURL = "http://localhost:3001/ecrud/v1/core/electronicCaseFiles/transform";
                 //config.StringURL = "http://das.dynalias.org:8080/ecrud/v1/core/electronicCaseFiles/transform";
                 //for HTTPS
                 //config.StringURL = "https://silvervler.va.gov/ecrud/v1/core/electronicCaseFiles/transform?batchComplete=true&moroni=true";
-                config.StringURL = "https://silvervler.va.gov/ecrud/v1/core/moroni/transform?batchComplete=true&moroni=true";
+                //config.StringURL = "https://silvervler.va.gov/ecrud/v1/core/moroni/transform?batchComplete=true&moroni=true";
                 //config.StringURL = "https://goldvler.va.gov/ecrud/v1/core/moroni/transform?batchComplete=true&moroni=true";
 
                 //config.DocTitle = "LargeAttachmentTitle-MoroniApp";
@@ -59,14 +60,14 @@ namespace ConsoleHttpPost {
                 config.AttachmentDescription = getANameFromTheFile(config);
                 config.AttachmentFormatName = guessAttachmentFormat(getANameFromTheFile(config));
 
-                config.PathToKey = @"E:\VA\2waySSL\clientcert.pkcs12";
-                config.KeyPassword = "keypass";
+                config.SslCertFileName = @"E:\VA\2waySSL\clientcert.pkcs12";
+                config.SslCertPasswordFileName = @"E:\VA\2waySSL\clientcert.pkcs12-password.txt";
                 //POSTRequest.ClientCertificates.Add(new X509Certificate(@"F:\Downloads\ides-cftdeom.asmr.com.cer", "test123"));
                 //POSTRequest.ClientCertificates.Add(new X509Certificate(@"E:\VA\DoDCerts\dodRootCA2.cer"));
                 //POSTRequest.ClientCertificates.Add(new X509Certificate(@"E:\VA\DoDCerts\DODJITCCA-27.crt"));
                 //POSTRequest.ClientCertificates.Add(new X509Certificate(@"E:\VA\DoDCerts\ides-cftdemo.asmr.com.crt"));
 
-                config.ClientTimeout = 600000 * 2; //10 Min
+                config.ClientTimeout = (int)(600000 * 1.5); //15 Min
 
                 StreamWriter writer = new StreamWriter(configFileName);
                 x.Serialize(writer, config);
@@ -77,13 +78,17 @@ namespace ConsoleHttpPost {
             return config;
         }
 
+        public string getCertPassword() {
+            return File.ReadAllText(SslCertPasswordFileName);
+        }
+
         static string guessAttachmentFormat(string fileName) {
-            if (fileName.ToLower().Contains("xml"))
-                return "application/xml";
+            if (fileName.ToLower().Contains("jpg") || fileName.ToLower().Contains("jpeg"))
+                return "image/jpg";
             else if (fileName.ToLower().Contains("pdf"))
                 return "application/pdf";
-            else if (fileName.ToLower().Contains("jpg") || fileName.ToLower().Contains("jpeg"))
-                return "image/jpg";
+            else if (fileName.ToLower().Contains("xml"))
+                return "application/xml";
             return "";
         }
 
@@ -97,9 +102,9 @@ namespace ConsoleHttpPost {
 
         public int PostTimes { get; set; }
 
-        public string PathToKey { get; set; }
+        public string SslCertFileName { get; set; }
 
-        public string KeyPassword { get; set; }
+        public string SslCertPasswordFileName { get; set; }
 
         public int ClientTimeout { get; set; }
 
