@@ -22,9 +22,9 @@ namespace ConsoleHttpGet {
                 config = (ConfigGET)x.Deserialize(fs);
             } else {
                 config = new ConfigGET();
-                config.GetTimes = 2;
-                config.OutputFileExt = "xml";
-                config.OutputFileNamePrefix = @"ConsoleHttpGet";
+                config.GetTimes = 1;
+                config.OutputFileExt = "pdf";
+                config.OutputFileNamePrefix = @"CnP-EXAM";
 
                 config.StringURL = "http://localhost:3001/ecrud/v1/core/fs/52811d03c26e69442065750e";
                 //config.StringURL = "http://localhost:3001/ecrud/v1/core/fs/52e6c73af3cedd800b000001";
@@ -38,8 +38,8 @@ namespace ConsoleHttpGet {
                 //config.StringURL = "https://goldvler.va.gov/ecrud/v1/core/fs/52af137559fde27176000056?moroni=true"; //whole document jpg
                 //config.StringURL = "https://goldvler.va.gov/ecrud/v1/core/electronicCaseFiles?limit=500";
 
-                config.PathToKey = @"E:\VA\2waySSL\clientcert.pkcs12";
-                config.KeyPassword = "keypass";
+                config.SslCertFileName = @"E:\VA\2waySSL\clientcert.pkcs12";
+                config.SslCertPasswordFileName = @"E:\VA\2waySSL\clientcert.pkcs12-password.txt";
 
                 config.ClientTimeout = 600000; //10 Min
 
@@ -51,13 +51,17 @@ namespace ConsoleHttpGet {
             return config;
         }
 
+        public string getCertPassword() {
+            return File.ReadAllText(SslCertPasswordFileName);
+        }
+
         public string StringURL { get; set; }
 
         public int GetTimes { get; set; }
 
-        public string PathToKey { get; set; }
+        public string SslCertFileName { get; set; }
 
-        public string KeyPassword { get; set; }
+        public string SslCertPasswordFileName { get; set; }
 
         public int ClientTimeout { get; set; }
 

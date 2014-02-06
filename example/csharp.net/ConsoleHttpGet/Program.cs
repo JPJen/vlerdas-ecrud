@@ -46,14 +46,14 @@ namespace ConsoleHttpGet {
                 Stopwatch stopWatch = new Stopwatch();
                 countGET++;
                 try {
-                    string fileName = ConfigGET.OUT_DIR + config.OutputFileNamePrefix + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + "." + config.OutputFileExt;
+                    string fileName = ConfigGET.OUT_DIR + config.OutputFileNamePrefix + "_"+ DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + "." + config.OutputFileExt;
                     /*using (var wc = new System.Net.WebClient()) {
                         
                         wc.DownloadFile(config.StringURL, fileName);
                     }*/
                     HttpWebRequest GETRequest = (HttpWebRequest)WebRequest.Create(config.StringURL);
                     //For HTTPS two way cert, must be imported to "Trusted Root Certificate Authorities", Location: IE > Tools > Internet Options > Content > Certificates
-                    GETRequest.ClientCertificates.Add(new X509Certificate(config.PathToKey, config.KeyPassword)); // ours/CACI
+                    GETRequest.ClientCertificates.Add(new X509Certificate(config.SslCertFileName, config.getCertPassword())); // ours/CACI
                     //End HTTPS
                     GETRequest.Method = "GET";
                     GETRequest.KeepAlive = false;

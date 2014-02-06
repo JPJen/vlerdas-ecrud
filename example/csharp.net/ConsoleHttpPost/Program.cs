@@ -65,7 +65,7 @@ namespace ConsoleHttpPost {
                 try {
                     HttpWebRequest POSTRequest = (HttpWebRequest)WebRequest.Create(config.StringURL);
                     //For HTTPS two way cert, must be imported to "Trusted Root Certificate Authorities", Location: IE > Tools > Internet Options > Content > Certificates
-                    POSTRequest.ClientCertificates.Add(new X509Certificate(config.PathToKey, config.KeyPassword)); // ours/CACI
+                    POSTRequest.ClientCertificates.Add(new X509Certificate(config.SslCertFileName, config.getCertPassword())); // ours/CACI
                     //End HTTPS
                     POSTRequest.Method = "POST";
                     POSTRequest.KeepAlive = false;
