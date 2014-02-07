@@ -118,33 +118,40 @@ module.exports = exports = function() {
                 });
 
                 saxStream.on("end", function() {
-                    var json = xotree.parseXML(xmlStr);
-                    var jsonDoc = Jsonpath.eval(json, '$..' + docTags.name);
-                    jsonDoc[0][docTags['gridFSId']] = req.files.file.id.toHexString();
-                    jsonDoc[0][docTags['contentType']] = req.files.file.type;
+                    if (xmlStr !== null) {
+                        var json = xotree.parseXML(xmlStr);
+                        var jsonDoc = Jsonpath.eval(json, '$..' + docTags.name);
+                        jsonDoc[0][docTags['gridFSId']] = req.files.file.id.toHexString();
+                        jsonDoc[0][docTags['contentType']] = req.files.file.type;
 
-                    // set attachment(s) properties, close/end each attachments
-                    // write streams
-                    var jsonAttachments = Jsonpath.eval(json, '$..' + attachmentTags.name);
-                    if (jsonAttachments[0][0])// only support 1 attachments section for now
-                        jsonAttachments = jsonAttachments[0];
-                    // console.log(jsonAttachments);
-                    if (attachStreamsTemp.length > 0) {
-                        for (var i = 0; i < attachStreamsTemp.length; i++) {
-                            attachStreamsTemp[i]._store.filename = jsonAttachments[i][attachmentTags.fileName];
-                            attachStreamsTemp[i].options.content_type = jsonAttachments[i][attachmentTags.contentType];
-                            jsonAttachments[i][attachmentTags['gridFSId']] = attachStreamsTemp[i].id.toHexString();
-                            attachStreamsTemp[i].end();
+                        // set attachment(s) properties, close/end each attachments
+                        // write streams
+                        var jsonAttachments = Jsonpath.eval(json, '$..' + attachmentTags.name);
+                        if (jsonAttachments[0][0])// only support 1 attachments section for now
+                            jsonAttachments = jsonAttachments[0];
+                        // console.log(jsonAttachments);
+                        if (attachStreamsTemp.length > 0) {
+                            for (var i = 0; i < attachStreamsTemp.length; i++) {
+                                attachStreamsTemp[i]._store.filename = jsonAttachments[i][attachmentTags.fileName];
+                                attachStreamsTemp[i].options.content_type = jsonAttachments[i][attachmentTags.contentType];
+                                jsonAttachments[i][attachmentTags['gridFSId']] = attachStreamsTemp[i].id.toHexString();
+                                attachStreamsTemp[i].end();
+                            }
                         }
+                        //var dataTransform = require('../../lib/dataTransform.js')(config);
+                        //json = dataTransform.toComputableJSON(json);
+                        writeToCollection(json);
                     }
-                    //var dataTransform = require('../../lib/dataTransform.js')(config);
-                    //json = dataTransform.toComputableJSON(json);
-                    writeToCollection(json);
                 });
 
                 saxStream.on("error", function(err) {
-                    console.error("error!", err);
-                    res.send('{"Error": "400 - XML Parse error: ' + err + '"}', 400);
+                    logger.error('Error parsing xml: ' + err);
+                    if (xmlStr !== null) {
+                        res.send('{"Error": "400 - XML Parse error: ' + err + '"}', 400);
+                        // blank out xmlStr to keep end event from doing anything.
+                        xmlStr = null;
+                        logger.trace('xml2collection.transform - end' + (cluster.worker ? ' - worker #' + cluster.worker.id : ''));
+                    }
                 });
 
                 // stream transform to strip out the BOM TODO: refactor to a class
