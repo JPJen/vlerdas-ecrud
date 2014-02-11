@@ -65,7 +65,7 @@ module.exports = exports = function() {
                     xmlStr += "<" + tag.name;
                     for (var attribName in tag.attributes) {
                         if (tag.attributes.hasOwnProperty(attribName))
-                            xmlStr += " " + attribName + "=\"" + tag.attributes[attribName] + "\"";
+                            xmlStr += " " + attribName + "=\"" + escapeXML(tag.attributes[attribName]) + "\"";
                     }
                     xmlStr += ">";
                     // console.log(xmlStr);
@@ -96,7 +96,7 @@ module.exports = exports = function() {
                             text = '';
                         } while (txtRemain.length > chunkSize);
                     } else {
-                        xmlStr += text;
+                        xmlStr += escapeXML(text);
                     }
                 }
 
@@ -230,3 +230,18 @@ module.exports = exports = function() {
         }
     };
 };
+
+//  This should go in vcommons...
+var XML_CHAR_MAP = {
+    '<': '&lt;',
+    '>': '&gt;',
+    '&': '&amp;',
+    '"': '&quot;',
+    "'": '&apos;'
+};
+
+function escapeXML(s) {
+    return s.replace(/[<>&"']/g, function(ch) {
+        return XML_CHAR_MAP[ch];
+    });
+}
