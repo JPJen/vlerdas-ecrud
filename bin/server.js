@@ -12,7 +12,7 @@ module.exports.config = config;
 var Log = require('vcommons').log;
 var logger = Log.getLogger('eCrud', config.log);
 module.exports.logger = logger;
-var bodyParser = require('vcommons').multipartBodyParser;
+var bodyParser = require('vcommons').bodyParser;
 var tmp = require("temp");
 tmp.track();
 var http = require('http');
@@ -78,7 +78,10 @@ function createApp(router) {
         // and text.
         app.use(mountPoint, bodyParser({
             db: router.db, // Needs DB
-            mongo: router.mongo
+            mongo: router.mongo,
+            defer: true,
+            limit: (!_.isUndefined(config.maxPostSize) ? config.maxPostSize : '100mb')
+            //uploadDir: config.tempdir
         }));
         // Log
         app.use(express.logger({
@@ -109,7 +112,7 @@ function createApp(router) {
     // GridFS Read Files
     app.get('/fs', router.getFiles.bind(router), router.sendResponse.bind(router));
     // GridFS Create Files
-    app.post('/fs', router.sendCreatedResponse.bind(router));
+    app.post('/fs', router.uploadFile.bind(router), router.sendCreatedResponse.bind(router));
     // GridFS Download Files
     app.get('/fs/:id', router.downloadFile.bind(router));
     // GridFS Delete Files
@@ -132,16 +135,14 @@ function createApp(router) {
     if (!_.isUndefined(config.server) || !_.isUndefined(config.secureServer)) {
         if (!_.isUndefined(config.server)) {
             var server = http.createServer(function (req, res) {
-                if (cluster.worker) {
-                    logger.debug('Request assigned to worker #' + cluster.worker.id);
-                }
+                logger.debug('Request assigned' + (cluster.worker ? ' to worker #' + cluster.worker.id : ''));
                 app(req, res);
             });
             server.on('connection', function(socket) {
-                logger.debug('Connection made to server.');
+                logger.debug('Connection made to server' + (cluster.worker ? ' to worker #' + cluster.worker.id : ''));
             });
             server.on('timeout', function(socket) {
-                logger.debug('A timeout occurred on a socket connected on http://' + config.server.host + ':' + config.server.port);
+                logger.warn('A timeout occurred on a socket connected on http://' + config.server.host + ':' + config.server.port);
                 socket.destroy();
             });
             if (!_.isUndefined(config.server.timeout)) {

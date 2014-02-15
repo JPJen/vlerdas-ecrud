@@ -1,8 +1,11 @@
 {
+    "clusterSize": 1,
     "context": "/ecrud/v1",
     "db": {
         "name": "core",
-        "url": "mongodb://localhost:27017/core?connectTimeoutMS=300000"
+        "url": "mongodb://localhost:27017/core?connectTimeoutMS=300000",
+	"autoReconnect": true,
+	"reconnectRetryIntervalMS": 5000
     },
     "server": {
         "port": 3001,
@@ -94,8 +97,14 @@
     ],
     "transform": {
         "adapters": {
-            "application/xml": "../adapters/xml/xml2collection.js",
-            "text/xml": "../adapters/xml/xml2collection.js",
+            "application/xml": {
+                "module" : "../adapters/xml/xml2collection.js",
+                "options" : "xml2collection"
+            },
+            "text/xml": {
+                "module" : "../adapters/xml/xml2collection.js",
+                "options" : "xml2collection"
+            },
             "application/pdf": "../adapters/pdf/pdf2collection.js",
             "application/x-msdownload": "../adapters/pdf/pdf2collection.js",
             "image/gif": "../adapters/image/img2collection.js",
@@ -107,7 +116,7 @@
             "application/vnd.ms-excel": "../adapters/csv/csv2collection.js",
             "application/json": "../adapters/jsonfile/json2collection.js"
         },
-        "xmlTags": {
+        "xml2collection": {
             "defaultScheme": "niem/xml",
             "niem/xml": {
                 "doc": {
