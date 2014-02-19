@@ -14,7 +14,7 @@ var logger = require('vcommons').log.getLogger('eCrud', config.log);
 var cluster = require('cluster');
 var fs = require('fs');
 var GridFSWriteStream = require('../../lib/gridFSWriteStream').GridFSWriteStream;
-var sax = require('sax');
+var sax = require('../../lib/PausableSAXStream');
 var _ = require('underscore');
 
 module.exports = exports = function(options) {
@@ -33,9 +33,9 @@ module.exports = exports = function(options) {
             };
             
             var writeOriginal = _.isUndefined(options.noWriteOriginal) ? true : !options.noWriteOriginal;
-            var writestream = null;
+            var writeStream = null;
             if (writeOriginal) {
-                writestream = new GridFSWriteStream(gfsOptions);
+                writeStream = new GridFSWriteStream(gfsOptions);
             }
 
             var xmlScheme = getXmlScheme();
@@ -81,6 +81,10 @@ module.exports = exports = function(options) {
                         mode: 'w',
                         root: 'fs'
                     });
+                    attachStreamsTemp[attachmentI].on('drain', function () {
+                        logger.detail('attachStreams[' + attachmentI + '] drained');
+                        saxStream.resume();
+                    });
                     attachStreamsTemp[attachmentI].once('finish', function() {
                         logger.detail('attachStreams[' + attachmentI + '] finished');
                         doFinish();
@@ -108,7 +112,9 @@ module.exports = exports = function(options) {
                     txtRemain = txtRemain + text;
                     // we have to write the data in chunks whose size is divisible by 4.
                     while (txtRemain.length > chunkSize) {
-                        attachStreamsTemp[attachmentI].write(txtRemain.slice(0, chunkSize), 'base64');
+                        if (!attachStreamsTemp[attachmentI].write(txtRemain.slice(0, chunkSize), 'base64')) {
+                            saxStream.pause();
+                        }
                         txtRemain = txtRemain.slice(chunkSize, txtRemain.length);
                     }
                 } 
@@ -147,7 +153,7 @@ module.exports = exports = function(options) {
                 if (xmlStr !== null) {
                     var json = xotree.parseXML(xmlStr);
                     if (writeOriginal) {
-                        part.id = writestream.id;
+                        part.id = writeStream.id;
                         var jsonDoc = Jsonpath.eval(json, '$..' + docTags.name);
                         jsonDoc[0][docTags['gridFSId']] = part.id.toHexString();
                         jsonDoc[0][docTags['contentType']] = part.headers['content-type'];
@@ -214,8 +220,11 @@ module.exports = exports = function(options) {
             });
 
             if (writeOriginal) {
-                writestream.once('finish', function() {
-                    logger.detail('writestream finished');
+                writeStream.on('drain', function() {
+                    logger.detail('writeStream drained');
+                });
+                writeStream.once('finish', function() {
+                    logger.detail('writeStream finished');
                     doFinish();
                 });
             }
@@ -227,7 +236,7 @@ module.exports = exports = function(options) {
             
             if (writeOriginal) {
                 doStart();
-                readstream.pipe(writestream);
+                readstream.pipe(writeStream);
             }
 
             doStart();
