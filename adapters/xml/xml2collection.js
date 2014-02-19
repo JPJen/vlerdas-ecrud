@@ -13,7 +13,7 @@ var config = require('config');
 var logger = require('vcommons').log.getLogger('eCrud', config.log);
 var cluster = require('cluster');
 var fs = require('fs');
-var GridFSWriteStream = require('../../lib/gridFSWriteStream').GridFSWriteStream;
+var GridFSWriteStream = require('../../lib/GridFSWriteStream').GridFSWriteStream;
 var sax = require('../../lib/PausableSAXStream');
 var _ = require('underscore');
 
