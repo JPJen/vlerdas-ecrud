@@ -31,11 +31,18 @@ module.exports = exports = function(options) {
                 root: 'fs',
                 highWaterMark: options.highWaterMark
             };
-            var writestream = new GridFSWriteStream(gfsOptions);
+            
+            var writeOriginal = _.isUndefined(options.noWriteOriginal) ? true : !options.noWriteOriginal;
+            var writestream = null;
+            if (writeOriginal) {
+                writestream = new GridFSWriteStream(gfsOptions);
+            }
 
             var xmlScheme = getXmlScheme();
             if (!xmlScheme)
                 return;
+
+            var completion = [];
 
             // , {
             // encoding:
@@ -67,6 +74,7 @@ module.exports = exports = function(options) {
                 if (S(lastOpenTag.toLowerCase()).contains(attachmentTags.base64.toLowerCase())) {
                     attachmentStarted = true;
                     attachmentI++;
+                    doStart();
                     attachStreamsTemp[attachmentI] = new GridFSWriteStream({
                         db: options.db,
                         mongo: options.mongo,
@@ -75,6 +83,7 @@ module.exports = exports = function(options) {
                     });
                     attachStreamsTemp[attachmentI].once('finish', function() {
                         logger.detail('attachStreams[' + attachmentI + '] finished');
+                        doFinish();
                     });
                 }
                 xmlStr += "<" + tag.name;
@@ -89,27 +98,23 @@ module.exports = exports = function(options) {
             saxStream.on("text", ontext);
             saxStream.on("doctype", ontext);
             var txtRemain = "";
-            //Must decode text in "chunks" that are divisible by 4
-            var chunkSize = 16 * 1024;
-
+            // chunkSize must be divisible by 4.
+            var chunkSize = !_.isUndefined(options.chunkSize) ? chunkSize : 16 * 1024;
+            
             function ontext(text) {
-                if (S(lastOpenTag.toLowerCase()).contains(attachmentTags.base64.toLowerCase())) {
-                    //console.log("aI=" + attachmentI + " TL= " + text.length);
-                    do {
-                        txtRemain = txtRemain + text;
-                        if (txtRemain.length > chunkSize) {
-                            var txtBuf = txtRemain.slice(0, chunkSize);
-                            txtRemain = txtRemain.slice(chunkSize, txtRemain.length);
-                        } else {
-                            var txtBuf = txtRemain;
-                            txtRemain = '';
-                        }
-                        var buf = new Buffer(txtBuf, 'base64');
-                        //if (attachmentI == 0) console.log(buf);
-                        attachStreamsTemp[attachmentI].write(buf);
-                        text = '';
-                    } while (txtRemain.length > chunkSize);
-                } else {
+                // if we're inside an attachment, write to GridFS.
+                if (attachmentStarted) {
+                    logger.detail('text type ' + (typeof text) + ' base64 length ' + text.length);
+                    txtRemain = txtRemain + text;
+                    // we have to write the data in chunks whose size is divisible by 4.
+                    while (txtRemain.length > chunkSize) {
+                        attachStreamsTemp[attachmentI].write(txtRemain.slice(0, chunkSize), 'base64');
+                        txtRemain = txtRemain.slice(chunkSize, txtRemain.length);
+                    }
+                } 
+                // else, append to xml
+                else {
+                    logger.detail('text type ' + (typeof text) + ' content ' + text);
                     xmlStr += escapeXML(text);
                 }
             }
@@ -117,8 +122,13 @@ module.exports = exports = function(options) {
 
             saxStream.on("closetag", function(tag) {
                 logger.detail('closetag ' + tag);
-                if (lastOpenTag == tag)
+                if (lastOpenTag === tag && attachmentStarted) {
                     attachmentStarted = false;
+                    // write out anything that's left in txtRemain.
+                    if (txtRemain.length > 0) {
+                        attachStreamsTemp[attachmentI].write(txtRemain, 'base64');
+                    }
+                }
                 if (attachmentStarted)
                     return;
                 xmlStr += "</" + tag + ">";
@@ -134,13 +144,15 @@ module.exports = exports = function(options) {
 
             saxStream.once("end", function() {
                 logger.detail('saxstream finished');
-                part.id = writestream.id;
                 if (xmlStr !== null) {
                     var json = xotree.parseXML(xmlStr);
-                    var jsonDoc = Jsonpath.eval(json, '$..' + docTags.name);
-                    jsonDoc[0][docTags['gridFSId']] = part.id.toHexString();
-                    jsonDoc[0][docTags['contentType']] = part.headers['content-type'];
-
+                    if (writeOriginal) {
+                        part.id = writestream.id;
+                        var jsonDoc = Jsonpath.eval(json, '$..' + docTags.name);
+                        jsonDoc[0][docTags['gridFSId']] = part.id.toHexString();
+                        jsonDoc[0][docTags['contentType']] = part.headers['content-type'];
+                    }
+                    
                     // set attachment(s) properties, close/end each attachments
                     // write streams
                     var jsonAttachments = Jsonpath.eval(json, '$..' + attachmentTags.name);
@@ -158,17 +170,18 @@ module.exports = exports = function(options) {
 
                     //var dataTransform = require('../../lib/dataTransform.js')(config);
                     //json = dataTransform.toComputableJSON(json);
-                    writeToCollection(json);
+                    part.json = json;
+                    doFinish();
                 }
             });
 
-            saxStream.once("error", function(err) {
+            saxStream.on("error", function(err) {
                 logger.error('Error parsing xml: ' + err);
                 if (xmlStr !== null) {
                     // blank out xmlStr to keep end event from doing anything.
                     xmlStr = null;
                     logger.enter('xml2collection.transform - end' + (cluster.worker ? ' - worker #' + cluster.worker.id : ''));
-                    callback('{"Error": "400 - XML Parse error: ' + err + '"}');
+                    callback({status: 400, text: '400 - XML Parse error: ' + err});
                 }
             });
 
@@ -200,26 +213,37 @@ module.exports = exports = function(options) {
                 logger.detail('readstream ended');
             });
 
-            writestream.once('finish', function() {
-                logger.detail('writestream finished');
-            });
+            if (writeOriginal) {
+                writestream.once('finish', function() {
+                    logger.detail('writestream finished');
+                    doFinish();
+                });
+            }
 
             //Tried block-stream instead of custom buffering 4 byte divisors, but saxStream uses its own buffer
             //var BlockStream = require('block-stream');
             //var block = new BlockStream(4, { nopad: true });
             //readstream.pipe(parserStripBOM).pipe(block).pipe(saxStream);
-            readstream.pipe(writestream);
+            
+            if (writeOriginal) {
+                doStart();
+                readstream.pipe(writestream);
+            }
+
+            doStart();
             readstream.pipe(parserStripBOM).pipe(saxStream);
             // **** transform() Functions ****
 
-            /*function gfsRemove(fileId) {
-             gfs.remove({ _id: fileId, root: 'fs'}, function(err) {
-             if (err)
-             return handleError(err);
-             console.log('Deleted temp gridFS file: ' + fileId);
-             return null;
-             });
-             }*/
+            function doStart() {
+                completion.push('start');
+            }
+            
+            function doFinish() {
+                completion.pop();
+                if (completion.length === 0) {
+                    writeToCollection(part.json);
+                }
+            }
 
             function writeToCollection(json) {
                 options.db.collection(part.collection, function(err, collection) {
@@ -236,7 +260,7 @@ module.exports = exports = function(options) {
             }
 
             function getXmlScheme() {
-                var xmlSchemeHeader = 'Content-Desc';
+                var xmlSchemeHeader = 'content-desc';
                 var xmlScheme = part.headers[xmlSchemeHeader];
                 if (!xmlScheme)
                     xmlScheme = options['defaultScheme'];
