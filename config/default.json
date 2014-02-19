@@ -3,7 +3,7 @@
     "context": "/ecrud/v1",
     "db": {
         "name": "core",
-        "url": "mongodb://localhost:27017/core?connectTimeoutMS=300000",
+	"url": "mongodb://localhost:27017/core?connectTimeoutMS=300000",
 	"autoReconnect": true,
 	"reconnectRetryIntervalMS": 5000
     },
@@ -118,6 +118,8 @@
         },
         "xml2collection": {
             "defaultScheme": "niem/xml",
+	    "highWaterMark" : 65536,
+	    "noWriteOriginal" : false,
             "niem/xml": {
                 "doc": {
                     "name": "nc:Document",
