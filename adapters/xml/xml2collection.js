@@ -109,7 +109,8 @@ module.exports = exports = function(options) {
                 // if we're inside an attachment, write to GridFS.
                 if (attachmentStarted) {
                     logger.detail('text type ' + (typeof text) + ' base64 length ' + text.length);
-                    txtRemain = txtRemain + text;
+                    // remove any whitespace in text so it doesn't screw up the decoding.
+                    txtRemain = txtRemain + text.replace(/[\s]/g, '');
                     // we have to write the data in chunks whose size is divisible by 4.
                     while (txtRemain.length > chunkSize) {
                         if (!attachStreamsTemp[attachmentI].write(txtRemain.slice(0, chunkSize), 'base64')) {
