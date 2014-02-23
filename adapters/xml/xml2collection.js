@@ -188,7 +188,7 @@ module.exports = exports = function(options) {
                     // blank out xmlStr to keep end event from doing anything.
                     xmlStr = null;
                     logger.enter('xml2collection.transform - end' + (cluster.worker ? ' - worker #' + cluster.worker.id : ''));
-                    callback({status: 400, text: '400 - XML Parse error: ' + err});
+                    callback({text: 'XML Parse error: ' + err});
                 }
             });
 
