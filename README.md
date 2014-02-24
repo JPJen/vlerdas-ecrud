@@ -38,11 +38,6 @@ Edit the file to suit your configuration needs:
 
 Specify a different db.name in the configuration if you need to use a different name.
 
-Setting property clusterSize to an integer value of 1 will disable clustering. Setting clustering size 
-to an empty String of "", will use the number of processors of the host  as the clusterSize. Disabling
-clustering is recommended when in development mode.
-
-
 ### Running eCrud
 
 Under the eCrud/bin folder, there is a server.js file. Run 
