@@ -89,6 +89,10 @@ module.exports = exports = function(options) {
                         logger.detail('attachStreams[' + attachmentI + '] finished');
                         doFinish();
                     });
+                    attachStreamsTemp[attachmentI].once('error', function() {
+                        logger.warn('There was an error writing to database.');
+                        saxStream.emit('error', new Error('Error writing to database.'));                        
+                    });
                 }
                 xmlStr += "<" + tag.name;
                 for (var attribName in tag.attributes) {
@@ -228,17 +232,18 @@ module.exports = exports = function(options) {
                     logger.detail('writeStream finished');
                     doFinish();
                 });
+                writeStream.once('error', function() {
+                    logger.warn('There was an error writing to database.');
+                    saxStream.emit('error', new Error('Error writing to database.'));
+                });
+                doStart();
+                readstream.pipe(writeStream);
             }
 
             //Tried block-stream instead of custom buffering 4 byte divisors, but saxStream uses its own buffer
             //var BlockStream = require('block-stream');
             //var block = new BlockStream(4, { nopad: true });
             //readstream.pipe(parserStripBOM).pipe(block).pipe(saxStream);
-            
-            if (writeOriginal) {
-                doStart();
-                readstream.pipe(writeStream);
-            }
 
             doStart();
             readstream.pipe(parserStripBOM).pipe(saxStream);
