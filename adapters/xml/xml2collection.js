@@ -14,6 +14,7 @@ var logger = require('vcommons').log.getLogger('eCrud', config.log);
 var cluster = require('cluster');
 var fs = require('fs');
 var GridFSWriteStream = require('../../lib/GridFSWriteStream').GridFSWriteStream;
+var StripBOMTransformStream = require('../../lib/StripBOMTransformStream').StripBOMTransformStream;
 var sax = require('../../lib/PausableSAXStream');
 var _ = require('underscore');
 
@@ -21,7 +22,10 @@ module.exports = exports = function(options) {
     return {
         transform: function(part, callback) {
             logger.enter('xml2collection.transform - start' + (cluster.worker ? ' - worker #' + cluster.worker.id : ''));
-            var readstream = part;
+            var readStream = part;
+            // stream transform to strip out the BOM TODO: refactor to a class
+            var stripBOMTransformStream = new StripBOMTransformStream();
+            
             var gfsOptions = {
                 db: options.db,
                 mongo: options.mongo,
@@ -91,7 +95,7 @@ module.exports = exports = function(options) {
                     });
                     attachStreamsTemp[attachmentI].once('error', function() {
                         logger.warn('There was an error writing to database.');
-                        saxStream.emit('error', new Error('Error writing to database.'));                        
+                        saxStream.end();
                     });
                 }
                 xmlStr += "<" + tag.name;
@@ -194,34 +198,18 @@ module.exports = exports = function(options) {
                     logger.enter('xml2collection.transform - end' + (cluster.worker ? ' - worker #' + cluster.worker.id : ''));
                     callback({text: 'XML Parse error: ' + err});
                 }
+                saxStream.resume();
+                
+                // There was an error. We're not interested in any more data.
+                readStream.unpipe(stripBOMTransformStream);
+                stripBOMTransformStream.unpipe(saxStream);
+                
+                // resume the readStream incsae the last write paused it.
+                readStream.resume();
             });
 
-            // stream transform to strip out the BOM TODO: refactor to a class
-            var stream = require('stream');
-            var parserStripBOM = new stream.Transform();
-            var dataCounter = 0;
-            parserStripBOM._transform = function(data, encoding, done) {
-                //console.log('dataCounter: '+dataCounter);
-                if (dataCounter == 0) {
-                    // utf8 signature on a utf8 file is 0xef, 0xbb, 0xbf
-                    // could try and edit the Buffer directly instead of converting to string
-                    // but this was faster to implement at the moment...
-                    data = data.toString('utf8');
-                    var firstChar = data.substring(0, 1);
-                    var bomChar = '\uFEFF';
-                    // Byte Order Mark character
-                    if (firstChar == bomChar) {
-                        data = data.substring(1);
-                        data = new Buffer(data, 'utf8');
-                    }
-                }
-                dataCounter++;
-                this.push(data);
-                done();
-            };
-
-            readstream.once('end', function() {
-                logger.detail('readstream ended');
+            readStream.once('end', function() {
+                logger.detail('readStream ended');
             });
 
             if (writeOriginal) {
@@ -234,19 +222,20 @@ module.exports = exports = function(options) {
                 });
                 writeStream.once('error', function() {
                     logger.warn('There was an error writing to database.');
-                    saxStream.emit('error', new Error('Error writing to database.'));
+                    readStream.unpipe(writeStream);
+                    saxStream.end();
                 });
                 doStart();
-                readstream.pipe(writeStream);
+                readStream.pipe(writeStream);
             }
 
             //Tried block-stream instead of custom buffering 4 byte divisors, but saxStream uses its own buffer
             //var BlockStream = require('block-stream');
             //var block = new BlockStream(4, { nopad: true });
-            //readstream.pipe(parserStripBOM).pipe(block).pipe(saxStream);
+            //readStream.pipe(parserStripBOM).pipe(block).pipe(saxStream);
 
             doStart();
-            readstream.pipe(parserStripBOM).pipe(saxStream);
+            readStream.pipe(stripBOMTransformStream).pipe(saxStream);
             // **** transform() Functions ****
 
             function doStart() {
