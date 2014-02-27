@@ -1,14 +1,18 @@
 {
+    "clusterSize": 1,
     "context": "/ecrud/v1",
+    "maxPostSize" : "500mb",
     "db": {
         "name": "core",
-        "url": "mongodb://localhost:27017/core?connectTimeoutMS=300000"
+	"url": "mongodb://localhost:27017/core?connectTimeoutMS=300000&auto_reconnect=false",
+        "autoReconnect": true,
+	"reconnectRetryIntervalMS" : 5000
     },
     "server": {
         "port": 3001,
         "host": "localhost"
     },
-    "secureServer": {
+    "secureServer.DISABLED": {
         "port": 3002,
         "host": "localhost",
         "options": {
@@ -94,8 +98,14 @@
     ],
     "transform": {
         "adapters": {
-            "application/xml": "../adapters/xml/xml2collection.js",
-            "text/xml": "../adapters/xml/xml2collection.js",
+            "application/xml": {
+                "module" : "../adapters/xml/xml2collection.js",
+                "options" : "xml2collection"
+            },
+            "text/xml": {
+                "module" : "../adapters/xml/xml2collection.js",
+                "options" : "xml2collection"
+            },
             "application/pdf": "../adapters/pdf/pdf2collection.js",
             "application/x-msdownload": "../adapters/pdf/pdf2collection.js",
             "image/gif": "../adapters/image/img2collection.js",
@@ -107,8 +117,10 @@
             "application/vnd.ms-excel": "../adapters/csv/csv2collection.js",
             "application/json": "../adapters/jsonfile/json2collection.js"
         },
-        "xmlTags": {
+        "xml2collection": {
             "defaultScheme": "niem/xml",
+	    "highWaterMark" : 65536,
+	    "noWriteOriginal" : false,
             "niem/xml": {
                 "doc": {
                     "name": "nc:Document",
