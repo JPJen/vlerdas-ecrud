@@ -1,14 +1,18 @@
 {
+    "clusterSize" : 1,
+    "maxPostSize" : "500mb",
     "context": "/ecrud/v1",
     "db": {
         "name": "audit",
-        "url": "mongodb://localhost:27017/audit?connectTimeoutMS=300000"
+        "url": "mongodb://localhost:27017/audit?connectTimeoutMS=300000&auto_reconnect=false",
+	"autoReconnect": true,
+	"reconnectRetryIntervalMS": 5000
     },
     "server": {
         "port": 3003,
         "host": "localhost"
     },
-    "secureServer": {
+    "secureServer.DISABLED": {
         "port": 3004,
         "host": "localhost",
         "options": {
@@ -93,49 +97,16 @@
             }
         }
     ],
-    "transform": {
-        "adapters": {
-            "application/xml": "../adapters/xml/xml2collection.js",
-            "text/xml": "../adapters/xml/xml2collection.js",
-            "application/pdf": "../adapters/pdf/pdf2collection.js",
-            "application/x-msdownload": "../adapters/pdf/pdf2collection.js",
-            "image/gif": "../adapters/image/img2collection.js",
-            "image/jpeg": "../adapters/image/img2collection.js",
-            "image/pjpeg": "../adapters/image/img2collection.js",
-            "image/png": "../adapters/image/img2collection.js",
-            "image/svg+xml": "../adapters/image/img2collection.js",
-            "image/tiff": "../adapters/image/img2collection.js",
-            "application/vnd.ms-excel": "../adapters/csv/csv2collection.js",
-            "application/json": "../adapters/jsonfile/json2collection.js"
-        },
-        "xmlTags": {
-            "defaultScheme": "niem/xml",
-            "niem/xml": {
-                "doc": {
-                    "name": "nc:Document",
-                    "gridFSId": "nc:DocumentFileControlID",
-                    "contentType": "nc:DocumentFormatText"
-                },
-                "attachment": {
-                    "name": "nc:Attachment",
-                    "fileName": "nc:BinaryLocationURI",
-                    "gridFSId": "nc:BinaryLocationURI",
-                    "contentType": "nc:BinaryFormatStandardName",
-                    "base64": "nc:BinaryBase64Object"
-                }
-            }
-        }
-    },
     "debug": true,
     "log": {
         "console": {
             "level": "trace",
             "colorize": true,
-            "label": "eCrud",
+            "label": "Audit",
             "timestamp": true
         },
         "file": {
-            "filename": "eCrud.log"
+            "filename": "Audit.log"
         }
     }
 }
