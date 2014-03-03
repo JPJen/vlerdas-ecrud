@@ -1,6 +1,6 @@
 {
     "name": "ecrud",
-    "version": "0.2.2",
+    "version": "0.3.0",
     "description": "Enterprise RESTful CRUD Service for MongoDB",
     "keywords": ["mongo", "mongodb", "rest", "restful", "CRUD", "crud", "database"],
     "author": "Julian Jewel <julian@julianjewel.com>",
