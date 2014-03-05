@@ -142,6 +142,7 @@ module.exports = exports = function(options) {
                     // write out anything that's left in txtRemain.
                     if (txtRemain.length > 0) {
                         attachStreamsTemp[attachmentI].write(txtRemain, 'base64');
+                        txtRemain = '';
                     }
                 }
                 if (attachmentStarted)
