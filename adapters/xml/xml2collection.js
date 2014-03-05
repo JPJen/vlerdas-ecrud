@@ -93,8 +93,8 @@ module.exports = exports = function(options) {
                         logger.detail('attachStreams[' + attachmentI + '] finished');
                         doFinish();
                     });
-                    attachStreamsTemp[attachmentI].once('error', function() {
-                        logger.warn('There was an error writing to database.');
+                    attachStreamsTemp[attachmentI].once('error', function(err) {
+                        logger.warn('There was an error writing to database. ' + err);
                         saxStream.end();
                     });
                 }
@@ -221,8 +221,8 @@ module.exports = exports = function(options) {
                     logger.detail('writeStream finished');
                     doFinish();
                 });
-                writeStream.once('error', function() {
-                    logger.warn('There was an error writing to database.');
+                writeStream.once('error', function(err) {
+                    logger.warn('There was an error writing to database. ' + err);
                     readStream.unpipe(writeStream);
                     saxStream.end();
                 });
