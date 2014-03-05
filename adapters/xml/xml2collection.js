@@ -111,7 +111,7 @@ module.exports = exports = function(options) {
             saxStream.on("doctype", ontext);
             var txtRemain = "";
             // chunkSize must be divisible by 4.
-            var chunkSize = !_.isUndefined(options.chunkSize) ? chunkSize : 16 * 1024;
+            var chunkSize = !_.isUndefined(options.chunkSize) ? options.chunkSize : 16 * 1024;
             
             function ontext(text) {
                 // if we're inside an attachment, write to GridFS.
