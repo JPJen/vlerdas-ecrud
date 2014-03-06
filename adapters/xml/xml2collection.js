@@ -94,8 +94,8 @@ module.exports = exports = function(options) {
                         logger.detail('attachStreams[' + attachmentI + '] finished');
                         doFinish();
                     });
-                    attachStreamsTemp[attachmentI].once('error', function() {
-                        logger.warn('There was an error writing to database.');
+                    attachStreamsTemp[attachmentI].once('error', function(err) {
+                        logger.warn('There was an error writing to database. ' + err);
                         saxStream.end();
                     });
                 }
@@ -112,7 +112,7 @@ module.exports = exports = function(options) {
             saxStream.on("doctype", ontext);
             var txtRemain = "";
             // chunkSize must be divisible by 4.
-            var chunkSize = !_.isUndefined(options.chunkSize) ? chunkSize : 16 * 1024;
+            var chunkSize = !_.isUndefined(options.chunkSize) ? options.chunkSize : 16 * 1024;
             
             function ontext(text) {
                 // if we're inside an attachment, write to GridFS.
@@ -143,6 +143,7 @@ module.exports = exports = function(options) {
                     // write out anything that's left in txtRemain.
                     if (txtRemain.length > 0) {
                         attachStreamsTemp[attachmentI].write(txtRemain, 'base64');
+                        txtRemain = '';
                     }
                 }
                 if (attachmentStarted)
@@ -222,8 +223,8 @@ module.exports = exports = function(options) {
                     logger.detail('writeStream finished');
                     doFinish();
                 });
-                writeStream.once('error', function() {
-                    logger.warn('There was an error writing to database.');
+                writeStream.once('error', function(err) {
+                    logger.warn('There was an error writing to database. ' + err);
                     readStream.unpipe(writeStream);
                     saxStream.end();
                 });
