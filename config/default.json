@@ -1,11 +1,11 @@
 {
-    "clusterSize": 1,
+    "clusterSize": 2,
     "context": "/ecrud/v1",
     "maxPostSize" : "500mb",
     "db": {
         "name": "core",
 	"url": "mongodb://localhost:27017/core?connectTimeoutMS=300000&auto_reconnect=false",
-        "autoReconnect": true,
+        "autoReconnect": false,
 	"reconnectRetryIntervalMS" : 5000
     },
     "server": {
@@ -119,8 +119,8 @@
         },
         "xml2collection": {
             "defaultScheme": "niem/xml",
-	    "highWaterMark" : 65536,
-	    "noWriteOriginal" : false,
+            "highWaterMark" : 65536,
+            "noWriteOriginal" : false,
             "niem/xml": {
                 "doc": {
                     "name": "nc:Document",
