@@ -5,8 +5,13 @@
     "db": {
         "name": "core",
         "url": "mongodb://localhost:27017/core?connectTimeoutMS=300000&auto_reconnect=false",
-        "autoReconnect": false,
-        "reconnectRetryIntervalMS": 5000
+        "autoReconnect": true,
+        "reconnectRetryIntervalMS": 5000,
+        "options" : {
+            "server": {
+                "auto_reconnect": false
+            }
+        }
     },
     "server": {
         "port": 3001,
