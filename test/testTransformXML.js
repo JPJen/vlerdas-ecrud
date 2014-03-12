@@ -142,15 +142,6 @@ describe(collectionName + ' POST', function() {
     });
 });
 
-//MAX_BUFFER_LENGTH
-describe(collectionName + ' POST', function() {
-    it('Test Error invalid attachment content type ', function(done) {
-        request.post('/ecrud/v1/core/' + collectionName + '/transform')
-            .attach('file', 'test/attachments/afile.bunk')
-            .expect(415, done);
-    });
-});
-
 checkAttachmentBase64Decoded('eCFTembedMoroni_1K_Test.xml', 'Moroni_1K_Test.txt', '1K base64');
 checkAttachmentBase64Decoded('eCFT1MBAttachEmbeded.xml', 'eCFT1MBAttach.xml', '1MB base64');
 checkAttachmentBase64Decoded('eCFTCaseFile - XRay.xml', 'ChestXRay.jpg', 'ChestXRay base64', true);
