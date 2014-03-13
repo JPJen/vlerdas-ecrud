@@ -9,7 +9,7 @@ var libtest = require("./libtest.js")(request);
 var Jsonpath = require('JSONPath');
 var fs = require('fs');
 
-var collectionName = 'eCFT';
+var collectionName = 'eCFT_test';
 
 testMultipleAttachments("eCFTCaseFile_minimal.xml", 2);
 testMultipleAttachments("eCFTCaseFile_10attachments.xml", 10);
@@ -77,7 +77,16 @@ describe(collectionName + ' POST', function() {
     });
 });
 
-collectionName = 'DBQ';
+var bareMinToTransform = "test/attachments/NIEM_BareMin.xml";
+describe(collectionName + ' POST', function() {
+    it('bare minimum to transform', function(done) {
+        request.post('/ecrud/v1/core/' + collectionName + '/transform')
+            .attach('file', bareMinToTransform)
+            .expect(201, done);
+    });
+});
+
+collectionName = 'DBQ_test';
 describe(collectionName + ' POST', function() {
     it('a file', function(done) {
         request.post('/ecrud/v1/core/' + collectionName + '/transform')

@@ -66,8 +66,7 @@ module.exports = exports = function(options) {
             var attachmentTags = options[xmlScheme].attachment;
             var docTags = options[xmlScheme].doc;
             var computableFields = options[xmlScheme].computableFields;
-            console.log(computableFields);
-            
+
             var attachmentI = -1;
             var attachStreamsTemp = [];
 
