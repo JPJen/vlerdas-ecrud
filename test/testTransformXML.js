@@ -134,6 +134,16 @@ describe(collectionName + ' POST', function() {
     });
 });
 
+/**
+ * Intermittently the test below will fail with the following error:
+ *  Error: write ECONNRESET
+        at errnoException (net.js:901:11)
+        at Socket._write (net.js:643:26)
+        ...
+    Using the advanced rest client to post the same bunk file over and over, NO failures
+    This seems to be a bug in the test REST client
+    TODO: try this test with a different node REST client
+ */
 describe(collectionName + ' POST', function() {
     it('Test Error invalid attachment content type ', function(done) {
         request.post('/ecrud/v1/core/' + collectionName + '/transform')
