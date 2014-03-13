@@ -8,7 +8,15 @@ var Jsonpath = require('JSONPath');
 
 module.exports = exports = function(request) {
     return {
+        getHexFromDecoratedID: function getHexFromDecoratedID(decoratedID) {
+            var a = /\$ObjectID\((.*)\)/.exec(decoratedID);
+            if (a) {
+                return a[1];
+            }
+            return decoratedID;
+        },
         checkDELETE_GridFSDoc: function(gridFSDocId, httpCode, desc) {
+            gridFSDocId = this.getHexFromDecoratedID(gridFSDocId);
             describe(desc + 'DELETE /ecrud/v1/core/fs/' + gridFSDocId, function() {
                 it('respond with json', function(done) {
                     request.del('/ecrud/v1/core/fs/' + gridFSDocId).expect(httpCode, done);
@@ -16,6 +24,7 @@ module.exports = exports = function(request) {
             });
         },
         checkGET_GridFSDoc: function(gridFSDocId, httpCode, desc) {
+            gridFSDocId = this.getHexFromDecoratedID(gridFSDocId);
             describe(desc + 'GET /ecrud/v1/core/fs/' + gridFSDocId, function() {
                 it('respond with json', function(done) {
                     request.get('/ecrud/v1/core/fs/' + gridFSDocId).expect(httpCode, done);
@@ -23,6 +32,7 @@ module.exports = exports = function(request) {
             });
         },
         checkGET_Collection: function(collectionName, collectionId, httpCode, desc) {
+            collectionId = this.getHexFromDecoratedID(collectionId);
             describe(desc + 'GET /ecrud/v1/core/' + collectionName + '/' + collectionId, function() {
                 it('respond with json', function(done) {
                     request.get('/ecrud/v1/core/' + collectionName + '/' + collectionId)
@@ -33,6 +43,7 @@ module.exports = exports = function(request) {
             });
         },
         checkDELETE_Collection: function(collectionName, collectionId, httpCode, desc) {
+            collectionId = this.getHexFromDecoratedID(collectionId);
             describe(desc + 'DELETE /ecrud/v1/core/' + collectionName + '/' + collectionId, function() {
                 it('respond with json', function(done) {
                     request.del('/ecrud/v1/core/' + collectionName + '/' + collectionId).expect(httpCode, done);
@@ -40,9 +51,11 @@ module.exports = exports = function(request) {
             });
         },
         checkXmlDocIds: function(collectionName, collectionId, json, desc) {
+            collectionId = this.getHexFromDecoratedID(collectionId);
             describe(desc + 'GET /ecrud/v1/core/' + collectionName + '/' + collectionId, function() {
                 it('XML check ids', function(done) {
-                    request.get('/ecrud/v1/core/' + collectionName + '/' + collectionId).set('Accept', 'application/xml').end(function(err, res) {
+                    request.get('/ecrud/v1/core/' + collectionName + '/' + collectionId).
+                            set('Accept', 'application/xml').end(function(err, res) {
                         var jsonFromXML = xotree.parseXML(res.text);
                         var attachmentsFromXML = Jsonpath.eval(jsonFromXML, '$..nc:Attachment');
                         var attachments = Jsonpath.eval(json, '$..nc:Attachment');

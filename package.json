@@ -9,6 +9,7 @@
         "test": "node ./test.js"
     },
     "dependencies": {
+        "async": ">=0.2.3",
         "datejs": ">=1.0.0-alpha",
         "winston": ">=0.7.2",
         "base64-stream": ">=0.1.2",

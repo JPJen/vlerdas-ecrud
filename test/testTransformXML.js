@@ -2,6 +2,7 @@
  * @author Moroni Pickering
  */
 
+require('should');
 var supertest = require('supertest');
 var request = supertest('localhost:3001');
 var libtest = require("./libtest.js")(request);
@@ -9,45 +10,53 @@ var Jsonpath = require('JSONPath');
 var fs = require('fs');
 
 var collectionName = 'eCFT';
-describe(collectionName + ' POST', function() {
-    it('a file', function(done) {
-        request.post('/ecrud/v1/core/' + collectionName + '/transform')
-            .set('Content-Desc', 'niem/xml')
-            .set('Content-Type', 'application/xml')
-            .attach('file', 'test/attachments/eCFTCaseFile_minimal.xml')
-            .end(function(err, res) {
-                res.should.have.status(201);
-                // 'created' success
-                // status
 
-                res.text.should.include("nc:Document");
-                res.text.should.include("nc:DocumentFileControlID");
-                res.text.should.include("nc:DocumentFormatText");
-                var json = JSON.parse(res.text);
-                var transformCollectionId = json[0]._id;
-                libtest.checkGET_Collection(collectionName, transformCollectionId, 200);
-                libtest.checkDELETE_Collection(collectionName, transformCollectionId, 200);
-                libtest.checkGET_Collection(collectionName, transformCollectionId, 404);
+testMultipleAttachments("eCFTCaseFile_minimal.xml", 2);
+testMultipleAttachments("eCFTCaseFile_10attachments.xml", 10);
 
-                var orginalGridFSDocId = Jsonpath.eval(json, '$..nc:DocumentFileControlID');
-                libtest.checkGET_GridFSDoc(orginalGridFSDocId, 200);
-                libtest.checkDELETE_GridFSDoc(orginalGridFSDocId, 200);
-                libtest.checkGET_GridFSDoc(orginalGridFSDocId, 404);
+function testMultipleAttachments(testFileName, numAttachments) {
+    describe(collectionName + ' POST', function() {
+        it('a file', function(done) {
+            request.post('/ecrud/v1/core/' + collectionName + '/transform')
+                .set('Content-Desc', 'niem/xml')
+                .set('Content-Type', 'application/xml')
+                .attach('file', 'test/attachments/'+testFileName)
+                .end(function(err, res) {
+                    res.should.have.status(201);
+                    // 'created' success
+                    // status
 
-                var jsonAttachments = Jsonpath.eval(json, '$..nc:Attachment')[0];
-                for (var i = 0; i < jsonAttachments.length; i++) {
-                    var attachmentGridFSId = jsonAttachments[i]['nc:BinaryLocationURI'];
-                    libtest.checkGET_GridFSDoc(attachmentGridFSId, 200);
-                    libtest.checkDELETE_GridFSDoc(attachmentGridFSId, 200);
-                    libtest.checkGET_GridFSDoc(attachmentGridFSId, 404);
-                }
-                jsonAttachments.length.should.equal(2);
+                    res.text.should.include("nc:Document");
+                    res.text.should.include("nc:DocumentFileControlID");
+                    res.text.should.include("nc:DocumentFormatText");
+                    var json = JSON.parse(res.text);
+                    var transformCollectionIdDecorated = json[0]._id;
+                    var transformCollectionId = libtest.getHexFromDecoratedID(json[0]._id);
+                    libtest.checkGET_Collection(collectionName, transformCollectionId, 200);
+                    libtest.checkDELETE_Collection(collectionName, transformCollectionId, 200);
+                    libtest.checkGET_Collection(collectionName, transformCollectionId, 404);
 
-                res.text.should.not.include("BinaryBase64Object");
-                done();
-            });
+                    var orginalGridFSDocId = Jsonpath.eval(json, '$..nc:DocumentFileControlID');
+                    libtest.checkGET_GridFSDoc(orginalGridFSDocId, 200);
+                    libtest.checkDELETE_GridFSDoc(orginalGridFSDocId, 200);
+                    libtest.checkGET_GridFSDoc(orginalGridFSDocId, 404);
+
+                    var jsonAttachments = Jsonpath.eval(json, '$..nc:Attachment')[0];
+                    for (var i = 0; i < jsonAttachments.length; i++) {
+                        var attachmentGridFSId = jsonAttachments[i]['nc:BinaryLocationURI'];
+                        libtest.checkGET_GridFSDoc(attachmentGridFSId, 200);
+                        libtest.checkDELETE_GridFSDoc(attachmentGridFSId, 200);
+                        libtest.checkGET_GridFSDoc(attachmentGridFSId, 404);
+                    }
+                    jsonAttachments.length.should.equal(numAttachments);
+
+                    res.text.should.not.include("BinaryBase64Object");
+                    done();
+                });
+        });
     });
-});
+}
+
 
 describe(collectionName + ' POST', function() {
     it('Header w/ Content-Desc: unicorn/xml', function(done) {
@@ -81,7 +90,8 @@ describe(collectionName + ' POST', function() {
                 res.text.should.include("nc:DocumentFileControlID");
                 res.text.should.include("nc:DocumentFormatText");
                 var json = JSON.parse(res.text);
-                var transformCollectionId = json[0]._id;
+                var transformCollectionIdDecorated = json[0]._id;
+                var transformCollectionId = libtest.getHexFromDecoratedID(json[0]._id);
                 libtest.checkXmlDocIds(collectionName, transformCollectionId, json);
                 libtest.checkGET_Collection(collectionName, transformCollectionId, 200);
                 libtest.checkDELETE_Collection(collectionName, transformCollectionId, 200);
@@ -124,15 +134,16 @@ describe(collectionName + ' POST', function() {
     });
 });
 
-describe(collectionName + ' POST', function() {
-    it('Test Error invalid attachment content type ', function(done) {
-        request.post('/ecrud/v1/core/' + collectionName + '/transform')
-            .attach('file', 'test/attachments/afile.bunk')
-            .expect(415, done);
-    });
-});
-
-//MAX_BUFFER_LENGTH
+/**
+ * Intermittently the test below will fail with the following error:
+ *  Error: write ECONNRESET
+        at errnoException (net.js:901:11)
+        at Socket._write (net.js:643:26)
+        ...
+    Using the advanced rest client to post the same bunk file over and over, NO failures
+    This seems to be a bug in the test REST client
+    TODO: try this test with a different node REST client
+ */
 describe(collectionName + ' POST', function() {
     it('Test Error invalid attachment content type ', function(done) {
         request.post('/ecrud/v1/core/' + collectionName + '/transform')

@@ -10,6 +10,7 @@ var collection = mountPoint + '/fs';
 
 var request = supertest(server);
 var libtest = require("./libtest.js")(request);
+var libtest = require("./libtest.js")(request);
 var docId;
 var docUploadDate;
 
@@ -25,7 +26,7 @@ describe('Create in ' + collection, function() {
                 file.should.have.property('lastModified');
                 file.should.have.property('path', 'test.pdf');
                 file.should.have.property('type', 'application/pdf');
-                docId = res.body.file.id;
+                docId = libtest.getHexFromDecoratedID(res.body.file.id);
                 docUploadDate = res.body.file.lastModified;
                 done();
             });

@@ -11,7 +11,7 @@ var fs = require('fs');
 
 module.exports = exports = function() {
     return {
-        transform: function(req, res, next, db, mongo, config, event) {
+        transform: function json2collection(req, res, next, db, mongo, config, event) {
             var readstream = multipart.gridform.gridfsStream(db, mongo).createReadStream(req.files.file.id);
             readstream.on('open', function() {
                 var store = readstream._store;
