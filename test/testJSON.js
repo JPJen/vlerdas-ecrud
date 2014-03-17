@@ -84,6 +84,35 @@ describe('Get from ' + collection, function() {
     });
 });
 
+describe('Get from ' + collection + 'using ?query decorated', function() {
+    it('test $ObjectID in query', function(done) {
+        var query = '?query={"_id":"' + decoratedDocID + '"}';
+        request.get(collection + query)
+            .set('Accept', 'application/json')
+            .expect(200).end(function(err, res) {
+                if (err)
+                    return done(err);
+                var document = res.body[0];
+                document.should.have.property('_id', decoratedDocID);
+                document.should.have.property('uploadDate', docUploadDate);
+                done();
+        });
+    });
+    it('test $Date in query', function(done) {
+        var query = '?query={"uploadDate": "' + docUploadDate + '"}';
+        request.get(collection + query)
+            .set('Accept', 'application/json')
+            .expect(200).end(function(err, res) {
+                if (err)
+                    return done(err);
+                var document = res.body[0];
+                document.should.have.property('_id', decoratedDocID);
+                document.should.have.property('uploadDate', docUploadDate);
+                done();
+            });
+    });
+});
+
 describe('Create with existing ID in ' + collection, function() {
     it('should return status of 500.', function(done) {
         request.post(collection).set('Content-Type', 'application/json').set('Accept', 'application/json').send({
